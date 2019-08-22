@@ -181,7 +181,7 @@ void MainWindow::on_actionLoad_protocol_triggered() {
 
 void MainWindow::on_actionDocumentation_triggered()
 {
-    QDesktopServices::openUrl(QUrl("https://jean-roland.github.io/LCSF_Doc/", QUrl::TolerantMode));
+    QDesktopServices::openUrl(QUrl("https://jean-roland.github.io/LCSF_Generator/", QUrl::TolerantMode));
 }
 
 void MainWindow::on_actionAbout_triggered()
