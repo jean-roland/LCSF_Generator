@@ -122,3 +122,7 @@ It will generate code for both A and B points of view.
 It will fully generate the descriptor and bridge files but only build a template for the main files as it cannot produce application code.
 
 If you already wrote application code for the protocol, you can import it through the _Import Desc_ buttons, the code will be included in the next generation. It will only accept files named "protocolName_Main.c".
+
+## About Code Importation
+
+The code importation feature relies heavily on its internal model of a protocol main source file to extract useful information. This means that heavy modification of this file formatting (sections names mainly) might yield unpredicted behaviour when importing and generating code with it.
