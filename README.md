@@ -4,6 +4,12 @@ LCSF Generator is a C++/Qt graphical tool used to create, edit and deploy LCSF p
 
 It generates code for the [LCSF C stack](https://github.com/jean-roland/LCSF_C_Stack) as well as documentation (markdown and wiki format).
 
+## About LCSF
+
+LCSF (Light Command Set Format) is a specification to easily create and deploy custom command sets.
+
+For more information, check the official LCSF documentation [here](https://jean-roland.github.io/LCSF_Doc/).
+
 ## How to install
 
 ### Windows
@@ -16,9 +22,3 @@ It generates code for the [LCSF C stack](https://github.com/jean-roland/LCSF_C_S
 ## How to use
 
 Refer to the project user manual found [here](https://jean-roland.github.io/LCSF_Generator/).
-
-## About LCSF
-
-LCSF is a specification to easily create and deploy custom command sets.
-
-For more information, check the official LCSF documentation [here](https://jean-roland.github.io/LCSF_Doc/).
