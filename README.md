@@ -13,8 +13,13 @@ For more information, check the official LCSF documentation [here](https://jean-
 ## How to install
 
 ### Windows
-* Go to the [release section](https://github.com/jean-roland/LCSF_Generator/releases) and download the latest version.
-* Uncompress the archive and execute LCSF_Generator.exe.
+* Go to the [release section](https://github.com/jean-roland/LCSF_Generator/releases) and download the latest Windows version.
+* Uncompress the archive and execute `LCSF_Generator.exe`.
+
+### Linux
+* Go to the [release section](https://github.com/jean-roland/LCSF_Generator/releases) and download the latest Linux version.
+* Uncompress the archive and execute `LCSF_Generator.sh`.
+* There might be missing libraries, in that case you should use the `ldd` command on `LCSF_Generator` and `platforms/libqxcb.so` and install the missing packages.
 
 ### Other OS
 * No other OS are currently supported.
