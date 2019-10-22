@@ -609,9 +609,6 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
       out << endl;
 
       // Other declarations
-      out << "// Command send callback function prototype" << endl;
-      out << "typedef bool "<< protocolName << "_SendCallback(uint8_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << endl;
-      out << endl;
       out << "// Module initialization descriptor" << endl;
       out << "typedef struct _" << protocolName.toLower() << "_init_desc {" << endl;
       out << "    uint8_t FooValue;" << endl;
@@ -634,14 +631,14 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
           out << endl;
       }
       out << "/**" << endl;
-      out << " * \\fn bool " << protocolName << "_MainExecute(uint8_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload)" << endl;
+      out << " * \\fn bool " << protocolName << "_MainExecute(uint16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload)" << endl;
       out << " * \\brief Execute a command" << endl;
       out << " *" << endl;
       out << " * \\param cmdName name of the command" << endl;
       out << " * \\param pCmdPayload pointer to command payload " << endl;
       out << " * \\return bool: true if operation was a success" << endl;
       out << " */" << endl;
-      out << "bool " << protocolName << "_MainExecute(uint8_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << endl;
+      out << "bool " << protocolName << "_MainExecute(uint16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << endl;
       out << endl;
       out << "// *** End Definitions ***" << endl;
       out << "#endif // " << protocolName.toLower() << "_Main_h" << endl;
@@ -695,7 +692,7 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
          out << "// --- Private Constants ---" << endl;
          out << "// --- Private Function Prototypes ---" << endl;
          out << "// Generated functions" << endl;
-         out << "static bool " << protocolName << "SendCommand(uint8_t cmdName, bool hasPayload);" << endl;
+         out << "static bool " << protocolName << "SendCommand(uint16_t cmdName, bool hasPayload);" << endl;
 
          for (int idx = 0; idx < cmdList.size(); idx++) {
             Command * command = cmdList.at(idx);
@@ -723,14 +720,14 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
          out << codeExtract.getUnknownPrivateFunctions();
       } else {
          out << "/**" << endl;
-         out << " * \\fn static bool " << protocolName << "_MainSendCommand(uint8_t cmdName, bool hasPayload)" << endl;
+         out << " * \\fn static bool " << protocolName << "_MainSendCommand(uint16_t cmdName, bool hasPayload)" << endl;
          out << " * \\brief Send a command" << endl;
          out << " *=" << endl;
          out << " * \\param cmdName name of the command to send=" << endl;
          out << " * \\param hasPayload indicates if command has a payload or not=" << endl;
          out << " * \\return bool: true if operation was a success=" << endl;
          out << " */" << endl;
-         out << "static bool " << protocolName << "SendCommand(uint8_t cmdName, bool hasPayload) {" << endl;
+         out << "static bool " << protocolName << "SendCommand(uint16_t cmdName, bool hasPayload) {" << endl;
          out << endl;
          out << "    if (cmdName >= " << protocolName.toUpper() << "_CMD_COUNT) {" << endl;
          out << "        return false;" << endl;
@@ -850,14 +847,14 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
       }
 
       out << "/**" << endl;
-      out << " * \\fn bool " << protocolName << "_MainExecute(uint8_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload)" << endl;
+      out << " * \\fn bool " << protocolName << "_MainExecute(uint16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload)" << endl;
       out << " * \\brief Execute a command" << endl;
       out << " *" << endl;
       out << " * \\param cmdName name of the command" << endl;
       out << " * \\param pCmdPayload pointer to command payload" << endl;
       out << " * \\return bool: true if operation was a success" << endl;
       out << " */" << endl;
-      out << "bool " << protocolName << "_MainExecute(uint8_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload) {" << endl;
+      out << "bool " << protocolName << "_MainExecute(uint16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload) {" << endl;
       out << "    switch (cmdName) {" << endl;
       for (Command * command : cmdList) {
          if (command->isReceivable(isA)) {
@@ -1048,28 +1045,28 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       out << endl;
       out << "// --- Private Constants ---" << endl;
       out << "// Array to convert command name value to their lcsf command id" << endl;
-      out << "const uint8_t LCSF_Bridge_" << protocolName << "_CMDNAME2CMDID[LCSF_" << protocolName.toUpper() << "_CMD_NB] = {" << endl;
+      out << "const uint16_t LCSF_Bridge_" << protocolName << "_CMDNAME2CMDID[LCSF_" << protocolName.toUpper() << "_CMD_NB] = {" << endl;
       for (Command * command : cmdList) {
          out << "    LCSF_" << protocolName.toUpper() << "_CMD_ID_" << command->getName().toUpper() << "," << endl;
       }
       out << "};" << endl;
       out << endl;
       out << "// --- Private Function Prototypes ---" << endl;
-      out << "static uint8_t LCSF_Bridge_" << protocolName << "_CMDID2CMDNAME(uint16_t cmdId);" << endl;
+      out << "static uint16_t LCSF_Bridge_" << protocolName << "_CMDID2CMDNAME(uint16_t cmdId);" << endl;
       for (Command * command : cmdList) {
          if ((command->getAttArray().size() > 0) && (command->isReceivable(isA))) {
             out << "static void LCSF_Bridge_" << protocolName << command->getName() << "GetData(lcsf_valid_att_t *pAttArray, "
                    << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << endl;
          }
       }
-      out << "static void LCSF_Bridge_" << protocolName << "GetCmdData(uint8_t cmdName, lcsf_valid_att_t *pAttArray, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << endl;
+      out << "static void LCSF_Bridge_" << protocolName << "GetCmdData(uint16_t cmdName, lcsf_valid_att_t *pAttArray, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << endl;
       for (Command * command : cmdList) {
          if ((command->getAttArray().size() > 0) && (command->isReceivable(isA))) {
             out << "static bool LCSF_Bridge_" << protocolName << command->getName() << "FillAtt(lcsf_valid_att_t **pAttArrayAddr, "
                    << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << endl;
          }
       }
-      out << "static bool LCSF_Bridge_" << protocolName << "FillCmdAtt(uint8_t cmdName, lcsf_valid_att_t **pAttArrayAddr, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << endl;
+      out << "static bool LCSF_Bridge_" << protocolName << "FillCmdAtt(uint16_t cmdName, lcsf_valid_att_t **pAttArrayAddr, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << endl;
       out << endl;
       out << "// --- Private Variables ---" << endl;
       out << "static lcsf_bridge_" << protocolName.toLower() << "_info_t LcsfBridge" << protocolName << "Info;" << endl;
@@ -1079,13 +1076,13 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       out << "// *** Private Functions ***" << endl;
       out << endl;
       out << "/**" << endl;
-      out << " * \\fn static uint8_t LCSF_Bridge_" << protocolName << "_CMDID2CMDNAME(uint16_t cmdId)" << endl;
+      out << " * \\fn static uint16_t LCSF_Bridge_" << protocolName << "_CMDID2CMDNAME(uint16_t cmdId)" << endl;
       out << " * \\brief Translate an lcsf command id to its name value" << endl;
       out << " *" << endl;
       out << " * \\param cmdId lcsf command identifier to translate" << endl;
-      out << " * \\return uint8_t: name value of the command" << endl;
+      out << " * \\return uint16_t: name value of the command" << endl;
       out << " */" << endl;
-      out << "static uint8_t LCSF_Bridge_" << protocolName << "_CMDID2CMDNAME(uint16_t cmdId) {" << endl;
+      out << "static uint16_t LCSF_Bridge_" << protocolName << "_CMDID2CMDNAME(uint16_t cmdId) {" << endl;
       out << "    switch (cmdId) {" << endl;
       out << "        default:" << endl;
       for (Command * command : cmdList) {
@@ -1164,7 +1161,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
 
       // Master get data function
       out << "/**" << endl;
-      out << " * \\fn static void LCSF_Bridge_" << protocolName << "GetCmdData(uint8_t cmdName, lcsf_valid_att_t *pAttArray, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload)" << endl;
+      out << " * \\fn static void LCSF_Bridge_" << protocolName << "GetCmdData(uint16_t cmdName, lcsf_valid_att_t *pAttArray, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload)" << endl;
       out << " * \\brief Retrieve command data from its attribute array and store it in a payload" << endl;
       out << " *" << endl;
       out << " * \\param cmdName name of the command" << endl;
@@ -1172,7 +1169,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       out << " * \\param pPayload pointer to the payload to contain the command data" << endl;
       out << " * \\return void" << endl;
       out << " */" << endl;
-      out << " static void LCSF_Bridge_" << protocolName << "GetCmdData(uint8_t cmdName, lcsf_valid_att_t *pAttArray, "
+      out << " static void LCSF_Bridge_" << protocolName << "GetCmdData(uint16_t cmdName, lcsf_valid_att_t *pAttArray, "
              << protocolName.toLower() << "_cmd_payload_t *pCmdPayload) {" << endl;
       out << "    if (pAttArray == NULL) {" << endl;
       out << "	    return;" << endl;
@@ -1285,7 +1282,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
 
       // Master fill attribute function
       out << "/**" << endl;
-      out << " * \\fn static bool LCSF_Bridge_" << protocolName << "FillCmdAtt(uint8_t cmdName, lcsf_valid_att_t **pAttArrayAddr, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload)" << endl;
+      out << " * \\fn static bool LCSF_Bridge_" << protocolName << "FillCmdAtt(uint16_t cmdName, lcsf_valid_att_t **pAttArrayAddr, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload)" << endl;
       out << " * \\brief Fill the attribute array of a command from its payload " << endl;
       out << " *" << endl;
       out << " * \\param cmdName name of the command" << endl;
@@ -1293,7 +1290,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       out << " * \\param pCmdPayload pointer to the command payload" << endl;
       out << " * \\return bool: true if operation was a success" << endl;
       out << " */" << endl;
-      out << "static bool LCSF_Bridge_" << protocolName << "FillCmdAtt(uint8_t cmdName, lcsf_valid_att_t **pAttArrayAddr, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload) {" << endl;
+      out << "static bool LCSF_Bridge_" << protocolName << "FillCmdAtt(uint16_t cmdName, lcsf_valid_att_t **pAttArrayAddr, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload) {" << endl;
       out << "    switch (cmdName) {" << endl;
       for (Command * command : cmdList) {
          if ((command->getAttArray().size() > 0) && (command->isTransmittable(isA))) {
@@ -1324,7 +1321,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       out << endl;
 
       out << "bool LCSF_Bridge_" << protocolName << "Receive(lcsf_valid_cmd_t *pValidCmd) {" << endl;
-      out << "    uint8_t cmdName = LCSF_Bridge_" << protocolName << "_CMDID2CMDNAME(pValidCmd->CmdId);" << endl;
+      out << "    uint16_t cmdName = LCSF_Bridge_" << protocolName << "_CMDID2CMDNAME(pValidCmd->CmdId);" << endl;
       out << "    " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload = LcsfBridge" << protocolName << "Info.pCmdPayload;" << endl;
       out << "    memset(pCmdPayload, 0, sizeof(" << protocolName.toLower() << "_cmd_payload_t));" << endl;
       out << endl;
