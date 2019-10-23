@@ -28,6 +28,7 @@
 *.so
 *.dll
 *.dylib
+*.exe
 
 # Qt-es
 
