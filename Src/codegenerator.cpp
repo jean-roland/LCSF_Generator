@@ -461,8 +461,8 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
       out << endl;
 
       // Commands enum
-      out << "// Command name enum " << endl;
-      out << "enum " << protocolName.toLower() << "__cmd_names {" << endl;
+      out << "// Command name enum" << endl;
+      out << "enum _" << protocolName.toLower() << "_cmd_names {" << endl;
       for (Command * command : cmdList) {
          out << "    " << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << "," << endl;
       }
@@ -476,7 +476,7 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
          out << "// Attributes enums" << endl;
          for (int idx = 0; idx < sortedAttInfosList.size(); idx++) {
             CodeGenerator::T_attInfos currentAttInfo = sortedAttInfosList.at(idx);
-            out << "enum " << protocolName.toLower() << "_" << currentAttInfo.parentName.toLower() << "_att_names {" << endl;
+            out << "enum _" << protocolName.toLower() << "_" << currentAttInfo.parentName.toLower() << "_att_names {" << endl;
             previousParentName = currentAttInfo.parentName;
             out << "    " << protocolName.toUpper() << "_" << currentAttInfo.parentName.toUpper() << "_ATT_" << currentAttInfo.attName.toUpper() << "," << endl;
             if (idx < sortedAttInfosList.size() - 1) {
@@ -939,7 +939,7 @@ void CodeGenerator::generateBridgeHeader(QString protocolName, QString protocolI
          out << "// Attribute identifier enum" << endl;
          out << "enum _lcsf_" << protocolName.toLower() << "_att_id {" << endl;
          for (CodeGenerator::T_attInfos currentAttInfo : attIdxList) {
-            out << "    LCSF_" << protocolName.toUpper() << "_ATT_" << currentAttInfo.attName << " = 0x"
+            out << "    LCSF_" << protocolName.toUpper() << "_ATT_" << currentAttInfo.attName.toUpper() << " = 0x"
                    << QString::number(currentAttInfo.attId, 16) << "," << endl;
          }
          out << "};" << endl;
@@ -960,7 +960,7 @@ void CodeGenerator::generateBridgeHeader(QString protocolName, QString protocolI
             out << "// Attribute sub-attributes number" << endl;
             for (CodeGenerator::T_attInfos currentAttInfo : attIdxList) {
                if (currentAttInfo.subAttNb > 0) {
-                  out << "#define LCSF_" << protocolName.toUpper() << "_ATT_" << currentAttInfo.attName << "_SUBATT_NB "
+                  out << "#define LCSF_" << protocolName.toUpper() << "_ATT_" << currentAttInfo.attName.toUpper() << "_SUBATT_NB "
                          << currentAttInfo.subAttNb << endl;
                }
             }
@@ -1096,8 +1096,8 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       // Command get data functions
       out << "/**" << endl;
       out << " * \\fn static void LCSF_Bridge_" << protocolName << "XGetData(lcsf_valid_att_t *pAttArray, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload)" << endl;
-      out << " * \\brief Retrieve data of command X from its valid attribute array and store it in a payload                                    " << endl;
-      out << " * " << endl;
+      out << " * \\brief Retrieve data of command X from its valid attribute array and store it in a payload" << endl;
+      out << " *" << endl;
       out << " * \\param pAttArray pointer to the command attribute array" << endl;
       out << " * \\param pCmdPayload pointer to the payload to contain the command data" << endl;
       out << " * \\return void" << endl;
@@ -1169,7 +1169,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       out << " * \\param pPayload pointer to the payload to contain the command data" << endl;
       out << " * \\return void" << endl;
       out << " */" << endl;
-      out << " static void LCSF_Bridge_" << protocolName << "GetCmdData(uint16_t cmdName, lcsf_valid_att_t *pAttArray, "
+      out << "static void LCSF_Bridge_" << protocolName << "GetCmdData(uint16_t cmdName, lcsf_valid_att_t *pAttArray, "
              << protocolName.toLower() << "_cmd_payload_t *pCmdPayload) {" << endl;
       out << "    if (pAttArray == NULL) {" << endl;
       out << "	    return;" << endl;
@@ -1340,7 +1340,6 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       out << "    }" << endl;
       out << "    return LCSF_ValidatorSend(LCSF_" << protocolName.toUpper() << "_PROTOCOL_ID, &sendCmd);" << endl;
       out << "}" << endl;
-      out << endl;
 
       file.close();
    }
@@ -1413,6 +1412,7 @@ void CodeGenerator::generateDescription(QString protocolName, QList<Command *> c
       }
 
       // Command descriptor array
+      out << "// Command array descriptor" << endl;
       out << "const lcsf_command_desc_t LCSF_" << protocolName << "_CmdDescArray[LCSF_" << protocolName.toUpper() << "_CMD_NB] = {" << endl;
       for (Command * command : cmdList) {
          if (command->getAttArray().size() > 0) {
