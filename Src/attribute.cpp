@@ -67,7 +67,15 @@ QString Attribute::getDesc(void) {
     return this->m_desc;
 }
 
-void Attribute::setSubAttArray(QList<Attribute*> attSubAttArray) {
+void Attribute::setObjPtr(void *pObj) {
+    this->pObj = pObj;
+}
+
+void *Attribute::getObjPtr(void) {
+    return this->pObj;
+}
+
+void Attribute::setSubAttArray(QList<Attribute *> attSubAttArray) {
     this->m_subAttArray = attSubAttArray;
 }
 

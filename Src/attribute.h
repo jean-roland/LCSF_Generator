@@ -12,6 +12,7 @@ private:
     NS_AttDataType::T_AttDataType m_dataType;
     QList<Attribute *> m_subAttArray;
     QString m_desc;
+    void *pObj;
 
 public:
     Attribute(void);
@@ -27,8 +28,8 @@ public:
     NS_AttDataType::T_AttDataType getDataType(void);
     void setDesc(QString attDesc);
     QString getDesc(void);
-    void setSubAttArray(QList<Attribute*> attSubAttArray);
-    void addSubAtt(Attribute * newAtt);
+    void setObjPtr(void *pObj);
+    void *getObjPtr(void);
     void setSubAttArray(QList<Attribute *> attSubAttArray);
     void addSubAtt(Attribute *newAtt);
     QList<Attribute *> getSubAttArray(void);
