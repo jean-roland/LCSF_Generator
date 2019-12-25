@@ -53,7 +53,7 @@ void MainWindow::on_actionSave_protocol_triggered(void) {
     }
     // Save current table
     if (ui->twDescTreeView->currentItem() != nullptr) {
-       this->saveCurrentDescTable(ui->twDescTreeView->currentItem()->text(0));
+       this->saveCurrentDescTable(ui->twDescTreeView->currentItem());
     }
     // If no commands, don't generate
     if (this->m_cmdArray.isEmpty()) {
@@ -264,7 +264,7 @@ QTreeWidgetItem *MainWindow::findTreeWidgetFromName(QString treeWidgetName) {
 void MainWindow::on_twDescTreeView_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous) {
     if ((previous != nullptr) && !treeIsCleared) {
         // Save only if tree wasn't cleared
-        this->saveCurrentDescTable(previous->text(0));
+        this->saveCurrentDescTable(previous);
     }
     if (current != nullptr) {
         QString tableName = current->text(0);
@@ -529,7 +529,7 @@ void MainWindow::updateDescTreeCmdAtt(QString cmdName) {
                 attribute->setObjPtr(newChild);
                 // Update sub-children if needed
                 if (attribute->getSubAttArray().size() > 0) {
-                    this->updateDescTreeAtt(attName);
+                    this->updateDescTreeAtt(newChild);
                 }
             }
         }
@@ -539,10 +539,8 @@ void MainWindow::updateDescTreeCmdAtt(QString cmdName) {
     ui->twDescTreeView->expandItem(parentTreeItem);
 }
 
-void MainWindow::updateDescTreeAtt(QString attName) {
-    QTreeWidgetItem *parentTreeItem = this->findTreeWidgetItem(attName);
+void MainWindow::updateDescTreeAtt(QTreeWidgetItem *parentTreeItem) {
     QStringList childName;
-    //Attribute *pAttStorage = this->findAttStorage(attName);
     Attribute *pAttStorage = this->findAttStorage(parentTreeItem);
 
     if ((parentTreeItem == nullptr) || (pAttStorage == nullptr)) {
@@ -569,7 +567,7 @@ void MainWindow::updateDescTreeAtt(QString attName) {
                 attribute->setObjPtr(newChild);
                 // Update sub-children if needed
                 if (attribute->getSubAttArray().size() > 0) {
-                    this->updateDescTreeAtt(attName);
+                    this->updateDescTreeAtt(newChild);
                 }
             }
         }
@@ -579,26 +577,27 @@ void MainWindow::updateDescTreeAtt(QString attName) {
     ui->twDescTreeView->expandItem(parentTreeItem);
 }
 
-bool MainWindow::saveCurrentDescTable(QString tableName) {
+bool MainWindow::saveCurrentDescTable(QTreeWidgetItem *item) {
+    QString tableName = item->text(0);
+
     if (tableName.compare(cmdArrayName) == 0) {
         if (this->saveCommandTable()) {
             this->updateDescTreeCmd();
             return true;
         }
     } else if (tableName.contains(attArraySuffix)) {
-        QTreeWidgetItem *currentItem = findTreeWidgetItem(tableName);
         QString parentName = "";
         QString trimmedTableName = tableName;
         trimmedTableName.remove(tableName.length() - attArraySuffix.length(), attArraySuffix.length());
-        if (currentItem == nullptr) {
+        if (item == nullptr) {
             qDebug() << "Null item, couldn't save table\n";
             return false;
         }
-        if (currentItem->parent() == nullptr) {
+        if (item->parent() == nullptr) {
             qDebug() << "Null parent, couldn't save table\n";
             return false;
         }
-        parentName = currentItem->parent()->text(0);
+        parentName = item->parent()->text(0);
 
         if (parentName.compare(cmdArrayName) == 0) {
            if (this->saveCmdAttTable(trimmedTableName)) {
@@ -606,8 +605,8 @@ bool MainWindow::saveCurrentDescTable(QString tableName) {
                return true;
            }
         } else if (parentName.contains(attArraySuffix)) {
-           if (this->saveAttTable(currentItem)) {
-               this->updateDescTreeAtt(tableName);
+           if (this->saveAttTable(item)) {
+               this->updateDescTreeAtt(item);
                return true;
            }
         } else {
@@ -972,7 +971,7 @@ bool MainWindow::saveAttTable(QTreeWidgetItem *item) {
 
 void MainWindow::on_pbSaveTable_clicked(void) {
    if (ui->twDescTreeView->currentItem() != nullptr) {
-      if (this->saveCurrentDescTable(ui->twDescTreeView->currentItem()->text(0))) {
+      if (this->saveCurrentDescTable(ui->twDescTreeView->currentItem())) {
          QMessageBox::information(this,"Info", "Table saved");
       }
    }
@@ -1006,12 +1005,12 @@ void MainWindow::deleteCommandAtt(QString cmdName, QString attName) {
    }
 }
 
-void MainWindow::deleteAttribute(QString parentAttName, QString attName, QTreeWidgetItem *attItem) {
+void MainWindow::deleteAttribute(QString attName, QTreeWidgetItem *attItem) {
    Attribute *attribute = this->findAttStorage(attItem);
    if (attribute != nullptr) {
       qDebug() << "Attribute deleted: " << attName;
       attribute->removeAtt(attName);
-      this->updateDescTreeAtt(parentAttName);
+      this->updateDescTreeAtt(attItem);
    }
 }
 
@@ -1060,8 +1059,7 @@ void MainWindow::on_pbDeleteTableLine_clicked(void) {
                this->deleteCommandAtt(parentObjectName, objectName);
             } else {
                // Sub-attributes
-               QString parentObjectName =  currentItem->text(0);
-               this->deleteAttribute(parentObjectName, objectName, currentItem);
+               this->deleteAttribute(objectName, currentItem);
             }
          }
       }
@@ -1115,7 +1113,7 @@ void MainWindow::on_pbSortTable_clicked(void) {
 
        if (questionAnswer == QMessageBox::Yes) {
           if (tableName.compare(cmdArrayName) == 0) {
-             this->saveCurrentDescTable(tableName);
+             this->saveCurrentDescTable(currentTreeItem);
              this->showCommandArray();
 
              if (this->m_cmdArray.size() > 0) {
@@ -1123,7 +1121,7 @@ void MainWindow::on_pbSortTable_clicked(void) {
                 this->loadCommandArray();
              }
           } else if (tableName.contains(attArraySuffix)) {
-             this->saveCurrentDescTable(tableName);
+             this->saveCurrentDescTable(currentTreeItem);
              this->showAttributeArray();
 
              if (currentTreeItem->parent() != nullptr) {
@@ -1310,7 +1308,7 @@ void MainWindow::on_pbGenerateDesc_clicked(void) {
     const QString protocolId(ui->leProtocolId->text());
 
     if (ui->twDescTreeView->currentItem() != nullptr) {
-       this->saveCurrentDescTable(ui->twDescTreeView->currentItem()->text(0));
+       this->saveCurrentDescTable(ui->twDescTreeView->currentItem());
     }
     if (protocolName.isEmpty()) {
         QMessageBox::warning(nullptr, "Warning", "Protocol name is empty!");

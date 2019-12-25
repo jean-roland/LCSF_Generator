@@ -63,8 +63,8 @@ private:
     void deleteNoLongerExistingTreeItemChildren(QTreeWidgetItem *parentTreeItem, QList<QTreeWidgetItem *> noLongerExistingChildren);
     void updateDescTreeCmd(void);
     void updateDescTreeCmdAtt(QString cmdName);
-    void updateDescTreeAtt(QString attName);
-    bool saveCurrentDescTable(QString tableName);
+    void updateDescTreeAtt(QTreeWidgetItem *parentTreeItem);
+    bool saveCurrentDescTable(QTreeWidgetItem *item);
     QStringList getTableNames(void);
     QList<short> getTableCodes(void);
     NS_DirectionType::T_DirectionType getDirectionTypeFromComboBox(QComboBox *comboBox);
@@ -78,7 +78,7 @@ private:
     bool saveAttTable(QTreeWidgetItem *item);
     void deleteCommand(QString cmdName);
     void deleteCommandAtt(QString cmdName, QString attName);
-    void deleteAttribute(QString parentAttName, QString attName, QTreeWidgetItem *attItem);
+    void deleteAttribute(QString attName, QTreeWidgetItem *attItem);
     void saveDesc_REC_Json(QJsonArray &attributes, QList<Attribute *> attList2Save);
     void loadAtt_REC_Json(Command *pParentCmd, Attribute *pParentAtt, const QJsonObject &attribut);
     void clearData(void);
