@@ -287,7 +287,7 @@ void MainWindow::on_twDescTreeView_currentItemChanged(QTreeWidgetItem *current, 
             if (current->parent()->text(0).compare(cmdArrayName) == 0) {
                 this->loadCommandAttArray(tableName.remove(tableName.length() - attArraySuffix.length(), attArraySuffix.length()));
             } else {
-                this->loadAttArray(tableName);
+                this->loadAttArray(current);
             }
             ui->twDescTableView->resizeColumnsToContents();
             ui->twDescTableView->horizontalHeader()->setStretchLastSection(true);
@@ -395,8 +395,8 @@ void MainWindow::loadCommandAttArray(QString cmdName) {
     }
 }
 
-void MainWindow::loadAttArray(QString attName) {
-    Attribute *attribute = this->findAttStorage(attName);
+void MainWindow::loadAttArray(QTreeWidgetItem *item) {
+    Attribute *attribute = this->findAttStorage(item);
     if (attribute == nullptr) {
         qDebug() << "Null pointer, couldn't load attribute\n";
         return;
@@ -481,13 +481,15 @@ void MainWindow::updateDescTreeCmd(void) {
          QString cmdName = command->getName() + attArraySuffix;
          QTreeWidgetItem *existingChild = this->getTreeItemChild(currentChildrenList, cmdName);
          if (existingChild != nullptr) {
-            // Remove pre-existing children
+            // Remove pre-existing children from list
             currentChildrenList.removeAll(existingChild);
          } else {
             // Add children
             childName.clear();
             childName.append(cmdName);
-            parentTreeItem->addChild(new QTreeWidgetItem(childName,0));
+            QTreeWidgetItem *newChild = new QTreeWidgetItem(childName,0);
+            parentTreeItem->addChild(newChild);
+            // Update sub-children if needed
             if (command->getAttArray().size() > 0) {
                this->updateDescTreeCmdAtt(command->getName());
             }
@@ -515,13 +517,17 @@ void MainWindow::updateDescTreeCmdAtt(QString cmdName) {
             QString attName = attribute->getName() + attArraySuffix;
             QTreeWidgetItem *existingChild = this->getTreeItemChild(currentChildrenList, attName);
             if (existingChild != nullptr) {
-                // Remove pre-existing children
+                // Remove pre-existing children from list
                 currentChildrenList.removeAll(existingChild);
             } else {
                 // Add children
                 childName.clear();
                 childName.append(attName);
-                parentTreeItem->addChild(new QTreeWidgetItem(childName,0));
+                QTreeWidgetItem *newChild = new QTreeWidgetItem(childName,0);
+                parentTreeItem->addChild(newChild);
+                // Note pointer to item
+                attribute->setObjPtr(newChild);
+                // Update sub-children if needed
                 if (attribute->getSubAttArray().size() > 0) {
                     this->updateDescTreeAtt(attName);
                 }
@@ -536,7 +542,8 @@ void MainWindow::updateDescTreeCmdAtt(QString cmdName) {
 void MainWindow::updateDescTreeAtt(QString attName) {
     QTreeWidgetItem *parentTreeItem = this->findTreeWidgetItem(attName);
     QStringList childName;
-    Attribute * pAttStorage = this->findAttStorage(attName);
+    //Attribute *pAttStorage = this->findAttStorage(attName);
+    Attribute *pAttStorage = this->findAttStorage(parentTreeItem);
 
     if ((parentTreeItem == nullptr) || (pAttStorage == nullptr)) {
         qDebug() << "Null pointers, couldn't update tree\n";
@@ -553,9 +560,14 @@ void MainWindow::updateDescTreeAtt(QString attName) {
                 // Remove pre-existing children
                 currentChildrenList.removeAll(existingChild);
             } else {
+                // Add children
                 childName.clear();
                 childName.append(attName);
-                parentTreeItem->addChild(new QTreeWidgetItem(childName,0));
+                QTreeWidgetItem *newChild = new QTreeWidgetItem(childName,0);
+                parentTreeItem->addChild(newChild);
+                // Note pointer to item
+                attribute->setObjPtr(newChild);
+                // Update sub-children if needed
                 if (attribute->getSubAttArray().size() > 0) {
                     this->updateDescTreeAtt(attName);
                 }
@@ -594,7 +606,7 @@ bool MainWindow::saveCurrentDescTable(QString tableName) {
                return true;
            }
         } else if (parentName.contains(attArraySuffix)) {
-           if (this->saveAttTable(tableName)) {
+           if (this->saveAttTable(currentItem)) {
                this->updateDescTreeAtt(tableName);
                return true;
            }
@@ -851,52 +863,41 @@ QTreeWidgetItem *MainWindow::findTreeWidgetItem(QString tableName) {
    return treeWidgetItem;
 }
 
-Attribute * MainWindow::findAttStorage(QString tableName) {
-   Attribute * pAttribute = nullptr;
-   bool goUpSuccess = false;
-   QString trimmedTableName = tableName;
-   trimmedTableName.remove(tableName.length() - attArraySuffix.length(), attArraySuffix.length());
-   QStringList tableNamesLineage;
-   QTreeWidgetItem *baseTableWidget = findTreeWidgetItem(tableName);
-   QTreeWidgetItem *currentTableWidget;
-
-   // Parse the tree upward
-   if ((baseTableWidget != nullptr) && (tableName.compare(baseTableWidget->text(0)) == 0)) {
-      tableNamesLineage.append(trimmedTableName);
-      currentTableWidget = baseTableWidget;
-      while (currentTableWidget->parent() != nullptr) {
-         currentTableWidget = currentTableWidget->parent();
-         if ((currentTableWidget->parent() == nullptr) && (currentTableWidget->text(0).compare(cmdArrayName) == 0)) {
-            goUpSuccess = true;
+Attribute *MainWindow::findAttStorage_REC(QTreeWidgetItem *item, QList<Attribute *> attList) {
+    Attribute *pAttribute = nullptr;
+    for(Attribute *att: attList) {
+        // Check if attribute corresponds
+        if (att->getObjPtr() == item) {
+            pAttribute = att;
             break;
-         } else {
-            tableNamesLineage.append(currentTableWidget->text(0).remove(currentTableWidget->text(0).length() - attArraySuffix.length(), attArraySuffix.length()));
-         }
-      }
-   }
-   // Parse the pointers downward
-   if (goUpSuccess) {
-      QString cmdName = tableNamesLineage.last();
-      Command *parentCommand = Command::findCmdAddr(cmdName, this->m_cmdArray);
-      // Must be a command attribute
-      if ((parentCommand != nullptr) && tableNamesLineage.size() > 1) {
-         // Look for command
-         QString attName = tableNamesLineage.at(tableNamesLineage.size() - 2);
-         pAttribute = parentCommand->getAttByName(attName);
-
-         for (int idx = tableNamesLineage.size() - 3; idx >= 0; idx--) {
-            attName = tableNamesLineage.at(idx);
-            pAttribute = pAttribute->getSubAttPointer(attName);
-         }
-      } else if (this->m_cmdArray.size() > 0) {
-          qDebug() << "Empty command table, couldn't find attribute\n";
-      }
-   }
-   return pAttribute;
+        }
+        // Parse sub-attribute list
+        QList<Attribute *> subAttList = att->getSubAttArray();
+        pAttribute = findAttStorage_REC(item, subAttList);
+        if (pAttribute != nullptr) {
+            break;
+        }
+    }
+    return pAttribute;
 }
 
-bool MainWindow::saveAttTable(QString tableName) {
-    Attribute *pAttStorage = this->findAttStorage(tableName);
+Attribute *MainWindow::findAttStorage(QTreeWidgetItem *item) {
+    Attribute *pAttribute = nullptr;
+
+    if (item != nullptr) {
+        for(Command *cmd: this->m_cmdArray) {
+            QList<Attribute *> attList = cmd->getAttArray();
+            pAttribute = findAttStorage_REC(item, attList);
+            if (pAttribute != nullptr) {
+                break;
+            }
+        }
+    }
+    return pAttribute;
+}
+
+bool MainWindow::saveAttTable(QTreeWidgetItem *item) {
+    Attribute *pAttStorage = this->findAttStorage(item);
     QStringList newAttNames = this->getTableNames();
     QList<short> newAttCodes = this->getTableCodes();
 
@@ -1005,8 +1006,8 @@ void MainWindow::deleteCommandAtt(QString cmdName, QString attName) {
    }
 }
 
-void MainWindow::deleteAttribute(QString parentAttName, QString attName) {
-   Attribute *attribute = this->findAttStorage(parentAttName);
+void MainWindow::deleteAttribute(QString parentAttName, QString attName, QTreeWidgetItem *attItem) {
+   Attribute *attribute = this->findAttStorage(attItem);
    if (attribute != nullptr) {
       qDebug() << "Attribute deleted: " << attName;
       attribute->removeAtt(attName);
@@ -1021,7 +1022,9 @@ void MainWindow::on_pbDeleteTableLine_clicked(void) {
    bool deleteOk = false;
 
    if (ui->twDescTableView->rowCount() > 0) {
-      if (ui->twDescTreeView->currentItem() != nullptr) {
+      QTreeWidgetItem *currentItem = ui->twDescTreeView->currentItem();
+
+      if (currentItem != nullptr) {
          if (ui->twDescTableView->currentRow() >= 0) {
             QString msgString = "Do you want to delete line n°" + QString::number(ui->twDescTableView->currentRow() + 1) + "?";
             questionAnswer = QMessageBox::question(this, "Warning", msgString, QMessageBox::Yes | QMessageBox::No);
@@ -1048,17 +1051,17 @@ void MainWindow::on_pbDeleteTableLine_clicked(void) {
             }
          }
          if (deleteOk) {
-            if (ui->twDescTreeView->currentItem()->parent() == nullptr) {
+            if (currentItem->parent() == nullptr) {
                // Commands
                this->deleteCommand(objectName);
-            } else if (ui->twDescTreeView->currentItem()->parent()->parent() == nullptr) {
+            } else if (currentItem->parent()->parent() == nullptr) {
                // Commands attributes
-               QString parentObjectName =  ui->twDescTreeView->currentItem()->text(0);
+               QString parentObjectName =  currentItem->text(0);
                this->deleteCommandAtt(parentObjectName, objectName);
             } else {
                // Sub-attributes
-               QString parentObjectName =  ui->twDescTreeView->currentItem()->text(0);
-               this->deleteAttribute(parentObjectName, objectName);
+               QString parentObjectName =  currentItem->text(0);
+               this->deleteAttribute(parentObjectName, objectName, currentItem);
             }
          }
       }
@@ -1096,7 +1099,7 @@ void MainWindow::on_pbRefreshTable_clicked(void) {
         if (current->parent()->text(0).compare(cmdArrayName) == 0) {
             this->loadCommandAttArray(tableName.remove(tableName.length() - attArraySuffix.length(), attArraySuffix.length()));
         } else {
-            this->loadAttArray(tableName);
+            this->loadAttArray(current);
         }
     }
 }
@@ -1133,10 +1136,10 @@ void MainWindow::on_pbSortTable_clicked(void) {
                       this->loadCommandAttArray(cmdName);
                    }
                 } else {
-                   Attribute * attribute = this->findAttStorage(tableName);
+                   Attribute *attribute = this->findAttStorage(currentTreeItem);
                    if (attribute != nullptr) {
                       attribute->sortArrayById();
-                      this->loadAttArray(tableName);
+                      this->loadAttArray(currentTreeItem);
                    }
                 }
              }

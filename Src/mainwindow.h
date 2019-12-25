@@ -54,7 +54,7 @@ private:
     void showCommandArray(void);
     void loadCommandArray(void);
     void loadCommandAttArray(QString cmdName);
-    void loadAttArray(QString attName);
+    void loadAttArray(QTreeWidgetItem *item);
     void showAttributeArray(void);
     void fillCellItems(int rowIdx);
     void fillCellWidgets(int rowIdx);
@@ -73,12 +73,12 @@ private:
     bool saveCmdAttTable(QString cmdName);
     QTreeWidgetItem *findTreeWidgetItem_REC(QTreeWidgetItem *parentTreeItem, QString tableName);
     QTreeWidgetItem *findTreeWidgetItem(QString tableName);
-    Attribute * findAttStorage(QString tableName);
-    Attribute *findAttStorage(QString tableName);
-    bool saveAttTable(QString tableName);
+    Attribute *findAttStorage_REC(QTreeWidgetItem *item, QList<Attribute *> attList);
+    Attribute *findAttStorage(QTreeWidgetItem *item);
+    bool saveAttTable(QTreeWidgetItem *item);
     void deleteCommand(QString cmdName);
     void deleteCommandAtt(QString cmdName, QString attName);
-    void deleteAttribute(QString parentAttName, QString attName);
+    void deleteAttribute(QString parentAttName, QString attName, QTreeWidgetItem *attItem);
     void saveDesc_REC_Json(QJsonArray &attributes, QList<Attribute *> attList2Save);
     void loadAtt_REC_Json(Command *pParentCmd, Attribute *pParentAtt, const QJsonObject &attribut);
     void clearData(void);
