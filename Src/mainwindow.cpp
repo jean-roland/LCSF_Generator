@@ -271,7 +271,7 @@ void MainWindow::on_twDescTreeView_currentItemChanged(QTreeWidgetItem *current, 
         ui->labelDescTableName->setText(baseTableLabel + tableName);
         ui->twDescTableView->clear();
         if (tableName.compare(cmdArrayName) == 0) {
-            qDebug() << "Commad array detected";
+            qDebug() << "Command array detected";
             this->showCommandArray();
             if (this->m_cmdArray.size() > 0) {
                 this->loadCommandArray();
@@ -874,7 +874,7 @@ Attribute * MainWindow::findAttStorage(QString tableName) {
          }
       }
    }
-   // Parse the pointers downard
+   // Parse the pointers downward
    if (goUpSuccess) {
       QString cmdName = tableNamesLineage.last();
       Command *parentCommand = Command::findCmdAddr(cmdName, this->m_cmdArray);
