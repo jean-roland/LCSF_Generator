@@ -1565,6 +1565,7 @@ void CodeGenerator::generateMkdownTable(QString protocolName, QList<Command *> c
                 continue;
             }
             out << "## " << command->getName() << " attributes table" << endl;
+            out << endl;
             out << "| Name | Id | Optional ? | Data type | Attribute Description |" << endl;
             out << "|:----:|:--:|:----------:|:---------:|:---------------------:|" << endl;
             for (Attribute *attribute : command->getAttArray()) {
@@ -1572,6 +1573,7 @@ void CodeGenerator::generateMkdownTable(QString protocolName, QList<Command *> c
                     << "` | " << ((attribute->getIsOptional()) ? "Yes" : "No") << " | `" << NS_AttDataType::SL_DocAttDataType[attribute->getDataType()]
                     << "` | " << attribute->getDesc() << " |" << endl;
             }
+            out << endl;
         }
         // Attribute tables
         QList<CodeGenerator::T_attInfos> attInfosList = this->getAttInfos(cmdList);
