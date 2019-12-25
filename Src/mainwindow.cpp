@@ -24,11 +24,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     treeIsCleared = false;
 }
 
-MainWindow::~MainWindow() {
+MainWindow::~MainWindow(void) {
    delete ui;
 }
 
-void MainWindow::on_actionNew_protocol_triggered() {
+void MainWindow::on_actionNew_protocol_triggered(void) {
     QString msgString = "Do you want to reinitialize the interface (all unsaved progress will be lost) ?";
     int questionAnswer = QMessageBox::question(this, "Question", msgString, QMessageBox::Yes | QMessageBox::No);
 
@@ -37,7 +37,7 @@ void MainWindow::on_actionNew_protocol_triggered() {
     }
 }
 
-void MainWindow::on_actionSave_protocol_triggered() {
+void MainWindow::on_actionSave_protocol_triggered(void) {
     QString protocolName(ui->leProtocolName->text());
     const QString protocolId(ui->leProtocolId->text().trimmed());
 
@@ -117,7 +117,7 @@ void MainWindow::on_actionSave_protocol_triggered() {
     }
 }
 
-void MainWindow::on_actionLoad_protocol_triggered() {
+void MainWindow::on_actionLoad_protocol_triggered(void) {
     // Look for descriptor file
     QFile file (QFileDialog::getOpenFileName(this, "Choose file to load", descDirPath, "Descriptor (*.json)"));
 
@@ -179,12 +179,12 @@ void MainWindow::on_actionLoad_protocol_triggered() {
     file.close();
 }
 
-void MainWindow::on_actionDocumentation_triggered()
+void MainWindow::on_actionDocumentation_triggered(void)
 {
     QDesktopServices::openUrl(QUrl("https://jean-roland.github.io/LCSF_Generator/", QUrl::TolerantMode));
 }
 
-void MainWindow::on_actionAbout_triggered()
+void MainWindow::on_actionAbout_triggered(void)
 {
     QString msgPopup = "LCSF Generator v";
     msgPopup.append(APP_VERSION);
@@ -324,7 +324,7 @@ void MainWindow::fillCellWidgets(int rowIdx) {
     }
 }
 
-void MainWindow::clearArray() {
+void MainWindow::clearArray(void) {
     for (int rowIdx = 0; rowIdx < ui->twDescTableView->rowCount(); rowIdx++) {
         for (int colIdx = 0; colIdx < ui->twDescTableView->columnCount(); colIdx++) {
             delete ui->twDescTableView->takeItem(rowIdx, colIdx);
@@ -332,7 +332,7 @@ void MainWindow::clearArray() {
     }
 }
 
-void MainWindow::showCommandArray() {
+void MainWindow::showCommandArray(void) {
     QStringList Headers;
     this->clearArray();
     Headers << "Command Name" << "Command Id (0x)" << "Attributes ?" << "Direction" << "Description";
@@ -342,7 +342,7 @@ void MainWindow::showCommandArray() {
     this->fillCellWidgets(0);
 }
 
-void MainWindow::loadCommandArray() {
+void MainWindow::loadCommandArray(void) {
    Command * command;
    QComboBox *hasAttComboBox, *directionComboBox;
    this->clearArray();
@@ -425,7 +425,7 @@ void MainWindow::loadAttArray(QString attName) {
     }
 }
 
-void MainWindow::showAttributeArray() {
+void MainWindow::showAttributeArray(void) {
     QStringList Headers;
     this->clearArray();
     Headers << "Attribute Name" << "Attribute Id (0x)" << "Optional ?" << "Data Type" << "Description";
@@ -471,7 +471,7 @@ void MainWindow::deleteNoLongerExistingTreeItemChildren(QTreeWidgetItem * parent
    }
 }
 
-void MainWindow::updateDescTreeCmd() {
+void MainWindow::updateDescTreeCmd(void) {
    QTreeWidgetItem * parentTreeItem = ui->twDescTreeView->topLevelItem(0);
    QStringList childName;
    QList<QTreeWidgetItem *> currentChildrenList = this->getTreeItemChildren(parentTreeItem);
@@ -622,7 +622,7 @@ NS_DirectionType::T_DirectionType MainWindow::getDirectionTypeFromComboBox(QComb
    return directionType;
 }
 
-QStringList MainWindow::getTableNames() {
+QStringList MainWindow::getTableNames(void) {
     QStringList tableNames = QStringList();
 
     for (int idx = 0; idx < ui->twDescTableView->rowCount(); idx++) {
@@ -635,7 +635,7 @@ QStringList MainWindow::getTableNames() {
     return tableNames;
 }
 
-QList<short> MainWindow::getTableCodes() {
+QList<short> MainWindow::getTableCodes(void) {
    QList<short> tableCodes = QList<short>();
 
    for (int idx = 0; idx < ui->twDescTableView->rowCount(); idx++) {
@@ -648,7 +648,7 @@ QList<short> MainWindow::getTableCodes() {
    return tableCodes;
 }
 
-bool MainWindow::saveCommandTable() {
+bool MainWindow::saveCommandTable(void) {
     QStringList prevExistingCmdNames = Command::getListCmdNames(this->m_cmdArray);
     QStringList noLongerExistingCmdNames = prevExistingCmdNames;
     QStringList newCmdNames = this->getTableNames();
@@ -969,7 +969,7 @@ bool MainWindow::saveAttTable(QString tableName) {
     return true;
 }
 
-void MainWindow::on_pbSaveTable_clicked() {
+void MainWindow::on_pbSaveTable_clicked(void) {
    if (ui->twDescTreeView->currentItem() != nullptr) {
       if (this->saveCurrentDescTable(ui->twDescTreeView->currentItem()->text(0))) {
          QMessageBox::information(this,"Info", "Table saved");
@@ -978,7 +978,7 @@ void MainWindow::on_pbSaveTable_clicked() {
 }
 
 
-void MainWindow::on_pbAddTableLine_clicked() {
+void MainWindow::on_pbAddTableLine_clicked(void) {
    int newLineIdx = ui->twDescTableView->rowCount();
    ui->twDescTableView->insertRow(newLineIdx);
    this->fillCellWidgets(newLineIdx);
@@ -1015,7 +1015,7 @@ void MainWindow::deleteAttribute(QString parentAttName, QString attName) {
 }
 
 // Delete Line button action
-void MainWindow::on_pbDeleteTableLine_clicked() {
+void MainWindow::on_pbDeleteTableLine_clicked(void) {
    int questionAnswer;
    QString objectName;
    bool deleteOk = false;
@@ -1068,7 +1068,7 @@ void MainWindow::on_pbDeleteTableLine_clicked() {
 }
 
 // Refresh Table button action
-void MainWindow::on_pbRefreshTable_clicked() {
+void MainWindow::on_pbRefreshTable_clicked(void) {
     QTreeWidgetItem * current = ui->twDescTreeView->currentItem();
 
     if (current == nullptr) {
@@ -1101,7 +1101,7 @@ void MainWindow::on_pbRefreshTable_clicked() {
     }
 }
 
-void MainWindow::on_pbSortTable_clicked() {
+void MainWindow::on_pbSortTable_clicked(void) {
     QTreeWidgetItem * currentTreeItem = ui->twDescTreeView->currentItem();
 
     if (currentTreeItem != nullptr) {
@@ -1193,7 +1193,7 @@ void MainWindow::loadAtt_REC_Json(Command* pParentCmd, Attribute* pParentAtt, co
    }
 }
 // Clear all data
-void MainWindow::clearData() {
+void MainWindow::clearData(void) {
    // Reset protocolName
    ui->leProtocolName->setText(defProtocolName);
    // Clear protocolNId field
@@ -1224,7 +1224,7 @@ void MainWindow::clearData() {
    outBPath = defoutBPath;
 }
 
-void MainWindow::clearTree() {
+void MainWindow::clearTree(void) {
     treeIsCleared = true;
     ui->twDescTreeView->setCurrentItem(ui->twDescTreeView->topLevelItem(0));
     QTreeWidgetItem * topItem = ui->twDescTreeView->topLevelItem(0);
@@ -1234,7 +1234,7 @@ void MainWindow::clearTree() {
 }
 
 // Import Desc A button action
-void MainWindow::on_pbImportDescA_clicked() {
+void MainWindow::on_pbImportDescA_clicked(void) {
     QString protocolName(ui->leProtocolName->text());
 
     if (protocolName.isEmpty()) {
@@ -1268,7 +1268,7 @@ void MainWindow::on_pbImportDescA_clicked() {
 }
 
 // Import Desc B button action
-void MainWindow::on_pbImportDescB_clicked() {
+void MainWindow::on_pbImportDescB_clicked(void) {
     QString protocolName(ui->leProtocolName->text());
 
     if (protocolName.isEmpty()) {
@@ -1302,7 +1302,7 @@ void MainWindow::on_pbImportDescB_clicked() {
 }
 
 // Generate Desc button action
-void MainWindow::on_pbGenerateDesc_clicked() {
+void MainWindow::on_pbGenerateDesc_clicked(void) {
     QString protocolName(ui->leProtocolName->text());
     const QString protocolId(ui->leProtocolId->text());
 
@@ -1350,7 +1350,7 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 }
 
 // Generate Wiki button action
-void MainWindow::on_pbGenerateDoc_clicked() {
+void MainWindow::on_pbGenerateDoc_clicked(void) {
     QString protocolName(ui->leProtocolName->text());
 
     if (protocolName.isEmpty()) {

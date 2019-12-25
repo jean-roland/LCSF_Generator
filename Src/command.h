@@ -13,28 +13,28 @@ private:
     QString m_desc;
 
 public:
-    Command();
+    Command(void);
     Command(QString cmdName, short cmdCode, bool cmdHasAtt, NS_DirectionType::T_DirectionType cmdDirection, QString commandDesc);
     Command(QString cmdName, short cmdCode, bool cmdHasAtt, NS_DirectionType::T_DirectionType cmdDirection, QList<Attribute*> attArray, QString commandDesc);
     void setName(QString cmdName);
-    QString getName();
+    QString getName(void);
     void setId(short cmdCode);
-    short getId();
+    short getId(void);
     void setHasAtt(bool cmdHasAtt);
-    bool getHasAtt();
+    bool getHasAtt(void);
     void setDesc(QString cmdDesc);
-    QString getDesc();
+    QString getDesc(void);
     void setDirection(NS_DirectionType::T_DirectionType cmdDirection);
     NS_DirectionType::T_DirectionType getDirection();
     bool isTransmittable(bool isA);
     bool isReceivable(bool isA);
     void setAttArray(QList<Attribute*> attArray);
     void addAttribute(Attribute * newAtt);
-    QList<Attribute*> getAttArray();
-    QStringList getAttNamesList();
-    void sortAttArrayById();
+    QList<Attribute*> getAttArray(void);
+    QStringList getAttNamesList(void);
+    void sortAttArrayById(void);
     void editParameters(QString cmdName, short cmdCode, bool cmdHasAtt, NS_DirectionType::T_DirectionType cmdDirection , QString cmdDesc);
-    void clearAttArray();
+    void clearAttArray(void);
     void removeAttByName(QString attName);
     Attribute *getAttByName(QString cmdAttName);
 

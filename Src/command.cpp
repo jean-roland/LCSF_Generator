@@ -1,6 +1,6 @@
 #include "command.h"
 
-Command::Command() {
+Command::Command(void) {
     this->m_name = "default";
     this->m_id = 0;
     this->m_hasAttributes = false;
@@ -30,7 +30,7 @@ void Command::setName(QString cmdName) {
     this->m_name = cmdName;
 }
 
-QString Command::getName() {
+QString Command::getName(void) {
     return this->m_name;
 }
 
@@ -40,7 +40,7 @@ void Command::setId(short cmdCode) {
     this->m_id = cmdCode;
 }
 
-short Command::getId() {
+short Command::getId(void) {
     return this->m_id;
 }
 
@@ -50,7 +50,7 @@ void Command::setHasAtt(bool cmdHasAtt) {
     this->m_hasAttributes = cmdHasAtt;
 }
 
-bool Command::getHasAtt() {
+bool Command::getHasAtt(void) {
    return this->m_hasAttributes;
 }
 
@@ -60,7 +60,7 @@ void Command::setDesc(QString cmdDesc) {
     this->m_desc = cmdDesc;
 }
 
-QString Command::getDesc() {
+QString Command::getDesc(void) {
     return this->m_desc;
 }
 
@@ -70,7 +70,7 @@ void Command::setDirection(NS_DirectionType::T_DirectionType cmdDirection) {
     this->m_direction = cmdDirection;
 }
 
-NS_DirectionType::T_DirectionType Command::getDirection() {
+NS_DirectionType::T_DirectionType Command::getDirection(void) {
    return this->m_direction;
 }
 
@@ -105,11 +105,11 @@ void Command::addAttribute(Attribute * newAtt) {
     this->m_attArray.append(newAtt);
 }
 
-QList<Attribute*> Command::getAttArray() {
+QList<Attribute*> Command::getAttArray(void) {
     return this->m_attArray;
 }
 
-QStringList Command::getAttNamesList() {
+QStringList Command::getAttNamesList(void) {
     QStringList attNames = QStringList();
 
     for (Attribute * attribute : this->getAttArray()) {
@@ -118,7 +118,7 @@ QStringList Command::getAttNamesList() {
     return attNames;
 }
 
-void Command::sortAttArrayById() {
+void Command::sortAttArrayById(void) {
     QList<Attribute *> sortedAttArray = this->m_attArray;
     Attribute *bufferAttribute;
     int j;
@@ -155,7 +155,7 @@ void Command::removeAttByName(QString attName) {
     }
 }
 
-void Command::clearAttArray() {
+void Command::clearAttArray(void) {
     for (Attribute * attribute : this->m_attArray) {
         if (attribute->getSubAttArray().size() > 0) {
             attribute->clearArray_rec();

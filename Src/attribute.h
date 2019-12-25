@@ -14,26 +14,26 @@ private:
     QString m_desc;
 
 public:
-    Attribute();
+    Attribute(void);
     Attribute(QString attName, short attId, bool attIsOptional, NS_AttDataType::T_AttDataType attDataType, QString attDesc);
     Attribute(QString attName, short attId, bool attIsOptional, NS_AttDataType::T_AttDataType attDataType, QList<Attribute *> attSubAttArray, QString attDesc);
     void setName(QString attName);
-    QString getName();
+    QString getName(void);
     void setId(short attId);
-    short getId();
+    short getId(void);
     void setIsOptional(bool attIsOptional);
-    bool getIsOptional();
+    bool getIsOptional(void);
     void setDataType(NS_AttDataType::T_AttDataType attDataType);
-    NS_AttDataType::T_AttDataType getDataType();
+    NS_AttDataType::T_AttDataType getDataType(void);
     void setDesc(QString attDesc);
-    QString getDesc();
+    QString getDesc(void);
     void setSubAttArray(QList<Attribute*> attSubAttArray);
     void addSubAtt(Attribute * newAtt);
-    QList<Attribute*> getSubAttArray();
-    QStringList getSubtAttNamesList();
-    void sortArrayById();
+    QList<Attribute*> getSubAttArray(void);
+    QStringList getSubtAttNamesList(void);
+    void sortArrayById(void);
     void editParams(QString attName, short attCode, bool attIsOptional, NS_AttDataType::T_AttDataType attDataType, QString attDesc);
-    void clearArray_rec();
+    void clearArray_rec(void);
     void removeAtt(QString attName);
     Attribute * getSubAttPointer(QString subAttName);
 };

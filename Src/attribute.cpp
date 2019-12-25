@@ -1,6 +1,6 @@
 #include "attribute.h"
 
-Attribute::Attribute() {
+Attribute::Attribute(void) {
     this->m_name = "default";
     this->m_id = 0;
     this->m_isOptional = true;
@@ -31,7 +31,7 @@ void Attribute::setName(QString attName) {
      this->m_name = attName;
 }
 
-QString Attribute::getName() {
+QString Attribute::getName(void) {
     return this->m_name;
 }
 
@@ -39,7 +39,7 @@ void Attribute::setId(short attId) {
     this->m_id = attId;
 }
 
-short Attribute::getId() {
+short Attribute::getId(void) {
     return this->m_id;
 }
 
@@ -47,7 +47,7 @@ void Attribute::setIsOptional(bool attIsOptional) {
     this->m_isOptional = attIsOptional;
 }
 
-bool Attribute::getIsOptional() {
+bool Attribute::getIsOptional(void) {
     return this->m_isOptional;
 }
 
@@ -55,7 +55,7 @@ void Attribute::setDataType(NS_AttDataType::T_AttDataType attDataType) {
     this->m_dataType = attDataType;
 }
 
-NS_AttDataType::T_AttDataType Attribute::getDataType() {
+NS_AttDataType::T_AttDataType Attribute::getDataType(void) {
     return this->m_dataType;
 }
 
@@ -63,7 +63,7 @@ void Attribute::setDesc(QString attDesc) {
      this->m_desc = attDesc;
 }
 
-QString Attribute::getDesc() {
+QString Attribute::getDesc(void) {
     return this->m_desc;
 }
 
@@ -75,11 +75,11 @@ void Attribute::addSubAtt(Attribute * newAtt) {
     this->m_subAttArray.append(newAtt);
 }
 
-QList<Attribute*> Attribute::getSubAttArray() {
+QList<Attribute*> Attribute::getSubAttArray(void) {
     return this->m_subAttArray;
 }
 
-QStringList Attribute::getSubtAttNamesList() {
+QStringList Attribute::getSubtAttNamesList(void) {
     QStringList subAttNames = QStringList();
 
     for (Attribute * attribute : this->getSubAttArray()) {
@@ -88,7 +88,7 @@ QStringList Attribute::getSubtAttNamesList() {
     return subAttNames;
 }
 
-void Attribute::sortArrayById() {
+void Attribute::sortArrayById(void) {
     QList<Attribute *> sortedAttArray = this->m_subAttArray;
     Attribute *bufferAttribute;
     int j;
@@ -123,7 +123,7 @@ void Attribute::removeAtt(QString attName) {
     }
 }
 
-void Attribute::clearArray_rec() {
+void Attribute::clearArray_rec(void) {
     for (Attribute * attribute : this->m_subAttArray) {
         if (attribute->getSubAttArray().size() > 0) {
             attribute->clearArray_rec();
