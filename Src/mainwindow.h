@@ -28,7 +28,7 @@ class MainWindow : public QMainWindow {
 
 private:
     Ui::MainWindow *ui;
-    QList<Command*> m_cmdArray;
+    QList<Command *> m_cmdArray;
     CodeGenerator m_codegen;
     CodeExtractor m_codeextractA;
     CodeExtractor m_codeextractB;
@@ -48,8 +48,8 @@ private:
     bool CheckInputString(QString input);
     QString CorrectInputString(QString input);
     QString CheckAndCorrectInputString(QString input);
-    QTreeWidgetItem * findTreeWidgetFromName_Rec(QTreeWidgetItem * parentWidget, QString treeWidgetName);
-    QTreeWidgetItem * findTreeWidgetFromName(QString treeWidgetName);
+    QTreeWidgetItem *findTreeWidgetFromName_Rec(QTreeWidgetItem *parentWidget, QString treeWidgetName);
+    QTreeWidgetItem *findTreeWidgetFromName(QString treeWidgetName);
     void clearArray(void);
     void showCommandArray(void);
     void loadCommandArray(void);
@@ -58,28 +58,29 @@ private:
     void showAttributeArray(void);
     void fillCellItems(int rowIdx);
     void fillCellWidgets(int rowIdx);
-    QList<QTreeWidgetItem *> getTreeItemChildren(QTreeWidgetItem * parentTreeItem);
-    QTreeWidgetItem * getTreeItemChild(QList<QTreeWidgetItem *> parentTreeItemChildren, QString childName);
-    void deleteNoLongerExistingTreeItemChildren(QTreeWidgetItem * parentTreeItem, QList<QTreeWidgetItem *> noLongerExistingChildren);
+    QList<QTreeWidgetItem *> getTreeItemChildren(QTreeWidgetItem *parentTreeItem);
+    QTreeWidgetItem *getTreeItemChild(QList<QTreeWidgetItem *> parentTreeItemChildren, QString childName);
+    void deleteNoLongerExistingTreeItemChildren(QTreeWidgetItem *parentTreeItem, QList<QTreeWidgetItem *> noLongerExistingChildren);
     void updateDescTreeCmd(void);
     void updateDescTreeCmdAtt(QString cmdName);
     void updateDescTreeAtt(QString attName);
     bool saveCurrentDescTable(QString tableName);
     QStringList getTableNames(void);
     QList<short> getTableCodes(void);
-    NS_DirectionType::T_DirectionType getDirectionTypeFromComboBox(QComboBox * comboBox);
+    NS_DirectionType::T_DirectionType getDirectionTypeFromComboBox(QComboBox *comboBox);
     bool saveCommandTable(void);
-    NS_AttDataType::T_AttDataType getAttDataTypeFromComboBox(QComboBox * comboBox);
+    NS_AttDataType::T_AttDataType getAttDataTypeFromComboBox(QComboBox *comboBox);
     bool saveCmdAttTable(QString cmdName);
-    QTreeWidgetItem * findTreeWidgetItem_REC(QTreeWidgetItem *parentTreeItem, QString tableName);
-    QTreeWidgetItem * findTreeWidgetItem(QString tableName);
+    QTreeWidgetItem *findTreeWidgetItem_REC(QTreeWidgetItem *parentTreeItem, QString tableName);
+    QTreeWidgetItem *findTreeWidgetItem(QString tableName);
     Attribute * findAttStorage(QString tableName);
+    Attribute *findAttStorage(QString tableName);
     bool saveAttTable(QString tableName);
     void deleteCommand(QString cmdName);
     void deleteCommandAtt(QString cmdName, QString attName);
     void deleteAttribute(QString parentAttName, QString attName);
     void saveDesc_REC_Json(QJsonArray &attributes, QList<Attribute *> attList2Save);
-    void loadAtt_REC_Json(Command* pParentCmd, Attribute *pParentAtt, const QJsonObject &attribut);
+    void loadAtt_REC_Json(Command *pParentCmd, Attribute *pParentAtt, const QJsonObject &attribut);
     void clearData(void);
     void clearTree(void);
 

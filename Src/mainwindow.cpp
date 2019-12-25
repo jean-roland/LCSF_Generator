@@ -85,7 +85,7 @@ void MainWindow::on_actionSave_protocol_triggered(void) {
 
     // Save commands
     QJsonArray DescCmd;
-    for (Command* Cmd : this->m_cmdArray) {
+    for (Command *Cmd : this->m_cmdArray) {
        QJsonObject jsonCmd;
 
        // Commands parameters
@@ -147,7 +147,7 @@ void MainWindow::on_actionLoad_protocol_triggered(void) {
        // Force command name correction
        QString cmdName = CorrectInputString(CmdObject.value(QLatin1String("name")).toString());
        // Command creation
-       Command* Cmd(new Command(cmdName,
+       Command *Cmd(new Command(cmdName,
                     static_cast<short>(CmdObject.value(QLatin1String("id")).toInt()),
                     CmdObject.value(QLatin1String("hasAtt")).toBool(),
                     NS_DirectionType::SLDirectionType2Enum[CmdObject.value(QLatin1String("direction")).toInt()],
@@ -192,18 +192,18 @@ void MainWindow::on_actionAbout_triggered(void)
     QMessageBox::information(this, "Info", msgPopup);
 }
 
-QTreeWidgetItem * MainWindow::findTreeWidgetFromName_Rec(QTreeWidgetItem * parentWidget, QString treeWidgetName) {
-   QTreeWidgetItem * treeWidget = nullptr;
-   QTreeWidgetItem * parentTreeItem = parentWidget;
+QTreeWidgetItem *MainWindow::findTreeWidgetFromName_Rec(QTreeWidgetItem *parentWidget, QString treeWidgetName) {
+   QTreeWidgetItem *treeWidget = nullptr;
+   QTreeWidgetItem *parentTreeItem = parentWidget;
    QList<QTreeWidgetItem *> currentChildrenList = this->getTreeItemChildren(parentTreeItem);
 
-   for (QTreeWidgetItem * childWidget: currentChildrenList) {
+   for (QTreeWidgetItem *childWidget: currentChildrenList) {
       if (childWidget->text(0).compare(treeWidgetName) == 0) {
          treeWidget = childWidget;
          break;
       }
       if (childWidget->childCount() > 0) {
-         QTreeWidgetItem * buffer = this->findTreeWidgetFromName_Rec(childWidget, treeWidgetName);
+         QTreeWidgetItem *buffer = this->findTreeWidgetFromName_Rec(childWidget, treeWidgetName);
          if (buffer != nullptr) {
             treeWidget = buffer;
             break;
@@ -237,20 +237,20 @@ QString MainWindow::CheckAndCorrectInputString(QString input) {
     }
 }
 
-QTreeWidgetItem * MainWindow::findTreeWidgetFromName(QString treeWidgetName) {
-   QTreeWidgetItem * treeWidget = nullptr;
-   QTreeWidgetItem * parentTreeItem = ui->twDescTreeView->topLevelItem(0);
+QTreeWidgetItem *MainWindow::findTreeWidgetFromName(QString treeWidgetName) {
+   QTreeWidgetItem *treeWidget = nullptr;
+   QTreeWidgetItem *parentTreeItem = ui->twDescTreeView->topLevelItem(0);
    QList<QTreeWidgetItem *> currentChildrenList = this->getTreeItemChildren(parentTreeItem);
    if (treeWidgetName.compare(parentTreeItem->text(0)) == 0) {
       treeWidget = parentTreeItem;
    } else {
-      for (QTreeWidgetItem * childWidget: currentChildrenList) {
+      for (QTreeWidgetItem *childWidget: currentChildrenList) {
          if (childWidget->text(0).compare(treeWidgetName) == 0) {
             treeWidget = childWidget;
             break;
          }
          if (childWidget->childCount() > 0) {
-            QTreeWidgetItem * buffer = this->findTreeWidgetFromName_Rec(childWidget, treeWidgetName);
+            QTreeWidgetItem *buffer = this->findTreeWidgetFromName_Rec(childWidget, treeWidgetName);
             if (buffer != nullptr) {
                treeWidget = buffer;
                break;
@@ -308,17 +308,17 @@ void MainWindow::fillCellItems(int rowIdx) {
 }
 
 void MainWindow::fillCellWidgets(int rowIdx) {
-    QComboBox * comboYesNo = new QComboBox();
+    QComboBox *comboYesNo = new QComboBox();
     comboYesNo->addItems(QStringList() << "Yes" << "No");
     ui->twDescTableView->setCellWidget(rowIdx, 2, comboYesNo);
 
     if (ui->twDescTableView->horizontalHeaderItem(0)->text().compare("Attribute Name") == 0) {
-        QComboBox * comboDataType = new QComboBox();
+        QComboBox *comboDataType = new QComboBox();
         comboDataType->addItems(NS_AttDataType::SL_DocAttDataType);
         ui->twDescTableView->setCellWidget(rowIdx, 3, comboDataType);
     } else {
         // Commands
-        QComboBox * comboDirectionType = new QComboBox();
+        QComboBox *comboDirectionType = new QComboBox();
         comboDirectionType->addItems(NS_DirectionType::SL_DirectionType);
         ui->twDescTableView->setCellWidget(rowIdx, 3, comboDirectionType);
     }
@@ -343,7 +343,7 @@ void MainWindow::showCommandArray(void) {
 }
 
 void MainWindow::loadCommandArray(void) {
-   Command * command;
+   Command *command;
    QComboBox *hasAttComboBox, *directionComboBox;
    this->clearArray();
    ui->twDescTableView->setRowCount(this->m_cmdArray.size());
@@ -366,7 +366,7 @@ void MainWindow::loadCommandArray(void) {
 }
 
 void MainWindow::loadCommandAttArray(QString cmdName) {
-    Command * command = Command::findCmdAddr(cmdName, this->m_cmdArray);
+    Command *command = Command::findCmdAddr(cmdName, this->m_cmdArray);
     if (command == nullptr) {
         QMessageBox::warning(this,"Warning", "Unknown command!");
         return;
@@ -374,12 +374,12 @@ void MainWindow::loadCommandAttArray(QString cmdName) {
     QList<Attribute *> cmdAttArray = command->getAttArray();
     this->clearArray();
     if (cmdAttArray.size() > 0) {
-       QComboBox * comboBox;
+       QComboBox *comboBox;
        ui->twDescTableView->setRowCount(cmdAttArray.size());
        for (int idx = 0; idx < cmdAttArray.size(); idx++) {
           this->fillCellItems(idx);
           this->fillCellWidgets(idx);
-          Attribute * attribute = cmdAttArray.at(idx);
+          Attribute *attribute = cmdAttArray.at(idx);
           ui->twDescTableView->item(idx, 0)->setText(attribute->getName());
           ui->twDescTableView->item(idx, 1)->setText(QString::number(attribute->getId(), 16).rightJustified(2, '0'));
           comboBox = static_cast<QComboBox *>(ui->twDescTableView->cellWidget(idx, 2));
@@ -396,7 +396,7 @@ void MainWindow::loadCommandAttArray(QString cmdName) {
 }
 
 void MainWindow::loadAttArray(QString attName) {
-    Attribute * attribute = this->findAttStorage(attName);
+    Attribute *attribute = this->findAttStorage(attName);
     if (attribute == nullptr) {
         qDebug() << "Null pointer, couldn't load attribute\n";
         return;
@@ -404,12 +404,12 @@ void MainWindow::loadAttArray(QString attName) {
     QList<Attribute *> attSubAttArray = attribute->getSubAttArray();
     this->clearArray();
     if (attSubAttArray.size() > 0) {
-        QComboBox * comboBox;
+        QComboBox *comboBox;
         ui->twDescTableView->setRowCount(attSubAttArray.size());
         for (int idx = 0; idx < attSubAttArray.size(); idx++) {
             this->fillCellItems(idx);
             this->fillCellWidgets(idx);
-            Attribute * attribute = attSubAttArray.at(idx);
+            Attribute *attribute = attSubAttArray.at(idx);
             ui->twDescTableView->item(idx, 0)->setText(attribute->getName());
             ui->twDescTableView->item(idx, 1)->setText(QString::number(attribute->getId(), 16).rightJustified(2, '0'));
             comboBox = static_cast<QComboBox *>(ui->twDescTableView->cellWidget(idx, 2));
@@ -435,9 +435,9 @@ void MainWindow::showAttributeArray(void) {
     this->fillCellWidgets(0);
 }
 
-QList<QTreeWidgetItem *> MainWindow::getTreeItemChildren(QTreeWidgetItem * parentTreeItem) {
+QList<QTreeWidgetItem *> MainWindow::getTreeItemChildren(QTreeWidgetItem *parentTreeItem) {
    QList<QTreeWidgetItem *> childrenList = QList<QTreeWidgetItem *>();
-   QTreeWidgetItem * currentChild;
+   QTreeWidgetItem *currentChild;
 
    if (parentTreeItem != nullptr) {
       for (int idx = 0; idx < parentTreeItem->childCount(); idx++) {
@@ -448,9 +448,9 @@ QList<QTreeWidgetItem *> MainWindow::getTreeItemChildren(QTreeWidgetItem * paren
    return childrenList;
 }
 
-QTreeWidgetItem * MainWindow::getTreeItemChild(QList<QTreeWidgetItem *> parentTreeItemChildren, QString childName) {
-   QTreeWidgetItem * treeChild = nullptr;
-   QTreeWidgetItem * currentChild;
+QTreeWidgetItem *MainWindow::getTreeItemChild(QList<QTreeWidgetItem *> parentTreeItemChildren, QString childName) {
+   QTreeWidgetItem *treeChild = nullptr;
+   QTreeWidgetItem *currentChild;
 
    for (int idx = 0; idx < parentTreeItemChildren.size(); idx++) {
       currentChild = parentTreeItemChildren.at(idx);
@@ -462,9 +462,9 @@ QTreeWidgetItem * MainWindow::getTreeItemChild(QList<QTreeWidgetItem *> parentTr
    return treeChild;
 }
 
-void MainWindow::deleteNoLongerExistingTreeItemChildren(QTreeWidgetItem * parentTreeItem, QList<QTreeWidgetItem *> noLongerExistingChildren) {
+void MainWindow::deleteNoLongerExistingTreeItemChildren(QTreeWidgetItem *parentTreeItem, QList<QTreeWidgetItem *> noLongerExistingChildren) {
    if (parentTreeItem != nullptr) {
-      for (QTreeWidgetItem * treeItemchild : noLongerExistingChildren) {
+      for (QTreeWidgetItem *treeItemchild : noLongerExistingChildren) {
          parentTreeItem->removeChild(treeItemchild);
          delete treeItemchild;
       }
@@ -472,14 +472,14 @@ void MainWindow::deleteNoLongerExistingTreeItemChildren(QTreeWidgetItem * parent
 }
 
 void MainWindow::updateDescTreeCmd(void) {
-   QTreeWidgetItem * parentTreeItem = ui->twDescTreeView->topLevelItem(0);
+   QTreeWidgetItem *parentTreeItem = ui->twDescTreeView->topLevelItem(0);
    QStringList childName;
    QList<QTreeWidgetItem *> currentChildrenList = this->getTreeItemChildren(parentTreeItem);
 
-   for (Command * command : this->m_cmdArray) {
+   for (Command *command : this->m_cmdArray) {
       if (command->getHasAtt()) {
          QString cmdName = command->getName() + attArraySuffix;
-         QTreeWidgetItem * existingChild = this->getTreeItemChild(currentChildrenList, cmdName);
+         QTreeWidgetItem *existingChild = this->getTreeItemChild(currentChildrenList, cmdName);
          if (existingChild != nullptr) {
             // Remove pre-existing children
             currentChildrenList.removeAll(existingChild);
@@ -500,9 +500,9 @@ void MainWindow::updateDescTreeCmd(void) {
 }
 
 void MainWindow::updateDescTreeCmdAtt(QString cmdName) {
-    QTreeWidgetItem * parentTreeItem = this->findTreeWidgetItem(cmdName + attArraySuffix);
+    QTreeWidgetItem *parentTreeItem = this->findTreeWidgetItem(cmdName + attArraySuffix);
     QStringList childName;
-    Command * command = Command::findCmdAddr(cmdName, this->m_cmdArray);
+    Command *command = Command::findCmdAddr(cmdName, this->m_cmdArray);
     if ((parentTreeItem == nullptr) || (command == nullptr)) {
         qDebug() << "Null pointers, couldn't update tree\n";
         return;
@@ -510,10 +510,10 @@ void MainWindow::updateDescTreeCmdAtt(QString cmdName) {
     QList<QTreeWidgetItem *> currentChildrenList = this->getTreeItemChildren(parentTreeItem);
     QList<Attribute *> commandAttArray = command->getAttArray();
 
-    for (Attribute * attribute : commandAttArray) {
+    for (Attribute *attribute : commandAttArray) {
         if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
             QString attName = attribute->getName() + attArraySuffix;
-            QTreeWidgetItem * existingChild = this->getTreeItemChild(currentChildrenList, attName);
+            QTreeWidgetItem *existingChild = this->getTreeItemChild(currentChildrenList, attName);
             if (existingChild != nullptr) {
                 // Remove pre-existing children
                 currentChildrenList.removeAll(existingChild);
@@ -534,7 +534,7 @@ void MainWindow::updateDescTreeCmdAtt(QString cmdName) {
 }
 
 void MainWindow::updateDescTreeAtt(QString attName) {
-    QTreeWidgetItem * parentTreeItem = this->findTreeWidgetItem(attName);
+    QTreeWidgetItem *parentTreeItem = this->findTreeWidgetItem(attName);
     QStringList childName;
     Attribute * pAttStorage = this->findAttStorage(attName);
 
@@ -545,9 +545,9 @@ void MainWindow::updateDescTreeAtt(QString attName) {
     QList<QTreeWidgetItem *> currentChildrenList = this->getTreeItemChildren(parentTreeItem);
     QList<Attribute *> attSubAttArray = pAttStorage->getSubAttArray();
 
-    for (Attribute * attribute : attSubAttArray) {
+    for (Attribute *attribute : attSubAttArray) {
         QString attName = attribute->getName() + attArraySuffix;
-        QTreeWidgetItem * existingChild = this->getTreeItemChild(currentChildrenList, attName);
+        QTreeWidgetItem *existingChild = this->getTreeItemChild(currentChildrenList, attName);
         if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
             if (existingChild != nullptr) {
                 // Remove pre-existing children
@@ -574,7 +574,7 @@ bool MainWindow::saveCurrentDescTable(QString tableName) {
             return true;
         }
     } else if (tableName.contains(attArraySuffix)) {
-        QTreeWidgetItem * currentItem = findTreeWidgetItem(tableName);
+        QTreeWidgetItem *currentItem = findTreeWidgetItem(tableName);
         QString parentName = "";
         QString trimmedTableName = tableName;
         trimmedTableName.remove(tableName.length() - attArraySuffix.length(), attArraySuffix.length());
@@ -609,7 +609,7 @@ bool MainWindow::saveCurrentDescTable(QString tableName) {
     return false;
 }
 
-NS_DirectionType::T_DirectionType MainWindow::getDirectionTypeFromComboBox(QComboBox * comboBox) {
+NS_DirectionType::T_DirectionType MainWindow::getDirectionTypeFromComboBox(QComboBox *comboBox) {
    NS_DirectionType::T_DirectionType directionType = NS_DirectionType::UNKNOWN;
    if (comboBox != nullptr) {
       for (int idx = 0; idx < NS_DirectionType::SL_DirectionType.size(); idx++) {
@@ -714,7 +714,7 @@ bool MainWindow::saveCommandTable(void) {
     return true;
 }
 
-NS_AttDataType::T_AttDataType MainWindow::getAttDataTypeFromComboBox(QComboBox * comboBox) {
+NS_AttDataType::T_AttDataType MainWindow::getAttDataTypeFromComboBox(QComboBox *comboBox) {
    NS_AttDataType::T_AttDataType dataType = NS_AttDataType::UNKNOWN;
    if (comboBox != nullptr) {
       for (int idx = 0; idx < NS_AttDataType::SL_DocAttDataType.size(); idx++) {
@@ -728,7 +728,7 @@ NS_AttDataType::T_AttDataType MainWindow::getAttDataTypeFromComboBox(QComboBox *
 }
 
 bool MainWindow::saveCmdAttTable(QString cmdName) {
-    Command * command = Command::findCmdAddr(cmdName, this->m_cmdArray);
+    Command *command = Command::findCmdAddr(cmdName, this->m_cmdArray);
     QStringList newAttNames = this->getTableNames();
     QList<short> newAttCodes = this->getTableCodes();
 
@@ -758,9 +758,9 @@ bool MainWindow::saveCmdAttTable(QString cmdName) {
             }
 
             short attCode = ui->twDescTableView->item(idx, 1)->text().toShort(nullptr, 16);
-            QComboBox * isOptionalComboBox = static_cast<QComboBox *>(ui->twDescTableView->cellWidget(idx, 2));
+            QComboBox *isOptionalComboBox = static_cast<QComboBox *>(ui->twDescTableView->cellWidget(idx, 2));
             bool attIsOptional = (isOptionalComboBox->currentText().compare("Yes") == 0) ? true : false ;
-            QComboBox * dataTypeComboBox = static_cast<QComboBox *>(ui->twDescTableView->cellWidget(idx, 3));
+            QComboBox *dataTypeComboBox = static_cast<QComboBox *>(ui->twDescTableView->cellWidget(idx, 3));
             NS_AttDataType::T_AttDataType attDataType = getAttDataTypeFromComboBox(dataTypeComboBox);
 
             if (attDataType == NS_AttDataType::UNKNOWN) {
@@ -803,9 +803,9 @@ bool MainWindow::saveCmdAttTable(QString cmdName) {
     return true;
 }
 
-QTreeWidgetItem * MainWindow::findTreeWidgetItem_REC(QTreeWidgetItem *parentTreeItem, QString tableName) {
-   QTreeWidgetItem * treeWidgetItem = nullptr;
-   QTreeWidgetItem * currentTreeWidgetItem = nullptr;
+QTreeWidgetItem *MainWindow::findTreeWidgetItem_REC(QTreeWidgetItem *parentTreeItem, QString tableName) {
+   QTreeWidgetItem *treeWidgetItem = nullptr;
+   QTreeWidgetItem *currentTreeWidgetItem = nullptr;
 
    if (parentTreeItem != nullptr) {
       for (int idx = 0; idx < parentTreeItem->childCount(); idx++) {
@@ -824,10 +824,10 @@ QTreeWidgetItem * MainWindow::findTreeWidgetItem_REC(QTreeWidgetItem *parentTree
    return treeWidgetItem;
 }
 
-QTreeWidgetItem * MainWindow::findTreeWidgetItem(QString tableName) {
-   QTreeWidgetItem * treeWidgetItem = nullptr;
-   QTreeWidgetItem * currentTreeWidgetItem = nullptr;
-   QTreeWidgetItem * topTreeWidgetItem = ui->twDescTreeView->topLevelItem(0);
+QTreeWidgetItem *MainWindow::findTreeWidgetItem(QString tableName) {
+   QTreeWidgetItem *treeWidgetItem = nullptr;
+   QTreeWidgetItem *currentTreeWidgetItem = nullptr;
+   QTreeWidgetItem *topTreeWidgetItem = ui->twDescTreeView->topLevelItem(0);
 
    if (topTreeWidgetItem != nullptr) {
       int topChildCount = topTreeWidgetItem->childCount();
@@ -857,8 +857,8 @@ Attribute * MainWindow::findAttStorage(QString tableName) {
    QString trimmedTableName = tableName;
    trimmedTableName.remove(tableName.length() - attArraySuffix.length(), attArraySuffix.length());
    QStringList tableNamesLineage;
-   QTreeWidgetItem * baseTableWidget = findTreeWidgetItem(tableName);
-   QTreeWidgetItem * currentTableWidget;
+   QTreeWidgetItem *baseTableWidget = findTreeWidgetItem(tableName);
+   QTreeWidgetItem *currentTableWidget;
 
    // Parse the tree upward
    if ((baseTableWidget != nullptr) && (tableName.compare(baseTableWidget->text(0)) == 0)) {
@@ -877,7 +877,7 @@ Attribute * MainWindow::findAttStorage(QString tableName) {
    // Parse the pointers downard
    if (goUpSuccess) {
       QString cmdName = tableNamesLineage.last();
-      Command * parentCommand = Command::findCmdAddr(cmdName, this->m_cmdArray);
+      Command *parentCommand = Command::findCmdAddr(cmdName, this->m_cmdArray);
       // Must be a command attribute
       if ((parentCommand != nullptr) && tableNamesLineage.size() > 1) {
          // Look for command
@@ -896,7 +896,7 @@ Attribute * MainWindow::findAttStorage(QString tableName) {
 }
 
 bool MainWindow::saveAttTable(QString tableName) {
-    Attribute * pAttStorage = this->findAttStorage(tableName);
+    Attribute *pAttStorage = this->findAttStorage(tableName);
     QStringList newAttNames = this->getTableNames();
     QList<short> newAttCodes = this->getTableCodes();
 
@@ -925,9 +925,9 @@ bool MainWindow::saveAttTable(QString tableName) {
                 attDesc = ui->twDescTableView->item(idx, 4)->text();
             }
             short attCode = ui->twDescTableView->item(idx, 1)->text().toShort(nullptr, 16);
-            QComboBox * isOptionalComboBox = static_cast<QComboBox *>(ui->twDescTableView->cellWidget(idx, 2));
+            QComboBox *isOptionalComboBox = static_cast<QComboBox *>(ui->twDescTableView->cellWidget(idx, 2));
             bool attIsOptional = (isOptionalComboBox->currentText().compare("Yes") == 0) ? true : false ;
-            QComboBox * dataTypeComboBox = static_cast<QComboBox *>(ui->twDescTableView->cellWidget(idx, 3));
+            QComboBox *dataTypeComboBox = static_cast<QComboBox *>(ui->twDescTableView->cellWidget(idx, 3));
             NS_AttDataType::T_AttDataType attDataType = getAttDataTypeFromComboBox(dataTypeComboBox);
 
             if (attDataType == NS_AttDataType::UNKNOWN) {
@@ -997,7 +997,7 @@ void MainWindow::deleteCommand(QString cmdName) {
 }
 
 void MainWindow::deleteCommandAtt(QString cmdName, QString attName) {
-   Command * command = Command::findCmdAddr(cmdName.remove(cmdName.length() - attArraySuffix.length(), attArraySuffix.length()), this->m_cmdArray);
+   Command *command = Command::findCmdAddr(cmdName.remove(cmdName.length() - attArraySuffix.length(), attArraySuffix.length()), this->m_cmdArray);
    if (command != nullptr) {
       qDebug() << "Attribute deleted: " << attName;
       command->removeAttByName(attName);
@@ -1006,7 +1006,7 @@ void MainWindow::deleteCommandAtt(QString cmdName, QString attName) {
 }
 
 void MainWindow::deleteAttribute(QString parentAttName, QString attName) {
-   Attribute * attribute = this->findAttStorage(parentAttName);
+   Attribute *attribute = this->findAttStorage(parentAttName);
    if (attribute != nullptr) {
       qDebug() << "Attribute deleted: " << attName;
       attribute->removeAtt(attName);
@@ -1069,7 +1069,7 @@ void MainWindow::on_pbDeleteTableLine_clicked(void) {
 
 // Refresh Table button action
 void MainWindow::on_pbRefreshTable_clicked(void) {
-    QTreeWidgetItem * current = ui->twDescTreeView->currentItem();
+    QTreeWidgetItem *current = ui->twDescTreeView->currentItem();
 
     if (current == nullptr) {
         return;
@@ -1102,7 +1102,7 @@ void MainWindow::on_pbRefreshTable_clicked(void) {
 }
 
 void MainWindow::on_pbSortTable_clicked(void) {
-    QTreeWidgetItem * currentTreeItem = ui->twDescTreeView->currentItem();
+    QTreeWidgetItem *currentTreeItem = ui->twDescTreeView->currentItem();
 
     if (currentTreeItem != nullptr) {
        QString widgetName = currentTreeItem->text(0);
@@ -1126,7 +1126,7 @@ void MainWindow::on_pbSortTable_clicked(void) {
              if (currentTreeItem->parent() != nullptr) {
                 if (currentTreeItem->parent()->text(0).compare(cmdArrayName) == 0) {
                    QString cmdName = tableName.remove(tableName.length() - attArraySuffix.length(), attArraySuffix.length());
-                   Command * command = Command::findCmdAddr(cmdName, this->m_cmdArray);
+                   Command *command = Command::findCmdAddr(cmdName, this->m_cmdArray);
 
                    if (command != nullptr) {
                       command->sortAttArrayById();
@@ -1150,7 +1150,7 @@ void MainWindow::on_pbSortTable_clicked(void) {
 
 void MainWindow::saveDesc_REC_Json(QJsonArray& attributes, QList<Attribute *> attList2Save) {
    // Parse attributes
-   for (Attribute * attribute : attList2Save) {
+   for (Attribute *attribute : attList2Save) {
       QJsonObject CmdAttr;
 
       // Attribute parameters
@@ -1172,8 +1172,8 @@ void MainWindow::saveDesc_REC_Json(QJsonArray& attributes, QList<Attribute *> at
    }
 }
 
-void MainWindow::loadAtt_REC_Json(Command* pParentCmd, Attribute* pParentAtt, const QJsonObject& attribute) {
-   Attribute* Attr(new Attribute(attribute.value(QLatin1String("name")).toString(), static_cast<short>(attribute.value(QLatin1String("id")).toInt()), attribute.value(QLatin1String("isOptional")).toBool(),
+void MainWindow::loadAtt_REC_Json(Command *pParentCmd, Attribute *pParentAtt, const QJsonObject& attribute) {
+   Attribute *Attr(new Attribute(attribute.value(QLatin1String("name")).toString(), static_cast<short>(attribute.value(QLatin1String("id")).toInt()), attribute.value(QLatin1String("isOptional")).toBool(),
                                  NS_AttDataType::SLAttDataType2Enum[attribute.value(QLatin1String("dataType")).toInt()], attribute.value(QLatin1String("desc")).toString()));
 
    // If this is a sub-attribute
@@ -1207,7 +1207,7 @@ void MainWindow::clearData(void) {
    ui->pbImportDescA->setPalette(pal);
    ui->pbImportDescB->setPalette(pal);
    // Clear command array
-   for (Command * command : this->m_cmdArray) {
+   for (Command *command : this->m_cmdArray) {
       command->clearAttArray();
    }
    while (!this->m_cmdArray.isEmpty()) {
@@ -1227,7 +1227,7 @@ void MainWindow::clearData(void) {
 void MainWindow::clearTree(void) {
     treeIsCleared = true;
     ui->twDescTreeView->setCurrentItem(ui->twDescTreeView->topLevelItem(0));
-    QTreeWidgetItem * topItem = ui->twDescTreeView->topLevelItem(0);
+    QTreeWidgetItem *topItem = ui->twDescTreeView->topLevelItem(0);
     while (topItem->childCount() > 0) {
         delete topItem->child(topItem->childCount() - 1);
     }
@@ -1392,7 +1392,7 @@ void MainWindow::on_twDescTableView_itemChanged(QTableWidgetItem *item) {
    }
    // Check for duplicates on first 2 columns
    for (int RowIndex = 0; RowIndex<ui->twDescTableView->rowCount(); ++RowIndex) {
-      QTableWidgetItem* ItemCell(ui->twDescTableView->item(RowIndex, ItemColumn));
+      QTableWidgetItem *ItemCell(ui->twDescTableView->item(RowIndex, ItemColumn));
 
       if (item == ItemCell) {
          continue;

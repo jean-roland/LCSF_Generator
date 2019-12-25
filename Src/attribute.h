@@ -10,7 +10,7 @@ private:
     short m_id;
     bool m_isOptional;
     NS_AttDataType::T_AttDataType m_dataType;
-    QList<Attribute*> m_subAttArray;
+    QList<Attribute *> m_subAttArray;
     QString m_desc;
 
 public:
@@ -29,13 +29,15 @@ public:
     QString getDesc(void);
     void setSubAttArray(QList<Attribute*> attSubAttArray);
     void addSubAtt(Attribute * newAtt);
-    QList<Attribute*> getSubAttArray(void);
+    void setSubAttArray(QList<Attribute *> attSubAttArray);
+    void addSubAtt(Attribute *newAtt);
+    QList<Attribute *> getSubAttArray(void);
     QStringList getSubtAttNamesList(void);
     void sortArrayById(void);
     void editParams(QString attName, short attCode, bool attIsOptional, NS_AttDataType::T_AttDataType attDataType, QString attDesc);
     void clearArray_rec(void);
     void removeAtt(QString attName);
-    Attribute * getSubAttPointer(QString subAttName);
+    Attribute *getSubAttPointer(QString subAttName);
 };
 
 #endif // ATTRIBUTE_H

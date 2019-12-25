@@ -23,7 +23,7 @@ private:
         QString parentName;
         QString attName;
         NS_AttDataType::T_AttDataType  dataType;
-        Attribute * attPointer;
+        Attribute *attPointer;
         bool isOptional;
         short attId;
         int subAttNb;
@@ -36,15 +36,15 @@ private:
     QString getIndent(int indentNb);
     QString getFlagTypeStringFromAttNb(int attNb, QString varName);
     QString getTypeStringFromDataType(NS_AttDataType::T_AttDataType dataType);
-    QString getAttDescString(QString protocolName, Attribute * attribute);
+    QString getAttDescString(QString protocolName, Attribute *attribute);
     QList<T_attInfos> getAttInfos_Rec(QString parentName, QList<Attribute *> attList);
     QList<T_attInfos> getAttInfos(QList<Command *> cmdList);
     QList<CodeGenerator::T_attInfos> insertSortAttInfosListByParentName(QList<CodeGenerator::T_attInfos> attInfosList);
     bool findAttInfoId(short attId, QList<CodeGenerator::T_attInfos> attInfosList);
     QList<CodeGenerator::T_attInfos> removeAttInfosDuplicate(QList<CodeGenerator::T_attInfos> attInfosList);
-    void fillSubAttData_Rec(QString protocolName, QStringList parentNames, QList<Attribute *> attList, QTextStream * pOut , int indentNb);
-    void fillSubAttPayload_Rec(QString protocolName, QStringList parentNames, QList<Attribute *> attList, QTextStream * pOut, int indentNb);
-    void grabAttValues_REC(QString protocolName, QStringList parentNames, QList<Attribute *> attList, QTextStream * pOut, int indentNb);
+    void fillSubAttData_Rec(QString protocolName, QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut , int indentNb);
+    void fillSubAttPayload_Rec(QString protocolName, QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, int indentNb);
+    void grabAttValues_REC(QString protocolName, QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, int indentNb);
     QString toCamelCase(const QString& s);
     QString toFirstLetterUpperCase(const QString& s);
     QList<CodeGenerator::T_attInfos> removeCommandAttributes(QList<CodeGenerator::T_attInfos> attInfosList, QList<Command *> cmdList);

@@ -106,7 +106,7 @@ QString CodeGenerator::getTypeStringFromDataType(NS_AttDataType::T_AttDataType d
    return typeString;
 }
 
-QString CodeGenerator::getAttDescString(QString protocolName, Attribute * attribute) {
+QString CodeGenerator::getAttDescString(QString protocolName, Attribute *attribute) {
    QString descString = "";
    if (attribute != nullptr) {
       if (attribute->getIsOptional()) {
@@ -129,7 +129,7 @@ QString CodeGenerator::getAttDescString(QString protocolName, Attribute * attrib
 QList<CodeGenerator::T_attInfos> CodeGenerator::getAttInfos_Rec(QString parentName, QList<Attribute *> attList) {
    QList<CodeGenerator::T_attInfos> resultList = QList<CodeGenerator::T_attInfos>();
    CodeGenerator::T_attInfos localAttInfos;
-   for (Attribute * attribute : attList) {
+   for (Attribute *attribute : attList) {
       localAttInfos.parentName = parentName;
       localAttInfos.attName = attribute->getName();
       localAttInfos.attId = attribute->getId();
@@ -152,7 +152,7 @@ QList<CodeGenerator::T_attInfos> CodeGenerator::getAttInfos_Rec(QString parentNa
 QList<CodeGenerator::T_attInfos> CodeGenerator::getAttInfos(QList<Command *> cmdList) {
    QList<CodeGenerator::T_attInfos> resultList = QList<CodeGenerator::T_attInfos>();
    this->protocolHasSubAtt = false;
-   for (Command * command : cmdList) {
+   for (Command *command : cmdList) {
       QString cmdName = command->getName();
       if ((command->getHasAtt()) && (command->getAttArray().size() > 0)) {
          resultList.append(this->getAttInfos_Rec(cmdName, command->getAttArray()));
@@ -202,7 +202,7 @@ QList<CodeGenerator::T_attInfos> CodeGenerator::removeAttInfosDuplicate(QList<Co
 }
 
 
-void CodeGenerator::fillSubAttData_Rec(QString protocolName, QStringList parentNames, QList<Attribute *> attList, QTextStream * pOut, int indentNb) {
+void CodeGenerator::fillSubAttData_Rec(QString protocolName, QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, int indentNb) {
     if ((pOut == nullptr) || (attList.size() == 0)) {
         return;
     }
@@ -210,14 +210,14 @@ void CodeGenerator::fillSubAttData_Rec(QString protocolName, QStringList parentN
     QString indent = this->getIndent(indentNb);
     QString attDataPath;
 
-    for (Attribute * attribute : attList) {
+    for (Attribute *attribute : attList) {
        if (attribute->getIsOptional()) {
           *pOut << indent << "// Initialize optional attribute flags bitfield" << endl;
           *pOut << indent << "pCmdPayload->" << this->getPayloadPath(parentNames) << "optAttFlagsBitfield = 0;" << endl;
           break;
        }
     }
-    for (Attribute * attribute : attList) {
+    for (Attribute *attribute : attList) {
        // Clear sub-attribute list between attributes
        nextParentNames = parentNames;
        attDataPath = this->getAttDataRxPath(protocolName, parentNames, attribute->getName());
@@ -259,7 +259,7 @@ void CodeGenerator::fillSubAttData_Rec(QString protocolName, QStringList parentN
     }
 }
 
-void CodeGenerator::fillSubAttPayload_Rec(QString protocolName, QStringList parentNames, QList<Attribute *> attList, QTextStream * pOut, int indentNb) {
+void CodeGenerator::fillSubAttPayload_Rec(QString protocolName, QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, int indentNb) {
     if ((pOut == nullptr) || (attList.size() == 0)) {
         return;
     }
@@ -267,7 +267,7 @@ void CodeGenerator::fillSubAttPayload_Rec(QString protocolName, QStringList pare
     QStringList nextParentNames = QStringList();
     QString indent = this->getIndent(indentNb);
 
-    for (Attribute * attribute : attList) {
+    for (Attribute *attribute : attList) {
         // Clear sub-attribute list between attributes
         nextParentNames = parentNames;
         attDataPath = this->getAttDataTxPath(protocolName, parentNames, attribute->getName());
@@ -339,7 +339,7 @@ void CodeGenerator::grabAttValues_REC(QString protocolName, QStringList parentNa
     QStringList nextParentNames = QStringList();
     QString indent = this->getIndent(indentNb);
 
-    for (Attribute * attribute : attList) {
+    for (Attribute *attribute : attList) {
        // Clear sub-attribute list between attributes
        nextParentNames = parentNames;
        attPayloadPath = this->getPayloadPath(parentNames);
@@ -463,7 +463,7 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
       // Commands enum
       out << "// Command name enum" << endl;
       out << "enum _" << protocolName.toLower() << "_cmd_names {" << endl;
-      for (Command * command : cmdList) {
+      for (Command *command : cmdList) {
          out << "    " << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << "," << endl;
       }
       out << "    " << protocolName.toUpper() << "_CMD_COUNT," << endl;
@@ -507,7 +507,7 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
             currentAttInfo = attInfosList.at(idx);
             if (currentAttInfo.dataType == NS_AttDataType::SUB_ATTRIBUTES) {
                int attCounter = 0;
-               for (Attribute * attribute : currentAttInfo.attPointer->getSubAttArray()) {
+               for (Attribute *attribute : currentAttInfo.attPointer->getSubAttArray()) {
                   if (attribute->getIsOptional()) {
                      if (!hasOptAtt) {
                          hasOptAtt = true;
@@ -555,11 +555,11 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
 
       // Commands payload struct
       out << "// Commands data structures" << endl;
-      for (Command * command : cmdList) {
+      for (Command *command : cmdList) {
          hasOptAtt = false;
          if (command->getAttArray().size() > 0) {
             int attCounter = 0;
-            for (Attribute * attribute : command->getAttArray()) {
+            for (Attribute *attribute : command->getAttArray()) {
                if (attribute->getIsOptional()) {
                   if (!hasOptAtt) {
                       hasOptAtt = true;
@@ -574,7 +574,7 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
                QString typeString = getFlagTypeStringFromAttNb(command->getAttArray().size(), "optAttFlagsBitfield");
                out << "    " << typeString << ";" << endl;
             }
-            for (Attribute * attribute : command->getAttArray()) {
+            for (Attribute *attribute : command->getAttArray()) {
                if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
                   out << "    " << protocolName.toLower() << "_" << command->getName().toLower() << "_att_" << attribute->getName().toLower() << "_att_payload_t "
                          << attribute->getName().toLower() << "_payload;" << endl;
@@ -599,7 +599,7 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
       // Command payload union
       out << "// Command payload union" << endl;
       out << "typedef union _" << protocolName.toLower() << "_cmd_payload {" << endl;
-      for (Command * command : cmdList) {
+      for (Command *command : cmdList) {
          if (command->getAttArray().size() > 0) {
             out << "    " << protocolName.toLower() << "_" << command->getName().toLower() << "_att_payload_t "
                    << command->getName().toLower() << "_payload;" << endl;
@@ -695,7 +695,7 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
          out << "static bool " << protocolName << "SendCommand(uint16_t cmdName, bool hasPayload);" << endl;
 
          for (int idx = 0; idx < cmdList.size(); idx++) {
-            Command * command = cmdList.at(idx);
+            Command *command = cmdList.at(idx);
 
             if (command->isReceivable(isA)) {
                out << "static bool " << protocolName << "Execute" << command->getName() << "(";
@@ -760,7 +760,7 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
       for (int idx = 0; idx < cmdList.size(); idx++) {
          QStringList commandFunctionsList;
          QString commandFunction;
-         Command * command = cmdList.at(idx);
+         Command *command = cmdList.at(idx);
 
          if (codeExtract.getExtractionComplete()) {
             commandFunctionsList = codeExtract.getCommandFunctions();
@@ -780,7 +780,7 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
                   out << "       return false;" << endl;
                   out << "    }" << endl;
 
-                  for (Attribute * attribute : command->getAttArray()) {
+                  for (Attribute *attribute : command->getAttArray()) {
                      if (attribute->getIsOptional()) {
                         out << "    if ((pCmdPayload->" << command->getName().toLower() << "_payload.optAttFlagsBitfield & " << protocolName.toUpper() << "_"
                                << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper() << "_FLAG) != 0) {" << endl;
@@ -856,7 +856,7 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
       out << " */" << endl;
       out << "bool " << protocolName << "_MainExecute(uint16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload) {" << endl;
       out << "    switch (cmdName) {" << endl;
-      for (Command * command : cmdList) {
+      for (Command *command : cmdList) {
          if (command->isReceivable(isA)) {
             out << "        case " << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << ":" << endl;
             out << "            return " << protocolName << "Execute" << command->getName();
@@ -928,7 +928,7 @@ void CodeGenerator::generateBridgeHeader(QString protocolName, QString protocolI
       // Commands Ids enum
       out << "// Command identifier enum" << endl;
       out << "enum _lcsf_" << protocolName.toLower() << "_cmd_id {" << endl;
-      for (Command * command : cmdList) {
+      for (Command *command : cmdList) {
          out << "    LCSF_" << protocolName.toUpper() << "_CMD_ID_" << command->getName().toUpper() << " = 0x" << QString::number(command->getId(), 16) << "," << endl;
       }
       out << "};" << endl;
@@ -951,7 +951,7 @@ void CodeGenerator::generateBridgeHeader(QString protocolName, QString protocolI
       out << "#define LCSF_" << protocolName.toUpper() << "_CMD_NB " << protocolName.toUpper() << "_CMD_COUNT" << endl;
       if (attIdxList.size() > 0) {
          out << "// Command attribute number" << endl;
-         for (Command * command : cmdList) {
+         for (Command *command : cmdList) {
             if (command->getAttArray().size() > 0) {
                out << "#define LCSF_" << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << "_ATT_NB " << command->getAttArray().size() << endl;
             }
@@ -1046,21 +1046,21 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       out << "// --- Private Constants ---" << endl;
       out << "// Array to convert command name value to their lcsf command id" << endl;
       out << "const uint16_t LCSF_Bridge_" << protocolName << "_CMDNAME2CMDID[LCSF_" << protocolName.toUpper() << "_CMD_NB] = {" << endl;
-      for (Command * command : cmdList) {
+      for (Command *command : cmdList) {
          out << "    LCSF_" << protocolName.toUpper() << "_CMD_ID_" << command->getName().toUpper() << "," << endl;
       }
       out << "};" << endl;
       out << endl;
       out << "// --- Private Function Prototypes ---" << endl;
       out << "static uint16_t LCSF_Bridge_" << protocolName << "_CMDID2CMDNAME(uint16_t cmdId);" << endl;
-      for (Command * command : cmdList) {
+      for (Command *command : cmdList) {
          if ((command->getAttArray().size() > 0) && (command->isReceivable(isA))) {
             out << "static void LCSF_Bridge_" << protocolName << command->getName() << "GetData(lcsf_valid_att_t *pAttArray, "
                    << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << endl;
          }
       }
       out << "static void LCSF_Bridge_" << protocolName << "GetCmdData(uint16_t cmdName, lcsf_valid_att_t *pAttArray, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << endl;
-      for (Command * command : cmdList) {
+      for (Command *command : cmdList) {
          if ((command->getAttArray().size() > 0) && (command->isReceivable(isA))) {
             out << "static bool LCSF_Bridge_" << protocolName << command->getName() << "FillAtt(lcsf_valid_att_t **pAttArrayAddr, "
                    << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << endl;
@@ -1085,7 +1085,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       out << "static uint16_t LCSF_Bridge_" << protocolName << "_CMDID2CMDNAME(uint16_t cmdId) {" << endl;
       out << "    switch (cmdId) {" << endl;
       out << "        default:" << endl;
-      for (Command * command : cmdList) {
+      for (Command *command : cmdList) {
          out << "        case LCSF_" << protocolName.toUpper() << "_CMD_ID_" << command->getName().toUpper() << ":" << endl;
          out << "            return " << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << ";" << endl;
       }
@@ -1102,21 +1102,21 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       out << " * \\param pCmdPayload pointer to the payload to contain the command data" << endl;
       out << " * \\return void" << endl;
       out << " */" << endl;
-      for (Command * command : cmdList) {
+      for (Command *command : cmdList) {
          if ((command->getAttArray().size() > 0) && (command->isReceivable(isA))) {
             out << "static void LCSF_Bridge_" << protocolName << command->getName() << "GetData(lcsf_valid_att_t *pAttArray, "
                    << protocolName.toLower() << "_cmd_payload_t *pCmdPayload) {" << endl;
             out << "    if (pCmdPayload == NULL) {" << endl;
             out << "        return;" << endl;
             out << "    }" << endl;
-            for (Attribute * attribute : command->getAttArray()) {
+            for (Attribute *attribute : command->getAttArray()) {
                if (attribute->getIsOptional()) {
                   out << "    // Initialize optional attribute flags bitfield" << endl;
                   out << "    pCmdPayload->" << command->getName().toLower() << "_payload.optAttFlagsBitfield = 0;" << endl;
                   break;
                }
             }
-            for (Attribute * attribute : command->getAttArray()) {
+            for (Attribute *attribute : command->getAttArray()) {
                out << "    // Retrieve data of attribute " << attribute->getName() << endl;
                if (attribute->getIsOptional()) {
                   out << "    if (pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_"
@@ -1175,7 +1175,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       out << "	    return;" << endl;
       out << "    }" << endl;
       out << "    switch (cmdName) {" << endl;
-      for (Command * command : cmdList) {
+      for (Command *command : cmdList) {
          if ((command->getAttArray().size() > 0) && (command->isReceivable(isA))) {
             out << "        case " << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << ":" << endl;
             out << "            LCSF_Bridge_" << protocolName << command->getName() << "GetData(pAttArray, pCmdPayload);" << endl;
@@ -1199,7 +1199,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       out << " * \\param pCmdPayload pointer to the command payload" << endl;
       out << " * \\return bool: true if operation was a success" << endl;
       out << " */" << endl;
-      for (Command * command : cmdList) {
+      for (Command *command : cmdList) {
          if ((command->getAttArray().size() > 0) && (command->isTransmittable(isA))) {
             out << "static bool LCSF_Bridge_" << protocolName << command->getName() << "FillAtt(lcsf_valid_att_t **pAttArrayAddr, "
                    << protocolName.toLower() << "_cmd_payload_t *pCmdPayload) {" << endl;
@@ -1213,7 +1213,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
             out << "    }" << endl;
             out << "    // Intermediary variable" << endl;
             out << "    lcsf_valid_att_t *pAttArray = *pAttArrayAddr;" << endl;
-            for (Attribute * attribute : command->getAttArray()) {
+            for (Attribute *attribute : command->getAttArray()) {
                out << "    // Fill data of attribute " << attribute->getName() << endl;
                if (attribute->getIsOptional()) {
                   out << "    if ((pCmdPayload->" << command->getName().toLower() << "_payload.optAttFlagsBitfield & " << protocolName.toUpper() << "_"
@@ -1292,7 +1292,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       out << " */" << endl;
       out << "static bool LCSF_Bridge_" << protocolName << "FillCmdAtt(uint16_t cmdName, lcsf_valid_att_t **pAttArrayAddr, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload) {" << endl;
       out << "    switch (cmdName) {" << endl;
-      for (Command * command : cmdList) {
+      for (Command *command : cmdList) {
          if ((command->getAttArray().size() > 0) && (command->isTransmittable(isA))) {
             out << "        case " << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << ":" << endl;
             out << "            return LCSF_Bridge_" << protocolName << command->getName() << "FillAtt(pAttArrayAddr, pCmdPayload);" << endl;
@@ -1388,7 +1388,7 @@ void CodeGenerator::generateDescription(QString protocolName, QList<Command *> c
                out << "// Sub-attribute array descriptor of attribute " << attInfo.attName << endl;
                out << "const lcsf_attribute_desc_t LCSF_" << protocolName << "_" << attInfo.attName << "_AttDescArray[LCSF_"
                       << protocolName.toUpper() + "_ATT_" + attInfo.attName.toUpper() + "_SUBATT_NB] = {" << endl;
-               for (Attribute * attribute : attInfo.attPointer->getSubAttArray()) {
+               for (Attribute *attribute : attInfo.attPointer->getSubAttArray()) {
                   out << "    { " << this->getAttDescString(protocolName, attribute) << " }," << endl;
                }
                out << "};" << endl;
@@ -1398,12 +1398,12 @@ void CodeGenerator::generateDescription(QString protocolName, QList<Command *> c
       }
 
       // Attribute descriptor array s
-      for (Command * command : cmdList) {
+      for (Command *command : cmdList) {
          if (command->getAttArray().size() > 0) {
             out << "// Attribute array descriptor of command " << command->getName() << endl;
             out << "const lcsf_attribute_desc_t LCSF_" << protocolName << "_" << command->getName() << "_AttDescArray[LCSF_"
                    << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << "_ATT_NB] = {" << endl;
-            for (Attribute * attribute : command->getAttArray()) {
+            for (Attribute *attribute : command->getAttArray()) {
                out << "    { " << this->getAttDescString(protocolName, attribute) << " }," << endl;
             }
             out << "};" << endl;
@@ -1414,7 +1414,7 @@ void CodeGenerator::generateDescription(QString protocolName, QList<Command *> c
       // Command descriptor array
       out << "// Command array descriptor" << endl;
       out << "const lcsf_command_desc_t LCSF_" << protocolName << "_CmdDescArray[LCSF_" << protocolName.toUpper() << "_CMD_NB] = {" << endl;
-      for (Command * command : cmdList) {
+      for (Command *command : cmdList) {
          if (command->getAttArray().size() > 0) {
             out << "    { LCSF_" << protocolName.toUpper() << "_CMD_ID_" << command->getName().toUpper() << ", LCSF_"
                    << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << "_ATT_NB" << ", LCSF_"
@@ -1462,14 +1462,14 @@ void CodeGenerator::generateWikiTable(QString protocolName, QList<Command *> cmd
       out << "! Name !! Id !! Direction !! Description !! Attribute(s) Name !! Attribute(s) Id !! Optional ? !! Data type !! Attribute Desc" << endl;
       out << "|-" << endl;
 
-      for (Command * command : cmdList) {
+      for (Command *command : cmdList) {
          if ((command->getHasAtt()) && (command->getAttArray().size() > 0)) {
             bool isFirtAttribute = true;
             int attNb = command->getAttArray().size();
             out << "| rowspan=\"" << attNb << "\" | " << command->getName() << " || rowspan=\"" << attNb << "\" | '''"
                       << QString::number(command->getId(), 16).rightJustified(2, '0').prepend("0x") << "''' || rowspan=\"" << attNb << "\" | "
                       <<  NS_DirectionType::SL_DirectionType[command->getDirection()] << " || rowspan=\"" << attNb << "\" | " << command->getDesc() << " || ";
-            for (Attribute * attribute : command->getAttArray()) {
+            for (Attribute *attribute : command->getAttArray()) {
                if (isFirtAttribute) {
                   isFirtAttribute = false;
                   out << attribute->getName() << " || '''" <<  QString::number(attribute->getId(), 16).rightJustified(2, '0').prepend("0x") << "''' || "
@@ -1553,21 +1553,21 @@ void CodeGenerator::generateMkdownTable(QString protocolName, QList<Command *> c
         out << endl;
         out << "| Name | Id | Direction | Description | Attributes ? |" << endl;
         out << "|:----:|:--:|:---------:|:-----------:|:------------:|" << endl;
-        for (Command * command : cmdList) {
+        for (Command *command : cmdList) {
             out << "| " << command->getName() << " | `" << QString::number(command->getId(), 16).rightJustified(2, '0').prepend("0x")
                 << "` | `" <<  NS_DirectionType::SL_DirectionType[command->getDirection()] << "` | " << command->getDesc() << " | "
                 << ((command->getHasAtt() && (command->getAttArray().size() > 0)) ? "Yes" : "No") << " |" << endl;
         }
         out << endl;
         // Command tables
-        for (Command * command : cmdList) {
+        for (Command *command : cmdList) {
             if (!command->getHasAtt() || (command->getAttArray().size() == 0)) {
                 continue;
             }
             out << "## " << command->getName() << " attributes table" << endl;
             out << "| Name | Id | Optional ? | Data type | Attribute Description |" << endl;
             out << "|:----:|:--:|:----------:|:---------:|:---------------------:|" << endl;
-            for (Attribute * attribute : command->getAttArray()) {
+            for (Attribute *attribute : command->getAttArray()) {
                 out << "| " << attribute->getName() << " | `" <<  QString::number(attribute->getId(), 16).rightJustified(2, '0').prepend("0x")
                     << "` | " << ((attribute->getIsOptional()) ? "Yes" : "No") << " | `" << NS_AttDataType::SL_DocAttDataType[attribute->getDataType()]
                     << "` | " << attribute->getDesc() << " |" << endl;
