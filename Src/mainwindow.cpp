@@ -1370,8 +1370,12 @@ void MainWindow::on_pbGenerateDoc_clicked(void) {
 
 void MainWindow::on_twDescTableView_cellChanged(int row, int column) {
     if (column == 0) {
-        QString cellText(ui->twDescTableView->item(row, column)->text());
+        QTableWidgetItem *item = ui->twDescTableView->item(row, column);
+        if (item == nullptr) {
+            return;
+        }
         // Check if valid table name
+        QString cellText(item->text());
         if (!cellText.isEmpty()) {
             const QString correctedCellText = CheckAndCorrectInputString(cellText);
             ui->twDescTableView->item(row, column)->setText(correctedCellText);
