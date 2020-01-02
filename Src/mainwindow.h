@@ -13,6 +13,7 @@
 #include <QFileDialog>
 #include <QDir>
 #include <QTableWidgetItem>
+#include <QSet>
 // Custom include
 #include "command.h"
 #include "enumtype.h"
@@ -45,6 +46,8 @@ private:
     const QString exportDirPath = "./Export";
     const QString baseTableLabel = "Current table - ";
 
+    QString CheckAttNameDuplicate_Rec(QSet<QString> *pSet, QList<Attribute *>attArray);
+    QString CheckAttNameDuplicate(void);
     bool CheckInputString(QString input);
     QString CorrectInputString(QString input);
     QString CheckAndCorrectInputString(QString input);

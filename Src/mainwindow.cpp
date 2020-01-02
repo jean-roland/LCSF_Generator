@@ -1,9 +1,10 @@
+// Qt include
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QStringBuilder>
-
+// Custom include
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -211,6 +212,44 @@ QTreeWidgetItem *MainWindow::findTreeWidgetFromName_Rec(QTreeWidgetItem *parentW
       }
    }
    return treeWidget;
+}
+
+QString MainWindow::CheckAttNameDuplicate_Rec(QSet<QString> *pSet, QList<Attribute *>attArray) {
+    // Parse the attribute table
+    for (Attribute *pAtt: attArray) {
+        // Only check duplicate name in complex attributes
+        if (pAtt->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
+            QString attName = pAtt->getName();
+            // Check if the name already exists
+            if (!pSet->contains(attName)) {
+                // Add name to set
+                pSet->insert(attName);
+            } else {
+                // Name already exists, duplicate found
+                return attName;
+            }
+            // Parse the sub-attributes
+            QString dupName = CheckAttNameDuplicate_Rec(pSet, pAtt->getSubAttArray());
+            if (dupName.size() > 0) {
+                return dupName;
+            }
+        }
+    }
+    return "";
+}
+
+QString MainWindow::CheckAttNameDuplicate(void) {
+    QSet<QString> set;
+    // Parse the commande table for attributes
+    for (Command *pCmd: this->m_cmdArray) {
+        if (pCmd->getHasAtt()) {
+            QString dupName = CheckAttNameDuplicate_Rec(&set, pCmd->getAttArray());
+            if (dupName.size() > 0) {
+                return dupName;
+            }
+        }
+    }
+    return "";
 }
 
 bool MainWindow::CheckInputString(QString input) {
@@ -1324,6 +1363,12 @@ void MainWindow::on_pbGenerateDesc_clicked(void) {
         QMessageBox::warning(nullptr, "Warning", "Protocol has no command!");
         return;
     }
+    QString dupName = CheckAttNameDuplicate();
+    if (dupName.size() > 0) {
+        QMessageBox::warning(nullptr, "Warning", "Duplicate complex attribute name: '"+ dupName +"' found, this is not supported !");
+        return;
+    }
+
     // Generate "A" C files
     this->m_codegen.generateMainHeader(protocolName, this->m_cmdArray, this->m_codeextractA, outAPath);
     this->m_codegen.generateMain(protocolName, this->m_cmdArray, this->m_codeextractA, true, outAPath);
@@ -1362,6 +1407,11 @@ void MainWindow::on_pbGenerateDoc_clicked(void) {
 
     if (this->m_cmdArray.size() <= 0) {
         QMessageBox::warning(nullptr, "Warning", "Protocol has no command!");
+        return;
+    }
+    QString dupName = CheckAttNameDuplicate();
+    if (dupName.size() > 0) {
+        QMessageBox::warning(nullptr, "Warning", "Duplicate complex attribute name: '"+ dupName +"' found, this is not supported !");
         return;
     }
     this->m_codegen.generateWikiTable(protocolName, this->m_cmdArray, exportDirPath);
