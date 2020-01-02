@@ -262,15 +262,21 @@ QString MainWindow::CorrectInputString(QString input) {
     QString tmp = input.replace(re, "");
     if (tmp.size() > 64) {
         return tmp.chopped(tmp.size() - 64);
+    } else if (tmp.size() == 0) {
+        return "default";
     } else {
         return tmp;
     }
 }
 
 QString MainWindow::CheckAndCorrectInputString(QString input) {
-    if (!CheckInputString(input)) {
-        QMessageBox::warning(nullptr, "Warning", QLatin1String("Invalid protocol name, only 64 alphanumerical/underscore chars allowed.\nCorrected to: \"") % input % QLatin1String("\""));
-        return CorrectInputString(input);
+    if (input.size() == 0) {
+        QMessageBox::warning(nullptr, "Warning", QLatin1String("Empty names are not allowed.\nCorrected to: 'default'"));
+        return "default";
+    } else if (!CheckInputString(input)) {
+        QString correctedInput = CorrectInputString(input);
+        QMessageBox::warning(nullptr, "Warning", QLatin1String("Invalid name, only 64 alphanumerical/underscore chars allowed.\nCorrected to: \"") % correctedInput % QLatin1String("\""));
+        return correctedInput;
     } else {
         return input;
     }
@@ -677,7 +683,11 @@ QStringList MainWindow::getTableNames(void) {
 
     for (int idx = 0; idx < ui->twDescTableView->rowCount(); idx++) {
         if (ui->twDescTableView->item(idx, 0) != nullptr) {
-            tableNames.append(ui->twDescTableView->item(idx, 0)->text());
+            QString input = ui->twDescTableView->item(idx, 0)->text();
+            QString corrInput = CheckAndCorrectInputString(input);
+            // Fix to avoid empty names
+            ui->twDescTableView->item(idx, 0)->setText(corrInput);
+            tableNames.append(corrInput);
         } else {
             break;
         }
