@@ -106,16 +106,20 @@ QString CodeGenerator::getTypeStringFromDataType(NS_AttDataType::T_AttDataType d
    return typeString;
 }
 
-QString CodeGenerator::getAttDescString(QString protocolName, Attribute *attribute) {
+QString CodeGenerator::getAttDescString(QString protocolName, QString parentName, Attribute *attribute) {
    QString descString = "";
    if (attribute != nullptr) {
+      // Optionality
       if (attribute->getIsOptional()) {
          descString.append("true, ");
       } else {
          descString.append("false, ");
       }
+      // Type
       descString.append(NS_AttDataType::SL_AttDataType.at(attribute->getDataType()) + ", ");
-      descString.append("LCSF_" + protocolName.toUpper() + "_ATT_" + attribute->getName().toUpper() + ", ");
+      // Id
+      descString.append("LCSF_" + protocolName.toUpper() + "_" + parentName.toUpper() + "_ATT_ID_" + attribute->getName().toUpper() + ", ");
+      // Sub-attributes descriptor
       if (attribute->getSubAttArray().size() > 0) {
          descString.append("LCSF_" + protocolName.toUpper() + "_ATT_" + attribute->getName().toUpper() + "_SUBATT_NB, ");
          descString.append("LCSF_" + protocolName + "_" + attribute->getName() + "_AttDescArray");
@@ -1389,7 +1393,7 @@ void CodeGenerator::generateDescription(QString protocolName, QList<Command *> c
                out << "const lcsf_attribute_desc_t LCSF_" << protocolName << "_" << attInfo.attName << "_AttDescArray[LCSF_"
                       << protocolName.toUpper() + "_ATT_" + attInfo.attName.toUpper() + "_SUBATT_NB] = {" << endl;
                for (Attribute *attribute : attInfo.attPointer->getSubAttArray()) {
-                  out << "    { " << this->getAttDescString(protocolName, attribute) << " }," << endl;
+                  out << "    {" << this->getAttDescString(protocolName, attInfo.attName, attribute) << "}," << endl;
                }
                out << "};" << endl;
                out << endl;
@@ -1397,14 +1401,14 @@ void CodeGenerator::generateDescription(QString protocolName, QList<Command *> c
          }
       }
 
-      // Attribute descriptor array s
+      // Attribute descriptor arrays
       for (Command *command : cmdList) {
          if (command->getAttArray().size() > 0) {
             out << "// Attribute array descriptor of command " << command->getName() << endl;
             out << "const lcsf_attribute_desc_t LCSF_" << protocolName << "_" << command->getName() << "_AttDescArray[LCSF_"
                    << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << "_ATT_NB] = {" << endl;
             for (Attribute *attribute : command->getAttArray()) {
-               out << "    { " << this->getAttDescString(protocolName, attribute) << " }," << endl;
+               out << "    {" << this->getAttDescString(protocolName, command->getName(), attribute) << "}," << endl;
             }
             out << "};" << endl;
             out << endl;
@@ -1416,12 +1420,12 @@ void CodeGenerator::generateDescription(QString protocolName, QList<Command *> c
       out << "const lcsf_command_desc_t LCSF_" << protocolName << "_CmdDescArray[LCSF_" << protocolName.toUpper() << "_CMD_NB] = {" << endl;
       for (Command *command : cmdList) {
          if (command->getAttArray().size() > 0) {
-            out << "    { LCSF_" << protocolName.toUpper() << "_CMD_ID_" << command->getName().toUpper() << ", LCSF_"
+            out << "    {LCSF_" << protocolName.toUpper() << "_CMD_ID_" << command->getName().toUpper() << ", LCSF_"
                    << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << "_ATT_NB" << ", LCSF_"
-                   << protocolName << "_" << command->getName() << "_AttDescArray" << " }," << endl;
+                   << protocolName << "_" << command->getName() << "_AttDescArray" << "}," << endl;
          } else {
-            out << "    { LCSF_" << protocolName.toUpper() << "_CMD_ID_" << command->getName().toUpper()
-                   << ", 0, NULL }," << endl;
+            out << "    {LCSF_" << protocolName.toUpper() << "_CMD_ID_" << command->getName().toUpper()
+                   << ", 0, NULL}," << endl;
          }
       }
       out << "};" << endl;

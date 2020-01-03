@@ -36,7 +36,7 @@ private:
     QString getIndent(int indentNb);
     QString getFlagTypeStringFromAttNb(int attNb, QString varName);
     QString getTypeStringFromDataType(NS_AttDataType::T_AttDataType dataType);
-    QString getAttDescString(QString protocolName, Attribute *attribute);
+    QString getAttDescString(QString protocolName, QString parentName, Attribute *attribute);
     QList<T_attInfos> getAttInfos_Rec(QString parentName, QList<Attribute *> attList);
     QList<T_attInfos> getAttInfos(QList<Command *> cmdList);
     QList<CodeGenerator::T_attInfos> insertSortAttInfosListByParentName(QList<CodeGenerator::T_attInfos> attInfosList);
