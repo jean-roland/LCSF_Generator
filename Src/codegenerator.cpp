@@ -611,26 +611,20 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
       out << "} " << protocolName.toLower() << "_cmd_payload_t;" << endl;
       out << endl;
 
-      // Other declarations
-      out << "// Module initialization descriptor" << endl;
-      out << "typedef struct _" << protocolName.toLower() << "_init_desc {" << endl;
-      out << "    uint8_t FooValue;" << endl;
-      out << "} " << protocolName.toLower() << "_init_desc_t;" << endl;
-      out << endl;
-
+      // Function headers
       out << "// --- Public Function Prototypes ---" << endl;
       out << endl;
       if (codeExtract.getExtractionComplete()) {
          out << codeExtract.getUnknownPublicFunctionsHeaders();
       } else {
           out << "/**" << endl;
-          out << " * \\fn bool " << protocolName << "_MainInit(const " << protocolName.toLower() << "_init_desc_t *pInitDesc)" << endl;
+          out << " * \\fn bool " << protocolName << "_MainInit(const void *pInitDesc)" << endl;
           out << " * \\brief Initialize the module" << endl;
           out << " *" << endl;
           out << " * \\param pInitDesc pointer to module initialization descriptor" << endl;
           out << " * \\return bool: true if operation was a success" << endl;
           out << " */" << endl;
-          out << "bool " << protocolName << "_MainInit(const " << protocolName.toLower() << "_init_desc_t * pDescInit);" << endl;
+          out << "bool " << protocolName << "_MainInit(const void *pDescInit);" << endl;
           out << endl;
       }
       out << "/**" << endl;
@@ -688,7 +682,7 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
       } else {
          out << "// --- Private Types ---" << endl;
          out << "typedef struct _" << protocolName.toLower() << "_info {" << endl;
-         out << "    const " << protocolName.toLower() << "_init_desc_t *pInitDesc;" << endl;
+         out << "    const void *pInitDesc;" << endl;
          out << "    " << protocolName.toLower() << "_cmd_payload_t *pSendCmdPayload;" << endl;
          out << "} " << protocolName.toLower() << "_info_t;" << endl;
          out << endl;
@@ -835,13 +829,13 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
          out << codeExtract.getUnknownPublicFunctions();
       } else {
          out << "/**" << endl;
-         out << " * \\fn bool " << protocolName << "_MainInit(const " << protocolName.toLower() << "_init_desc_t *pInitDesc)" << endl;
+         out << " * \\fn bool " << protocolName << "_MainInit(const void *pInitDesc)" << endl;
          out << " * \\brief Initialize the module" << endl;
          out << " *" << endl;
          out << " * \\param pInitDesc pointer to module initialization descriptor" << endl;
          out << " * \\return bool: true if operation was a success" << endl;
          out << " */" << endl;
-         out << "bool " << protocolName << "_MainInit(const " << protocolName.toLower() << "_init_desc_t *pDescInit) {" << endl;
+         out << "bool " << protocolName << "_MainInit(const void *pDescInit) {" << endl;
          out << "    " << protocolName << "Info.pInitDesc = pDescInit;" << endl;
          out << "    " << protocolName << "Info.pSendCmdPayload = ("<< protocolName.toLower() << "_cmd_payload_t *)MemAllocCalloc(sizeof("<< protocolName.toLower() << "_cmd_payload_t));" << endl;
          out << "    return true;" << endl;
