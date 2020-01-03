@@ -518,8 +518,8 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
                      }
                      out << "#define " << protocolName.toUpper() << "_" << currentAttInfo.attName.toUpper()
                             << "_ATT_" << attribute->getName().toUpper() << "_FLAG (1 << " << attCounter << ")" << endl;
+                     attCounter++;
                   }
-                  attCounter++;
                }
                out << "typedef struct _" << protocolName.toLower() << "_" << currentAttInfo.parentName.toLower() << "_att_" << currentAttInfo.attName.toLower() << "_att_payload {" << endl;
                if (hasOptAtt) {
@@ -570,8 +570,8 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
                   }
                   out << "#define " << protocolName.toUpper() << "_" << command->getName().toUpper()
                          << "_ATT_" << attribute->getName().toUpper() << "_FLAG (1 << " << attCounter << ")" << endl;
+                  attCounter++;
                }
-               attCounter++;
             }
             out << "typedef struct _" << protocolName.toLower() << "_" << command->getName().toLower() << "_att_payload {" << endl;
             if (hasOptAtt) {
@@ -598,7 +598,6 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
             out << endl;
          }
       }
-      out << endl;
 
       // Command payload union
       out << "// Command payload union" << endl;
