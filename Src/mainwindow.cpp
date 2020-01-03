@@ -310,6 +310,8 @@ void MainWindow::on_twDescTreeView_currentItemChanged(QTreeWidgetItem *current, 
     if ((previous != nullptr) && !treeIsCleared) {
         // Save only if tree wasn't cleared
         this->saveCurrentDescTable(previous);
+        // Fix in case current item was renamed
+        current = ui->twDescTreeView->currentItem();
     }
     if (current != nullptr) {
         QString tableName = current->text(0);
