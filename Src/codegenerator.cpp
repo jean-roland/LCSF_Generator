@@ -931,22 +931,37 @@ void CodeGenerator::generateBridgeHeader(QString protocolName, QString protocolI
       out << "};" << endl;
       out << endl;
 
-      // Attributes Ids enum
-      if (attIdxList.size() > 0) {
-         out << "// Attribute identifier enum" << endl;
-         out << "enum _lcsf_" << protocolName.toLower() << "_att_id {" << endl;
-         for (CodeGenerator::T_attInfos currentAttInfo : attIdxList) {
-            out << "    LCSF_" << protocolName.toUpper() << "_ATT_" << currentAttInfo.attName.toUpper() << " = 0x"
-                   << QString::number(currentAttInfo.attId, 16) << "," << endl;
+      // Attributes Ids enums
+      if (!attIdxList.isEmpty()) {
+         out << "// Attribute identifier enums" << endl;
+         for (int idx = 0; idx < attIdxList.size(); idx++) {
+             CodeGenerator::T_attInfos currentAttInfo = attIdxList.at(idx);
+             QString currentParentName = currentAttInfo.parentName;
+             out << "enum _lcsf_" << protocolName.toLower() << "_" << currentAttInfo.parentName.toLower() << "_att_id {" << endl;
+             while (idx < attIdxList.size()) {
+                 out << "    LCSF_" << protocolName.toUpper() << "_" << currentAttInfo.parentName.toUpper() << "_ATT_ID_" << currentAttInfo.attName.toUpper() << " = 0x"
+                     << QString::number(currentAttInfo.attId, 16) << "," << endl;
+                 // Check next attribute
+                 if (idx < attIdxList.size() - 1) {
+                     currentAttInfo = attIdxList.at(idx + 1);
+                 } else {
+                     break;
+                 }
+                 if (currentAttInfo.parentName == currentParentName) {
+                     idx++;
+                 } else {
+                     break;
+                 }
+             }
+             out << "};" << endl;
+             out << endl;
          }
-         out << "};" << endl;
-         out << endl;
       }
       out << "// --- Public Constants ---" << endl;
       out << endl;
       out << "// Command number" << endl;
       out << "#define LCSF_" << protocolName.toUpper() << "_CMD_NB " << protocolName.toUpper() << "_CMD_COUNT" << endl;
-      if (attIdxList.size() > 0) {
+      if (!attIdxList.isEmpty()) {
          out << "// Command attribute number" << endl;
          for (Command *command : cmdList) {
             if (command->getAttArray().size() > 0) {
