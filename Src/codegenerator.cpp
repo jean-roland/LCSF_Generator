@@ -853,10 +853,9 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
          out << "    return true;" << endl;
          out << "}" << endl;
          out << endl;
+         out << "// Place custom public functions here" << endl;
+         out << endl;
       }
-      out << "// Place custom public functions here";
-      out << endl;
-
       out << "/**" << endl;
       out << " * \\fn bool " << protocolName << "_MainExecute(uint16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload)" << endl;
       out << " * \\brief Execute a command" << endl;
