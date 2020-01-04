@@ -338,14 +338,14 @@ void CodeGenerator::declareAtt_REC(QString parentName, QList<Attribute *> attLis
     QString indent = "    ";
 
     for (Attribute *attribute : attList) {
+        if (attribute->getIsOptional()) {
+            *pOut << indent << "bool m_" << parentName.toLower() << "_" << attribute->getName().toLower() << "_isHere = false;" << endl;
+        }
         if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
             this->declareAtt_REC(attribute->getName(), attribute->getSubAttArray(), pOut);
         } else {
             QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
-            *pOut << indent << typeString << "m_" << parentName.toLower() << "_" << attribute->getName().toLower() << endl;
-            if (attribute->getIsOptional()) {
-                *pOut << indent << "bool m_" << parentName.toLower() << "_" << attribute->getName().toLower() << "_isHere = false;" << endl;
-            }
+            *pOut << indent << typeString << "m_" << parentName.toLower() << "_" << attribute->getName().toLower() << ";" << endl;
         }
     }
 }
@@ -367,6 +367,7 @@ void CodeGenerator::grabAttValues_REC(QString protocolName, QStringList parentNa
 
           if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
              nextParentNames.append(attribute->getName());
+             *pOut << indent << "m_" << parentNames.last().toLower() << "_" << attribute->getName().toLower() << "_isHere = true;" << endl;
              this->grabAttValues_REC(protocolName, nextParentNames, attribute->getSubAttArray(), pOut, indentNb + 1);
           } else {
              if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) || (attribute->getDataType() == NS_AttDataType::STRING)) {
@@ -791,6 +792,7 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
 
                         if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
                            QStringList parentNames = { command->getName(), attribute->getName() };
+                           out << "        m_" << command->getName().toLower() << "_" << attribute->getName().toLower() << "_isHere = true;" << endl;
                            this->grabAttValues_REC(protocolName, parentNames, attribute->getSubAttArray(), &out, 2);
                         } else {
                             if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) || (attribute->getDataType() == NS_AttDataType::STRING)) {
