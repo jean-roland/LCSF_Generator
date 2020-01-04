@@ -4,6 +4,7 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QStringBuilder>
+#include <QRandomGenerator>
 // Custom include
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -263,7 +264,7 @@ QString MainWindow::CorrectInputString(QString input) {
     if (tmp.size() > 64) {
         return tmp.chopped(tmp.size() - 64);
     } else if (tmp.size() == 0) {
-        return "default";
+        return "default_" + QString::number(QRandomGenerator::global()->generate());
     } else {
         return tmp;
     }
@@ -271,8 +272,9 @@ QString MainWindow::CorrectInputString(QString input) {
 
 QString MainWindow::CheckAndCorrectInputString(QString input) {
     if (input.size() == 0) {
-        QMessageBox::warning(nullptr, "Warning", QLatin1String("Empty names are not allowed.\nCorrected to: 'default'"));
-        return "default";
+        QString correctedInput = "default_" + QString::number(QRandomGenerator::global()->generate());
+        QMessageBox::warning(nullptr, "Warning", "Empty names are not allowed.\nCorrected to: '"+correctedInput+"'");
+        return correctedInput;
     } else if (!CheckInputString(input)) {
         QString correctedInput = CorrectInputString(input);
         QMessageBox::warning(nullptr, "Warning", QLatin1String("Invalid name, only 64 alphanumerical/underscore chars allowed.\nCorrected to: \"") % correctedInput % QLatin1String("\""));
