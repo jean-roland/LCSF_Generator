@@ -44,6 +44,7 @@ private:
     QList<CodeGenerator::T_attInfos> removeAttInfosDuplicate(QList<CodeGenerator::T_attInfos> attInfosList);
     void fillSubAttData_Rec(QString protocolName, QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut , int indentNb);
     void fillSubAttPayload_Rec(QString protocolName, QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, int indentNb);
+    void declareAtt_REC(QString parentName, QList<Attribute *> attList, QTextStream *pOut);
     void grabAttValues_REC(QString protocolName, QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, int indentNb);
     QString toCamelCase(const QString& s);
     QString toFirstLetterUpperCase(const QString& s);

@@ -334,11 +334,23 @@ void CodeGenerator::fillSubAttPayload_Rec(QString protocolName, QStringList pare
         }
     }
 }
+void CodeGenerator::declareAtt_REC(QString parentName, QList<Attribute *> attList, QTextStream *pOut) {
+    QString indent = "    ";
+
+    for (Attribute *attribute : attList) {
+        if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
+            this->declareAtt_REC(attribute->getName(), attribute->getSubAttArray(), pOut);
+        } else {
+            QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
+            *pOut << indent << typeString << "m_" << parentName.toLower() << "_" << attribute->getName().toLower() << endl;
+            if (attribute->getIsOptional()) {
+                *pOut << indent << "bool m_" << parentName.toLower() << "_" << attribute->getName().toLower() << "_isHere = false;" << endl;
+            }
+        }
+    }
+}
 
 void CodeGenerator::grabAttValues_REC(QString protocolName, QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, int indentNb) {
-    if ((pOut == nullptr) || (attList.size() == 0)) {
-        return;
-    }
     QString attPayloadPath;
     QStringList nextParentNames = QStringList();
     QString indent = this->getIndent(indentNb);
@@ -356,32 +368,27 @@ void CodeGenerator::grabAttValues_REC(QString protocolName, QStringList parentNa
           if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
              nextParentNames.append(attribute->getName());
              this->grabAttValues_REC(protocolName, nextParentNames, attribute->getSubAttArray(), pOut, indentNb + 1);
-             indent = this->getIndent(indentNb);
-             *pOut << indent << "}" << endl;
-          } else if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) || (attribute->getDataType() == NS_AttDataType::STRING)) {
-             QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
-             *pOut << indent << typeString << "m_" << attribute->getName().toLower() << " = pCmdPayload->"
-                      << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower() << ";" << endl;
-             indent = this->getIndent(indentNb);
-             *pOut << indent << "}" << endl;
           } else {
-             QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
-             *pOut << indent << typeString << "m_" << attribute->getName().toLower() << " = pCmdPayload->"
-                      << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";" << endl;
-             indent = this->getIndent(indentNb);
-             *pOut << indent << "}" << endl;
+             if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) || (attribute->getDataType() == NS_AttDataType::STRING)) {
+                 *pOut << indent << "m_" << parentNames.last().toLower() << "_" << attribute->getName().toLower() << " = pCmdPayload->"
+                          << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower() << ";" << endl;
+             } else {
+                 *pOut << indent << "m_" << parentNames.last().toLower() << "_" << attribute->getName().toLower() << " = pCmdPayload->"
+                          << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";" << endl;
+             }
+             *pOut << indent << "m_" << parentNames.last().toLower() << "_" << attribute->getName().toLower() << "_isHere = true;" << endl;
           }
+          indent = this->getIndent(indentNb);
+          *pOut << indent << "}" << endl;
        } else {
           if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
              nextParentNames.append(attribute->getName());
              this->grabAttValues_REC(protocolName, nextParentNames, attribute->getSubAttArray(), pOut, indentNb);
           } else if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) || (attribute->getDataType() == NS_AttDataType::STRING)) {
-             QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
-             *pOut << indent << typeString << "m_" << attribute->getName().toLower() << " = pCmdPayload->"
+             *pOut << indent << "m_" << parentNames.last().toLower() << "_" << attribute->getName().toLower() << " = pCmdPayload->"
                       << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower() << ";" << endl;
           } else {
-             QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
-             *pOut << indent << typeString << "m_" << attribute->getName().toLower() << " = pCmdPayload->"
+             *pOut << indent << "m_" << parentNames.last().toLower() << "_" << attribute->getName().toLower() << " = pCmdPayload->"
                       << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";" << endl;
           }
        }
@@ -774,7 +781,9 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
                   out << "    if (pCmdPayload == NULL) {" << endl;
                   out << "       return false;" << endl;
                   out << "    }" << endl;
-
+                  out << "    // Declare attributes" << endl;
+                  declareAtt_REC(command->getName(), command->getAttArray(), &out);
+                  out << "    // Retrieve attributes data" << endl;
                   for (Attribute *attribute : command->getAttArray()) {
                      if (attribute->getIsOptional()) {
                         out << "    if ((pCmdPayload->" << command->getName().toLower() << "_payload.optAttFlagsBitfield & " << protocolName.toUpper() << "_"
@@ -783,14 +792,16 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
                         if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
                            QStringList parentNames = { command->getName(), attribute->getName() };
                            this->grabAttValues_REC(protocolName, parentNames, attribute->getSubAttArray(), &out, 2);
-                        } else if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) || (attribute->getDataType() == NS_AttDataType::STRING)) {
-                           QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
-                           out << "        " << typeString << "m_" << attribute->getName().toLower() << " = pCmdPayload->"
-                                  << command->getName().toLower() << "_payload.p_" << attribute->getName().toLower() << ";" << endl;
                         } else {
-                           QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
-                           out << "        " << typeString << "m_" << attribute->getName().toLower() << " = pCmdPayload->"
-                                  << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ";" << endl;
+                            if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) || (attribute->getDataType() == NS_AttDataType::STRING)) {
+                               out << "        " << "m_" << command->getName().toLower() << "_" << attribute->getName().toLower() << " = pCmdPayload->"
+                                      << command->getName().toLower() << "_payload.p_" << attribute->getName().toLower() << ";" << endl;
+                            } else {
+                               QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
+                               out << "        " << "m_" << command->getName().toLower() << "_" << attribute->getName().toLower() << " = pCmdPayload->"
+                                      << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ";" << endl;
+                            }
+                            out << "        m_" << command->getName().toLower() << "_" << attribute->getName().toLower() << "_isHere = true;" << endl;
                         }
                         out << "    }" << endl;
                      } else {
@@ -799,15 +810,16 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
                            this->grabAttValues_REC(protocolName, parentNames, attribute->getSubAttArray(), &out, 1);
                         } else if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) || (attribute->getDataType() == NS_AttDataType::STRING)) {
                            QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
-                           out << "    " << typeString << "m_" << attribute->getName().toLower() << " = pCmdPayload->"
+                           out << "    " << "m_" << command->getName().toLower() << "_" << attribute->getName().toLower() << " = pCmdPayload->"
                                   << command->getName().toLower() << "_payload.p_" << attribute->getName().toLower() << ";" << endl;
                         } else {
                            QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
-                           out << "    " << typeString << "m_" << attribute->getName().toLower() << " = pCmdPayload->"
+                           out << "    " << "m_" << command->getName().toLower() << "_" << attribute->getName().toLower() << " = pCmdPayload->"
                                   << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ";" << endl;
                         }
                      }
                   }
+                  out << "    // Process data" << endl;
                   out << "    #pragma GCC warning \"#warning TODO: function to implement\"" << endl;
                } else {
                   out << "void) {" << endl;
