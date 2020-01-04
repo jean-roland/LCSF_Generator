@@ -364,7 +364,6 @@ void CodeGenerator::grabAttValues_REC(QString protocolName, QStringList parentNa
                       << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower() << ";" << endl;
              indent = this->getIndent(indentNb);
              *pOut << indent << "}" << endl;
-             *pOut << endl;
           } else {
              QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
              *pOut << indent << typeString << "m_" << attribute->getName().toLower() << " = pCmdPayload->"
@@ -380,7 +379,6 @@ void CodeGenerator::grabAttValues_REC(QString protocolName, QStringList parentNa
              QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
              *pOut << indent << typeString << "m_" << attribute->getName().toLower() << " = pCmdPayload->"
                       << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower() << ";" << endl;
-             *pOut << endl;
           } else {
              QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
              *pOut << indent << typeString << "m_" << attribute->getName().toLower() << " = pCmdPayload->"
