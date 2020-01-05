@@ -1072,7 +1072,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       out << endl;
       out << "// --- Private Constants ---" << endl;
       out << "// Array to convert command name value to their lcsf command id" << endl;
-      out << "const uint16_t LCSF_Bridge_" << protocolName << "_CMDNAME2CMDID[LCSF_" << protocolName.toUpper() << "_CMD_NB] = {" << endl;
+      out << "static const uint16_t LCSF_Bridge_" << protocolName << "_CMDNAME2CMDID[LCSF_" << protocolName.toUpper() << "_CMD_NB] = {" << endl;
       for (Command *command : cmdList) {
          out << "    LCSF_" << protocolName.toUpper() << "_CMD_ID_" << command->getName().toUpper() << "," << endl;
       }
