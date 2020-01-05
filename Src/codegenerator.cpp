@@ -442,7 +442,6 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
        dir.mkpath(".");
    }
    QString fileName = dirPath + "/" +protocolName + "_Main.h";
-   QString previousParentName;
    QList<CodeGenerator::T_attInfos> attInfosList = this->getAttInfos(cmdList);
    bool hasOptAtt = false;
    QFile file(fileName);
@@ -487,7 +486,7 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
          for (int idx = 0; idx < sortedAttInfosList.size(); idx++) {
             CodeGenerator::T_attInfos currentAttInfo = sortedAttInfosList.at(idx);
             out << "enum _" << protocolName.toLower() << "_" << currentAttInfo.parentName.toLower() << "_att_names {" << endl;
-            previousParentName = currentAttInfo.parentName;
+            QString previousParentName = currentAttInfo.parentName;
             out << "    " << protocolName.toUpper() << "_" << currentAttInfo.parentName.toUpper() << "_ATT_" << currentAttInfo.attName.toUpper() << "," << endl;
             if (idx < sortedAttInfosList.size() - 1) {
                currentAttInfo = sortedAttInfosList.at(idx+1);
@@ -904,6 +903,7 @@ void CodeGenerator::generateBridgeHeader(QString protocolName, QString protocolI
    }
    QString fileName = dirPath + "/LCSF_Bridge_" + protocolName + ".h";
    QList<CodeGenerator::T_attInfos> attIdxList = this->getAttInfos(cmdList);
+   QList<CodeGenerator::T_attInfos> sortedAttInfosList = this->insertSortAttInfosListByParentName(attIdxList);
    QFile file(fileName);
 
    if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
@@ -948,27 +948,28 @@ void CodeGenerator::generateBridgeHeader(QString protocolName, QString protocolI
       // Attributes Ids enums
       if (!attIdxList.isEmpty()) {
          out << "// Attribute identifier enums" << endl;
-         for (int idx = 0; idx < attIdxList.size(); idx++) {
-             CodeGenerator::T_attInfos currentAttInfo = attIdxList.at(idx);
-             QString currentParentName = currentAttInfo.parentName;
-             out << "enum _lcsf_" << protocolName.toLower() << "_" << currentAttInfo.parentName.toLower() << "_att_id {" << endl;
-             while (idx < attIdxList.size()) {
-                 out << "    LCSF_" << protocolName.toUpper() << "_" << currentAttInfo.parentName.toUpper() << "_ATT_ID_" << currentAttInfo.attName.toUpper() << " = 0x"
-                     << QString::number(currentAttInfo.attId, 16) << "," << endl;
-                 // Check next attribute
-                 if (idx < attIdxList.size() - 1) {
-                     currentAttInfo = attIdxList.at(idx + 1);
-                 } else {
+         for (int idx = 0; idx < sortedAttInfosList.size(); idx++) {
+            CodeGenerator::T_attInfos currentAttInfo = sortedAttInfosList.at(idx);
+            out << "enum _lcsf_" << protocolName.toLower() << "_" << currentAttInfo.parentName.toLower() << "_att_id {" << endl;
+            QString previousParentName = currentAttInfo.parentName;
+            out << "    LCSF_" << protocolName.toUpper() << "_" << currentAttInfo.parentName.toUpper() << "_ATT_ID_" << currentAttInfo.attName.toUpper() << " = 0x"
+                << QString::number(currentAttInfo.attId, 16) << "," << endl;
+            if (idx < sortedAttInfosList.size() - 1) {
+               currentAttInfo = sortedAttInfosList.at(idx+1);
+               while (currentAttInfo.parentName.compare(previousParentName) == 0) {
+                  out << "    LCSF_" << protocolName.toUpper() << "_" << currentAttInfo.parentName.toUpper() << "_ATT_ID_" << currentAttInfo.attName.toUpper() << " = 0x"
+                      << QString::number(currentAttInfo.attId, 16) << "," << endl;
+                  previousParentName = currentAttInfo.parentName;
+                  idx++;
+                  if (idx < sortedAttInfosList.size() - 1) {
+                     currentAttInfo = sortedAttInfosList.at(idx+1);
+                  } else {
                      break;
-                 }
-                 if (currentAttInfo.parentName == currentParentName) {
-                     idx++;
-                 } else {
-                     break;
-                 }
-             }
-             out << "};" << endl;
-             out << endl;
+                  }
+               }
+            }
+            out << "};" << endl;
+            out << endl;
          }
       }
       out << "// --- Public Constants ---" << endl;
