@@ -886,6 +886,7 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
       if ((codeExtract.getExtractionComplete()) && (defaultCommandHandler.compare("") != 0)) {
         out << defaultCommandHandler;
       } else {
+        out << "            // This case can be customized (e.g to send an error command)" << endl;
         out << "            return false;" << endl;
       }
       out << "        break;" << endl;
