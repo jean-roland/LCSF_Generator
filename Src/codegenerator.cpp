@@ -933,7 +933,7 @@ void CodeGenerator::generateBridgeHeader(QString protocolName, QString protocolI
       out << "// --- Public Types ---" << endl;
       out << endl;
       out << "// Lcsf protocol identifier" << endl;
-      out << "#define LCSF_" << protocolName.toUpper() << "_PROTOCOL_ID 0x" << protocolId.toInt(nullptr, 16) << endl;
+      out << "#define LCSF_" << protocolName.toUpper() << "_PROTOCOL_ID 0x" << protocolId.toInt(nullptr, 10) << endl;
       out << endl;
 
       // Commands Ids enum
