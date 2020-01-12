@@ -1278,7 +1278,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
                       out << "    lcsf_valid_att_t **pSubAttArray = &(pAttArray[" << protocolName.toUpper() << "_"
                              << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper() << "].Payload.pSubAttArray);" << endl;
                       out << "    // Allocate sub-attribute array" << endl;
-                      out << "    if (!FiloGet(LcsfBridge" << protocolName << "Info.pFilo, LCSF_" << protocolName.toUpper() << "_CMD_"
+                      out << "    if (!FiloGet(LcsfBridge" << protocolName << "Info.pFilo, LCSF_" << protocolName.toUpper() << "_ATT_"
                              << attribute->getName().toUpper() << "_SUBATT_NB, (void *)pSubAttArray)) {" << endl;
                       out << "        return false;" << endl;
                       out << "    }" << endl;
