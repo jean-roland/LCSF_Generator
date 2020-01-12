@@ -726,8 +726,8 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
          out << " * \\brief Send a command" << endl;
          out << " *=" << endl;
          out << " * \\param cmdName name of the command to send" << endl;
-         out << " * \\param hasPayload indicates if command has a payload or not=" << endl;
-         out << " * \\return bool: true if operation was a success=" << endl;
+         out << " * \\param hasPayload indicates if command has a payload or not" << endl;
+         out << " * \\return bool: true if operation was a success" << endl;
          out << " */" << endl;
          out << "static bool " << protocolName << "SendCommand(uint16_t cmdName, bool hasPayload) {" << endl;
          out << endl;
