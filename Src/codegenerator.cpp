@@ -1088,7 +1088,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       }
       out << "static void LCSF_Bridge_" << protocolName << "GetCmdData(uint16_t cmdName, lcsf_valid_att_t *pAttArray, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << endl;
       for (Command *command : cmdList) {
-         if ((command->getAttArray().size() > 0) && (command->isReceivable(isA))) {
+         if ((command->getAttArray().size() > 0) && (command->isReceivable(!isA))) {
             out << "static bool LCSF_Bridge_" << protocolName << command->getName() << "FillAtt(lcsf_valid_att_t **pAttArrayAddr, "
                    << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << endl;
          }
