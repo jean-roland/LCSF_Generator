@@ -528,7 +528,7 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
                }
                out << "typedef struct _" << protocolName.toLower() << "_" << currentAttInfo.parentName.toLower() << "_att_" << currentAttInfo.attName.toLower() << "_att_payload {" << endl;
                if (hasOptAtt) {
-                  QString typeString = getFlagTypeStringFromAttNb(currentAttInfo.subAttNb, "optAttFlagsBitfield");
+                  QString typeString = getFlagTypeStringFromAttNb(attCounter, "optAttFlagsBitfield");
                   out << "    " << typeString << ";" << endl;
                }
                int subIdx = idx + 1;
@@ -580,7 +580,7 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
             }
             out << "typedef struct _" << protocolName.toLower() << "_" << command->getName().toLower() << "_att_payload {" << endl;
             if (hasOptAtt) {
-               QString typeString = getFlagTypeStringFromAttNb(command->getAttArray().size(), "optAttFlagsBitfield");
+               QString typeString = getFlagTypeStringFromAttNb(attCounter, "optAttFlagsBitfield");
                out << "    " << typeString << ";" << endl;
             }
             for (Attribute *attribute : command->getAttArray()) {
