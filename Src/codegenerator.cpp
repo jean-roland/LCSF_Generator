@@ -243,7 +243,7 @@ void CodeGenerator::fillSubAttData_Rec(QString protocolName, QStringList parentN
              *pOut << indent << "// Retrieve data of sub-attribute " << attribute->getName() << endl;
              QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
              *pOut << indent << "memcpy(&(pCmdPayload->" << this->getPayloadPath(parentNames) << attribute->getName().toLower()
-                      << "), " << attDataPath << ", sizeof(" << typeString << "));" << endl;
+                      << "), " << attDataPath << ", sizeof(" << typeString.chopped(1) << "));" << endl;
           }
           indent = this->getIndent(indentNb);
           *pOut << indent << "}" << endl;
@@ -257,7 +257,7 @@ void CodeGenerator::fillSubAttData_Rec(QString protocolName, QStringList parentN
           } else {
              QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
              *pOut << indent << "memcpy(&(pCmdPayload->" << this->getPayloadPath(parentNames) << attribute->getName().toLower()
-                      << "), " << attDataPath << ", sizeof(" << typeString << "));" << endl;
+                      << "), " << attDataPath << ", sizeof(" << typeString.chopped(1) << "));" << endl;
           }
        }
     }
@@ -1162,7 +1162,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
                      QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
                      out << "        memcpy(&(pCmdPayload->" << command->getName().toLower() << "_payload." << attribute->getName().toLower() << "), pAttArray["
                             << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
-                            << "].Payload.pData, sizeof(" << typeString << "));" << endl;
+                            << "].Payload.pData, sizeof(" << typeString.chopped(1) << "));" << endl;
                   }
                   out << "    }" << endl;
                } else {
@@ -1177,7 +1177,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
                      QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
                      out << "    memcpy(&(pCmdPayload->" << command->getName().toLower() << "_payload." << attribute->getName().toLower() << "), pAttArray["
                             << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
-                            << "].Payload.pData, sizeof(" << typeString << "));" << endl;
+                            << "].Payload.pData, sizeof(" << typeString.chopped(1) << "));" << endl;
                   }
                }
             }
