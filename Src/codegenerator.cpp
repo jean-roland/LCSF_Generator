@@ -1271,6 +1271,9 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
                      out << "        pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
                             << "].Payload.pData = &(pCmdPayload->" << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ");" << endl;
                   }
+                  out << "    } else {" << endl;
+                  out << "        pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
+                      << "].Payload.pData = NULL;" << endl;
                   out << "    }" << endl;
                } else {
                   if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
