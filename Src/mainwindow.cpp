@@ -5,9 +5,14 @@
 #include <QJsonValue>
 #include <QStringBuilder>
 #include <QRandomGenerator>
+#include <QDesktopServices>
 // Custom include
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+
+#ifndef APP_VERSION
+#define APP_VERSION "@PROJECT_VERSION@"
+#endif
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
