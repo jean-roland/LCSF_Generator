@@ -1,7 +1,5 @@
 #include "codegenerator.h"
 
-#include <QApplication>
-#include <QDate>
 #include <QStringBuilder>
 
 CodeGenerator::CodeGenerator() {

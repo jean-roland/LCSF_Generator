@@ -6,9 +6,7 @@
 #include <QFileInfo>
 #include <QString>
 #include <QTextStream>
-#include <QMessageBox>
 #include <QUrl>
-#include <QDesktopServices>
 #include <QDate>
 #include "enumtype.h"
 #include "attribute.h"
