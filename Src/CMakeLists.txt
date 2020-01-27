@@ -1,0 +1,8 @@
+# Libraries
+add_library(LCSF_Generator_lib SHARED attribute.cpp codeextractor.cpp codegenerator.cpp command.cpp)
+target_link_libraries(LCSF_Generator_lib Qt5::Core)
+
+# Executables
+add_executable(LCSF_Generator mainwindow.ui mainwindow.cpp main.cpp)
+target_link_libraries(LCSF_Generator LCSF_Generator_lib)
+target_link_libraries(LCSF_Generator Qt5::Widgets)
