@@ -131,3 +131,4 @@ _deps
 # Qt Cmake
 LCSF_Generator_autogen
 LCSF_Generator_lib_autogen
+LCSF_Generator
