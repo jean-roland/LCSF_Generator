@@ -221,11 +221,10 @@ void CodeExtractor::extractPublicFunctionHeader(QString functionBuffer) {
     }
 }
 
-void CodeExtractor::extractFromSourceFile(QString protocolName, QTextStream *pInStream, QList<Command *> cmdList) {
+bool CodeExtractor::extractFromSourceFile(QString protocolName, QTextStream *pInStream, QList<Command *> cmdList) {
 
     if (pInStream == nullptr) {
-        QMessageBox::warning(nullptr, "Error", "Nothing to import!");
-        return;
+        return false;
     }
     while ((!pInStream->atEnd()) && (this->m_state != EXTRACT_END)) {
         switch (this->m_state) {
@@ -250,8 +249,7 @@ void CodeExtractor::extractFromSourceFile(QString protocolName, QTextStream *pIn
         }
     }
     this->m_extractionComplete = true;
-    QString msgString = "Code successfully imported!";
-    QMessageBox::information(nullptr,"Info", msgString);
+    return true;
 }
 
 bool CodeExtractor::getExtractionComplete() {

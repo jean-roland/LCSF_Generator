@@ -4,7 +4,6 @@
 #include <QString>
 #include <QList>
 #include <QTextStream>
-#include <QMessageBox>
 #include <QDebug>
 #include "command.h"
 
@@ -38,7 +37,7 @@ private:
 
 public:
     CodeExtractor();
-    void extractFromSourceFile(QString protocolName, QTextStream *pInStream , QList<Command *> cmdList);
+    bool extractFromSourceFile(QString protocolName, QTextStream *pInStream , QList<Command *> cmdList);
     bool getExtractionComplete();
     QString getUnknownIncludes();
     QString getUnknownDefinitions();

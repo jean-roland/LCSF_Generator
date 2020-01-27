@@ -1310,7 +1310,11 @@ void MainWindow::on_pbImportDescA_clicked(void) {
     }
     QTextStream inStream(&file);
     this->m_codeextractA = CodeExtractor();
-    this->m_codeextractA.extractFromSourceFile(protocolName, &inStream, this->m_cmdArray);
+    if (this->m_codeextractA.extractFromSourceFile(protocolName, &inStream, this->m_cmdArray)) {
+      QMessageBox::information(nullptr, "Info", "Code successfully imported!");
+    } else {
+      QMessageBox::warning(nullptr, "Error", "Code importation failed!");      
+    }
     file.close();
     // Note destination path
     QFileInfo fileInfo(file);
@@ -1344,7 +1348,11 @@ void MainWindow::on_pbImportDescB_clicked(void) {
     }
     QTextStream inStream(&file);
     this->m_codeextractB = CodeExtractor();
-    this->m_codeextractB.extractFromSourceFile(protocolName, &inStream, this->m_cmdArray);
+    if (this->m_codeextractB.extractFromSourceFile(protocolName, &inStream, this->m_cmdArray)) {
+      QMessageBox::information(nullptr, "Info", "Code successfully imported!");
+    } else {
+      QMessageBox::warning(nullptr, "Error", "Code importation failed!");      
+    }
     file.close();
     // Note destination path
     QFileInfo fileInfo(file);
