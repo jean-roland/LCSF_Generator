@@ -27,3 +27,10 @@ For more information, check the official LCSF documentation [here](https://jean-
 ## How to use
 
 Refer to the project user manual found [here](https://jean-roland.github.io/LCSF_Generator/).
+
+## How to build
+
+If for some reasons you want or need to build the application yourself you have two options:
+* Use CMake (3.10 or higher) in the project root directory after indicating your Qt directories in `CMakeLists.txt` also at the project root directory.
+* Use the Qt Creator IDE, the project file is found at `src/LCSF_Generator.pro`
+For both, you will need to have Qt5.10 or higher installed on your machine.
