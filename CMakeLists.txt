@@ -5,6 +5,7 @@ cmake_minimum_required(VERSION 3.10)
 project(LCSF_Generator VERSION 1.1 LANGUAGES CXX)
 
 #CMAKE_ variables
+#set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
