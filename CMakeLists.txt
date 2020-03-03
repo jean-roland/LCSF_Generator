@@ -27,3 +27,5 @@ endif()
 # Directories
 include_directories(src)
 add_subdirectory(src)
+include_directories(tests)
+add_subdirectory(tests)
