@@ -8,13 +8,15 @@ if (GTEST_FOUND)
         # create an exectuable in which the tests will be stored
         add_executable(${TESTNAME} ${ARGN})
         # link the Google test infrastructure
-        target_link_libraries(${TESTNAME} ${GTEST_BOTH_LIBRARIES})
+        target_link_libraries(${TESTNAME} ${GTEST_BOTH_LIBRARIES} pthread LCSF_Generator_lib)
         # add tests to Google test
         gtest_discover_tests(${TESTNAME})
         set_target_properties(${TESTNAME} PROPERTIES FOLDER tests)
     endmacro()
 
     # Test Executables
+   	package_add_test(test_attribute test_attribute.cpp)
+	#target_link_libraries(test_attribute LCSF_Generator_lib)
 else()
     message(WARNING "Google test not found, tests will not be built")
 endif()
