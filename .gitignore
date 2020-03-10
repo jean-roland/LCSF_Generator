@@ -127,8 +127,13 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
+*.cmake
 
-# Qt Cmake
+# Qt CMake
 LCSF_Generator_autogen
 LCSF_Generator_lib_autogen
 LCSF_Generator
+
+#Tests CMake
+test_attribute_autogen
+test_attribute
