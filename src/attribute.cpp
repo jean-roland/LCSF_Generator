@@ -87,7 +87,7 @@ QList<Attribute *> Attribute::getSubAttArray(void) {
     return this->m_subAttArray;
 }
 
-QStringList Attribute::getSubtAttNamesList(void) {
+QStringList Attribute::getSubAttNamesList(void) {
     QStringList subAttNames = QStringList();
 
     for (Attribute *attribute : this->getSubAttArray()) {

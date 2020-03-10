@@ -959,7 +959,7 @@ bool MainWindow::saveAttTable(QTreeWidgetItem *item) {
     QList<short> newAttCodes = this->getTableCodes();
 
     if (pAttStorage != nullptr) {
-        QStringList prevExistingAttNames = pAttStorage->getSubtAttNamesList();
+        QStringList prevExistingAttNames = pAttStorage->getSubAttNamesList();
         QStringList noLongerExistingAttNames = prevExistingAttNames;
 
         for (int idx = 0; idx < ui->twDescTableView->rowCount(); idx++) {

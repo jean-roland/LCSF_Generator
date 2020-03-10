@@ -33,7 +33,7 @@ public:
     void setSubAttArray(QList<Attribute *> attSubAttArray);
     void addSubAtt(Attribute *newAtt);
     QList<Attribute *> getSubAttArray(void);
-    QStringList getSubtAttNamesList(void);
+    QStringList getSubAttNamesList(void);
     void sortArrayById(void);
     void editParams(QString attName, short attCode, bool attIsOptional, NS_AttDataType::T_AttDataType attDataType, QString attDesc);
     void clearArray_rec(void);
