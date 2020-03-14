@@ -21,10 +21,10 @@ TEST(test_attribute, setget) {
     test_att.setId(att_id);
     ASSERT_EQ(test_att.getId(), att_id);
 
-    test_att.setIsOptional(true);
-    ASSERT_TRUE(test_att.getIsOptional());
     test_att.setIsOptional(false);
     ASSERT_FALSE(test_att.getIsOptional());
+    test_att.setIsOptional(true);
+    ASSERT_TRUE(test_att.getIsOptional());
 
     NS_AttDataType::T_AttDataType att_dt = NS_AttDataType::BYTE_ARRAY;
     test_att.setDataType(att_dt);
