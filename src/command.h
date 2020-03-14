@@ -40,7 +40,7 @@ public:
 
     static Command *findCmdAddr(QString cmdName, QList<Command *> cmdList);
     static QList<Command *> sortListById(QList<Command *> cmdList);
-    static int findCmdId(QString cmdName, QList<Command *> cmdList);
+    static int findCmdIdx(QString cmdName, QList<Command *> cmdList);
     static QStringList getListCmdNames(QList<Command *> cmdList);
 };
 

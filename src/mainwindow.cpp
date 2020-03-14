@@ -1043,7 +1043,7 @@ void MainWindow::on_pbAddTableLine_clicked(void) {
 }
 
 void MainWindow::deleteCommand(QString cmdName) {
-   int cmdIdx = Command::findCmdId(cmdName, this->m_cmdArray);
+   int cmdIdx = Command::findCmdIdx(cmdName, this->m_cmdArray);
    if (cmdIdx >= 0) {
       qDebug() << "Command deleted: " << cmdName;
       this->m_cmdArray.at(cmdIdx)->clearAttArray();
@@ -1318,7 +1318,7 @@ void MainWindow::on_pbImportDescA_clicked(void) {
     if (this->m_codeextractA.extractFromSourceFile(protocolName, &inStream, this->m_cmdArray)) {
       QMessageBox::information(nullptr, "Info", "Code successfully imported!");
     } else {
-      QMessageBox::warning(nullptr, "Error", "Code importation failed!");      
+      QMessageBox::warning(nullptr, "Error", "Code importation failed!");
     }
     file.close();
     // Note destination path
@@ -1356,7 +1356,7 @@ void MainWindow::on_pbImportDescB_clicked(void) {
     if (this->m_codeextractB.extractFromSourceFile(protocolName, &inStream, this->m_cmdArray)) {
       QMessageBox::information(nullptr, "Info", "Code successfully imported!");
     } else {
-      QMessageBox::warning(nullptr, "Error", "Code importation failed!");      
+      QMessageBox::warning(nullptr, "Error", "Code importation failed!");
     }
     file.close();
     // Note destination path

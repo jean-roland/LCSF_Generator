@@ -147,7 +147,7 @@ void Command::editParameters(QString cmdName, short cmdCode, bool cmdHasAtt , NS
 }
 
 void Command::removeAttByName(QString attName) {
-    Attribute  *attStorage = this->getAttByName(attName);
+    Attribute *attStorage = this->getAttByName(attName);
     if (attStorage != nullptr) {
         attStorage->clearArray_rec();
         this->m_attArray.removeAll(attStorage);
@@ -156,7 +156,7 @@ void Command::removeAttByName(QString attName) {
 }
 
 void Command::clearAttArray(void) {
-    for (Attribute  *attribute : this->m_attArray) {
+    for (Attribute *attribute : this->m_attArray) {
         if (attribute->getSubAttArray().size() > 0) {
             attribute->clearArray_rec();
         }
@@ -166,8 +166,8 @@ void Command::clearAttArray(void) {
     }
 }
 
-Attribute  *Command::getAttByName(QString cmdAttName) {
-    Attribute  *cmdAttPointer = nullptr;
+Attribute *Command::getAttByName(QString cmdAttName) {
+    Attribute *cmdAttPointer = nullptr;
 
     for (Attribute  *attribute : this->m_attArray) {
         if ((attribute != nullptr) && (attribute->getName().compare(cmdAttName) == 0)) {
@@ -178,8 +178,8 @@ Attribute  *Command::getAttByName(QString cmdAttName) {
     return cmdAttPointer;
 }
 
-Command  *Command::findCmdAddr(QString cmdName, QList<Command *> cmdList) {
-   Command  *cmdStorage = nullptr;
+Command *Command::findCmdAddr(QString cmdName, QList<Command *> cmdList) {
+   Command *cmdStorage = nullptr;
 
    for (Command  *command : cmdList) {
       if (command->getName().compare(cmdName) == 0) {
@@ -208,7 +208,7 @@ QList<Command *> Command::sortListById(QList<Command *> cmdList) {
    return sortedArray;
 }
 
-int Command::findCmdId(QString cmdName, QList<Command *> cmdList) {
+int Command::findCmdIdx(QString cmdName, QList<Command *> cmdList) {
    int cmdIdx = -1;
 
    for (int idx = 0; idx < cmdList.size(); idx++) {
