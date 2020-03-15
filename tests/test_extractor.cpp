@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
 #include <QFile>
 #include "codeextractor.h"
-#include "data/output_extractor.h"
+#include "data/extractor_data.h"
 
 TEST(test_extractor, extraction) {
     // Get model file data
-    QFile file("../tests/data/model_extractor.c"); // Note: Test should be run from build/ for this path to work
+    QFile file("../tests/data/model_main.c"); // Note: Test should be run from build/ for this path to work
 
     if(!file.open(QIODevice::ReadOnly)) {
         FAIL() << " Couldn't open file: " + file.errorString().toStdString();
