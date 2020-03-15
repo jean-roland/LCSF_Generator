@@ -28,7 +28,7 @@ void CodeExtractor::extractDefinitions(QTextStream *pInStream) {
 
     while (!pInStream->atEnd()) {
         QString currentLine = pInStream->readLine();
-        this->m_unknownIncludes.append(currentLine + "\n");
+        this->m_unknownDefinitions.append(currentLine + "\n");
 
         if (currentLine.contains("Private Functions")) {
             this->m_state = EXTRACT_PRIVATE_FUNCTIONS;
