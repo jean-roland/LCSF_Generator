@@ -17,6 +17,7 @@ if (GTEST_FOUND)
     # Test Executables
    	package_add_test(test_attribute test_attribute.cpp)
     package_add_test(test_command test_command.cpp)
+    package_add_test(test_extractor test_extractor.cpp)
 else()
     message(WARNING "Google test not found, tests will not be built")
 endif()
