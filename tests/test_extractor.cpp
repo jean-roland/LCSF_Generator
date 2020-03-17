@@ -17,6 +17,7 @@ TEST(test_extractor, extraction) {
     ASSERT_FALSE(test_extractor.getExtractionComplete());
     test_extractor.extractFromSourceFile(prot_name, &file_content, cmd_list);
     ASSERT_TRUE(test_extractor.getExtractionComplete());
+    file.close();
 
     // Check output
     ASSERT_TRUE(test_extractor.getUnknownIncludes() == unk_inc);
