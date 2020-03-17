@@ -639,7 +639,7 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
       out << " * \\brief Execute a command" << endl;
       out << " *" << endl;
       out << " * \\param cmdName name of the command" << endl;
-      out << " * \\param pCmdPayload pointer to command payload " << endl;
+      out << " * \\param pCmdPayload pointer to command payload" << endl;
       out << " * \\return bool: true if operation was a success" << endl;
       out << " */" << endl;
       out << "bool " << protocolName << "_MainExecute(uint16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << endl;
@@ -1315,7 +1315,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       // Master fill attribute function
       out << "/**" << endl;
       out << " * \\fn static bool LCSF_Bridge_" << protocolName << "FillCmdAtt(uint16_t cmdName, lcsf_valid_att_t **pAttArrayAddr, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload)" << endl;
-      out << " * \\brief Fill the attribute array of a command from its payload " << endl;
+      out << " * \\brief Fill the attribute array of a command from its payload" << endl;
       out << " *" << endl;
       out << " * \\param cmdName name of the command" << endl;
       out << " * \\param pAttArrayAddr pointer to contain the attribute array" << endl;
