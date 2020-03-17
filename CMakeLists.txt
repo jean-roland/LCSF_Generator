@@ -11,10 +11,10 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 # Qt directory (switch to your own)
-set(Qt5Core_DIR "/home/jean-roland/Qt/5.13.1/gcc_64/lib/cmake/Qt5Core/")
-set(Qt5Widgets_DIR "/home/jean-roland/Qt/5.13.1/gcc_64/lib/cmake/Qt5Widgets/")
-set(Qt5_DIR "/home/jean-roland/Qt/5.13.1/gcc_64/lib/cmake/Qt5/")
-set(QT_QMAKE_EXECUTABLE "/home/jean-roland/Qt/5.13.1/gcc_64/bin/qmake/qmake.exe")
+# set(Qt5Core_DIR "/home/jean-roland/Qt/5.13.1/gcc_64/lib/cmake/Qt5Core/")
+# set(Qt5Widgets_DIR "/home/jean-roland/Qt/5.13.1/gcc_64/lib/cmake/Qt5Widgets/")
+# set(Qt5_DIR "/home/jean-roland/Qt/5.13.1/gcc_64/lib/cmake/Qt5/")
+# set(QT_QMAKE_EXECUTABLE "/home/jean-roland/Qt/5.13.1/gcc_64/bin/qmake/qmake.exe")
 
 # Find Qt5
 find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
