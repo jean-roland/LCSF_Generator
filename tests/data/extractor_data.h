@@ -20,7 +20,14 @@ const QList<Command *> cmd_list = {&cmd0, &cmd1, &cmd2, &cmd3, &cmd4, &cmd5, &cm
 // Model string
 const QString prot_name = "Test";
 
-const QString unk_inc = R"(// *** Libraries include ***
+const QString unk_inc = R"(/**
+ * \file Test_Main.c
+ * \brief Test protocol module (A)
+ * \author LCSF Generator v@PROJECT_VERSION@
+ *
+ */
+
+// *** Libraries include ***
 // Standard lib
 #include <stdlib.h>
 #include <string.h>
