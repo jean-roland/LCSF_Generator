@@ -29,7 +29,7 @@ QStringList readFileContent(QFile *pFile) {
     return output;
 }
 
-TEST(test_extractor, gen_raw_main) {
+TEST(test_generator, gen_output) {
     CodeGenerator test_generator;
     CodeExtractor test_extractor;
     QString path = "gen_out/";
