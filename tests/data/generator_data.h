@@ -3,8 +3,8 @@
 #include <QList>
 #include <QString>
 #include "enumtype.h"
-#include "Command.h"
-#include "Attribute.h"
+#include "command.h"
+#include "attribute.h"
 
 // Model protocol info
 QString protocol_name = "Test";

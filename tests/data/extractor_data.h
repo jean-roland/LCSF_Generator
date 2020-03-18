@@ -2,7 +2,7 @@
 
 #include <QString>
 #include <QList>
-#include "Command.h"
+#include "command.h"
 #include "enumtype.h"
 
 // Model command
