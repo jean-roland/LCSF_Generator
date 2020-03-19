@@ -6,7 +6,7 @@ configure_file (
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 # Libraries
-add_library(LCSF_Generator_lib SHARED attribute.cpp codeextractor.cpp codegenerator.cpp command.cpp)
+add_library(LCSF_Generator_lib SHARED attribute.cpp codeextractor.cpp codegenerator.cpp command.cpp deschandler.cpp)
 target_link_libraries(LCSF_Generator_lib Qt5::Core)
 
 # Executables

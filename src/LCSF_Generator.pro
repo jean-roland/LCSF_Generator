@@ -31,6 +31,7 @@ SOURCES += \
         codeextractor.cpp \
         codegenerator.cpp \
         command.cpp \
+        deschandler.cpp \
         main.cpp \
         mainwindow.cpp
 
@@ -39,6 +40,7 @@ HEADERS += \
         codeextractor.h \
         codegenerator.h \
         command.h \
+        deschandler.h \
         enumtype.h \
         mainwindow.h
 

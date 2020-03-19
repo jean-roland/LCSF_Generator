@@ -5,18 +5,14 @@
 #include <QFile>
 #include <QList>
 #include <QSet>
-#include <QStringBuilder>
-#include <QRandomGenerator>
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonValue>
+
 // Custom include
 #include "command.h"
 #include "attribute.h"
 #include "enumtype.h"
 #include "codegenerator.h"
 #include "codeextractor.h"
+#include "deschandler.h"
 #include <version.h>
 
 // Private variables
@@ -25,6 +21,7 @@ static QString protocolId;
 static QList<Command *> cmdArray;
 static QString outAPath = "./OutputA";
 static QString outBPath = "./OutputB";
+static QString docPath = "./Export";
 
 static CodeGenerator codegen;
 static CodeExtractor codeextractA;
@@ -67,71 +64,6 @@ static QString checkAttNameDuplicate(QList<Command *> cmdList) {
         }
     }
     return "";
-}
-
-static QString correctInputString(QString input) {
-    QRegExp re(R"([^\w])");
-    QString tmp = input.replace(re, "");
-    if (tmp.size() > 64) {
-        return tmp.chopped(tmp.size() - 64);
-    } else if (tmp.size() == 0) {
-        return "default_" + QString::number(QRandomGenerator::global()->generate());
-    } else {
-        return tmp;
-    }
-}
-
-static void loadAtt_Rec(Command *pParentCmd, Attribute *pParentAtt, const QJsonObject& attribute) {
-    Attribute *Attr(new Attribute(attribute.value(QLatin1String("name")).toString(),
-                                static_cast<short>(attribute.value(QLatin1String("id")).toInt()),
-                                attribute.value(QLatin1String("isOptional")).toBool(),
-                                NS_AttDataType::SLAttDataType2Enum[attribute.value(QLatin1String("dataType")).toInt()],
-                                attribute.value(QLatin1String("desc")).toString()));
-    // If this is a sub-attribute
-    if (pParentAtt != nullptr) {
-        pParentAtt->addSubAtt(Attr);
-    }
-    // Parse sub-attributes
-    if (NS_AttDataType::SLAttDataType2Enum[attribute.value(QLatin1String("dataType")).toInt()] == NS_AttDataType::SUB_ATTRIBUTES) {
-        for (const QJsonValueRef SubAttr : attribute.value(QLatin1String("subAttr")).toArray()) {
-            QJsonObject SubAttrObject(SubAttr.toObject());
-            loadAtt_Rec(nullptr, Attr, SubAttrObject);
-        }
-    }
-    // If this is a command attribute
-    if (pParentCmd != nullptr) {
-        pParentCmd->addAttribute(Attr);
-    }
-}
-
-static void load_desc(QFile& file) {
-    QJsonDocument DescFile(QJsonDocument::fromJson(file.readAll()));
-    QJsonObject DescFileObject(DescFile.object());
-
-    protocolName = correctInputString(DescFileObject.value(QLatin1String("name")).toString());
-    protocolId = DescFileObject.value(QLatin1String("id")).toString();
-
-    // Attributes
-    for (const QJsonValueRef CmdRef : DescFileObject.value(QLatin1String("commands")).toArray()) {
-        QJsonObject CmdObject(CmdRef.toObject());
-        // Force command name correction
-        QString cmdName = correctInputString(CmdObject.value(QLatin1String("name")).toString());
-        // Command creation
-        Command *Cmd(new Command(cmdName,
-                    static_cast<short>(CmdObject.value(QLatin1String("id")).toInt()),
-                    CmdObject.value(QLatin1String("hasAtt")).toBool(),
-                    NS_DirectionType::SLDirectionType2Enum[CmdObject.value(QLatin1String("direction")).toInt()],
-                    CmdObject.value(QLatin1String("description")).toString()));
-        // Parse sub-attributes
-        if (CmdObject.value(QLatin1String("hasAtt")).toBool()) {
-            for (const QJsonValueRef AttrRef : CmdObject.value(QLatin1String("attributes")).toArray()) {
-                const QJsonObject AttrObject(AttrRef.toObject());
-                loadAtt_Rec(Cmd, nullptr, AttrObject);
-            }
-        }
-        // Add into graphical component
-        cmdArray.append(Cmd);
-    }
 }
 
 // Main function
@@ -186,7 +118,7 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
     // Process description file
-    load_desc(descFile);
+    DescHandler::load_desc(descFile, cmdArray, protocolName, protocolId);
     descFile.close();
 
     // Check import
@@ -246,8 +178,13 @@ int main(int argc, char *argv[]) {
     codegen.generateBridgeHeader(protocolName, protocolId, cmdArray, outBPath);
     codegen.generateBridge(protocolName, cmdArray, false, outBPath);
     codegen.generateDescription(protocolName, cmdArray, outBPath);
+    // Generate doc
+    codegen.generateWikiTable(protocolName, cmdArray, docPath);
+    codegen.generateMkdownTable(protocolName, cmdArray, docPath);
+    // End output
     out << "Generation complete." << endl;
     out << "Code A generated in: " << outAPath << ", code B generated in: " << outBPath << endl;
+    out << "Documentation generated in: " << docPath << endl;
     exit(EXIT_FAILURE);
     return a.exec();
 }

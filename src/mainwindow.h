@@ -41,7 +41,6 @@ private:
     const QString defoutBPath = "./OutputB";
     const QString cmdArrayName = "Commands";
     const QString attArraySuffix = "_Attributes";
-    const QString cmdDescParentCmdName = "NONE";
     const QString descDirPath = "./Description";
     const QString exportDirPath = "./Export";
     const QString baseTableLabel = "Current table - ";

@@ -1,13 +1,10 @@
 // Qt include
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonValue>
-#include <QStringBuilder>
-#include <QRandomGenerator>
 #include <QDesktopServices>
+#include <QRandomGenerator>
+#include <QStringBuilder>
 // Custom include
 #include "mainwindow.h"
+#include "deschandler.h"
 #include "ui_mainwindow.h"
 // Cmake/qmake coexistence issue
 #ifndef APP_VERSION
@@ -82,44 +79,9 @@ void MainWindow::on_actionSave_protocol_triggered(void) {
     // Trim descriptor name
     QFileInfo completeFileName = QFileInfo(filename);
     filename = descDirPath + "/" + completeFileName.baseName();
-
     qDebug() << "File selected: " << filename;
-
-    // Generate JSON
-    QJsonObject DescFile;
-    DescFile.insert(QLatin1String("name"), protocolName);
-    DescFile.insert(QLatin1String("id"), protocolId);
-
-    // Save commands
-    QJsonArray DescCmd;
-    for (Command *Cmd : this->m_cmdArray) {
-       QJsonObject jsonCmd;
-
-       // Commands parameters
-       jsonCmd.insert(QLatin1String("parentName"), cmdDescParentCmdName);
-       jsonCmd.insert(QLatin1String("name"), Cmd->getName());
-       jsonCmd.insert(QLatin1String("id"), Cmd->getId());
-       jsonCmd.insert(QLatin1String("hasAtt"), Cmd->getHasAtt());
-       jsonCmd.insert(QLatin1String("direction"), Cmd->getDirection());
-       jsonCmd.insert(QLatin1String("description"), Cmd->getDesc());
-       jsonCmd.insert(QLatin1String("size"), Cmd->getAttArray().size());
-
-       // Command attributes
-       QJsonArray Attr;
-       this->saveDesc_REC_Json(Attr, Cmd->getAttArray());
-       jsonCmd.insert(QLatin1String("attributes"), Attr);
-
-       // Add command in the array
-       DescCmd.append(jsonCmd);
-    }
-
-    // Write commands in file
-    DescFile.insert(QLatin1String("commands"), DescCmd);
-
-    QFile JsonDescFile(filename + ".json");
-    if (JsonDescFile.open(QIODevice::WriteOnly)) {
-       JsonDescFile.write(QJsonDocument(DescFile).toJson());
-    } else {
+    // Save data
+    if (!DescHandler::save_desc(filename, this->m_cmdArray, protocolName, protocolId)) {
        QMessageBox::warning(nullptr, "Warning", "Couldn't create json descriptor file!");
     }
 }
@@ -141,36 +103,11 @@ void MainWindow::on_actionLoad_protocol_triggered(void) {
         return;
     }
     // Extract data
-    QJsonDocument DescFile(QJsonDocument::fromJson(file.readAll()));
-    QJsonObject DescFileObject(DescFile.object());
+    QString protocolName, protocolId;
+    DescHandler::load_desc(file, this->m_cmdArray, protocolName, protocolId);
 
-    // Protocol parameters
-    ui->leProtocolName->setText(DescFileObject.value(QLatin1String("name")).toString());
-    ui->leProtocolId->setText(DescFileObject.value(QLatin1String("id")).toString());
-
-    // Attributes
-    for (const QJsonValueRef CmdRef : DescFileObject.value(QLatin1String("commands")).toArray()) {
-       QJsonObject CmdObject(CmdRef.toObject());
-       // Force command name correction
-       QString cmdName = CorrectInputString(CmdObject.value(QLatin1String("name")).toString());
-       // Command creation
-       Command *Cmd(new Command(cmdName,
-                    static_cast<short>(CmdObject.value(QLatin1String("id")).toInt()),
-                    CmdObject.value(QLatin1String("hasAtt")).toBool(),
-                    NS_DirectionType::SLDirectionType2Enum[CmdObject.value(QLatin1String("direction")).toInt()],
-                    CmdObject.value(QLatin1String("description")).toString()));
-
-       // Parse sub-attributes
-       if (CmdObject.value(QLatin1String("hasAtt")).toBool()) {
-          for (const QJsonValueRef AttrRef : CmdObject.value(QLatin1String("attributes")).toArray()) {
-             const QJsonObject AttrObject(AttrRef.toObject());
-             this->loadAtt_REC_Json(Cmd, nullptr, AttrObject);
-          }
-       }
-
-       // Add into graphical component
-       this->m_cmdArray.append(Cmd);
-    }
+    ui->leProtocolName->setText(protocolName);
+    ui->leProtocolId->setText(protocolId);
 
     // Update UI
     this->updateDescTreeCmd();
@@ -1207,50 +1144,6 @@ void MainWindow::on_pbSortTable_clicked(void) {
     }
 }
 
-void MainWindow::saveDesc_REC_Json(QJsonArray& attributes, QList<Attribute *> attList2Save) {
-   // Parse attributes
-   for (Attribute *attribute : attList2Save) {
-      QJsonObject CmdAttr;
-
-      // Attribute parameters
-      CmdAttr.insert(QLatin1String("name"), attribute->getName());
-      CmdAttr.insert(QLatin1String("id"), attribute->getId());
-      CmdAttr.insert(QLatin1String("isOptional"), attribute->getIsOptional());
-      CmdAttr.insert(QLatin1String("dataType"), attribute->getDataType());
-      CmdAttr.insert(QLatin1String("desc"), attribute->getDesc());
-      CmdAttr.insert(QLatin1String("size"), attribute->getSubAttArray().size());
-
-      // Parse sub-attributes
-      if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
-         QJsonArray SubAttr;
-         this->saveDesc_REC_Json(SubAttr, attribute->getSubAttArray());
-         CmdAttr.insert(QLatin1String("subAttr"), SubAttr);
-      }
-      // Add the attribute
-      attributes.append(CmdAttr);
-   }
-}
-
-void MainWindow::loadAtt_REC_Json(Command *pParentCmd, Attribute *pParentAtt, const QJsonObject& attribute) {
-   Attribute *Attr(new Attribute(attribute.value(QLatin1String("name")).toString(), static_cast<short>(attribute.value(QLatin1String("id")).toInt()), attribute.value(QLatin1String("isOptional")).toBool(),
-                                 NS_AttDataType::SLAttDataType2Enum[attribute.value(QLatin1String("dataType")).toInt()], attribute.value(QLatin1String("desc")).toString()));
-
-   // If this is a sub-attribute
-   if (pParentAtt != nullptr) {
-      pParentAtt->addSubAtt(Attr);
-   }
-   // Parse sub-attributes
-   if (NS_AttDataType::SLAttDataType2Enum[attribute.value(QLatin1String("dataType")).toInt()] == NS_AttDataType::SUB_ATTRIBUTES) {
-      for (const QJsonValueRef SubAttr : attribute.value(QLatin1String("subAttr")).toArray()) {
-         QJsonObject SubAttrObject(SubAttr.toObject());
-         this->loadAtt_REC_Json(nullptr, Attr, SubAttrObject);
-      }
-   }
-   // If this is a command attribute
-   if (pParentCmd != nullptr) {
-      pParentCmd->addAttribute(Attr);
-   }
-}
 // Clear all data
 void MainWindow::clearData(void) {
    // Reset protocolName
