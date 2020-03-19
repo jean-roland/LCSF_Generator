@@ -172,7 +172,7 @@ int main(int argc, char *argv[]) {
 
     // Process args
     QTextStream out(stdout);
-    out << "LCSF_Generator_CLI v" << APP_VERSION << endl;
+    out << "*** LCSF_Generator_CLI v" << APP_VERSION << " ***" << endl;
 
     if (!parser.isSet("l")) {
         out << "Error, missing protocol description file." << endl;
@@ -246,7 +246,8 @@ int main(int argc, char *argv[]) {
     codegen.generateBridgeHeader(protocolName, protocolId, cmdArray, outBPath);
     codegen.generateBridge(protocolName, cmdArray, false, outBPath);
     codegen.generateDescription(protocolName, cmdArray, outBPath);
-    out << "Generation complete. Code A generated in: " << outAPath << ", code B generated in: " << outBPath << endl;
+    out << "Generation complete." << endl;
+    out << "Code A generated in: " << outAPath << ", code B generated in: " << outBPath << endl;
     exit(EXIT_FAILURE);
     return a.exec();
 }
