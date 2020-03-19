@@ -1474,7 +1474,6 @@ void CodeGenerator::generateWikiTable(QString protocolName, QList<Command *> cmd
        dir.mkpath(".");
    }
    QString fileName = dirPath + "/LCSF_" + protocolName + "_WikiTables.txt";
-   qDebug() << "File selected: " << fileName;
    QFile saveFile(fileName);
    QFileInfo fileInfo(saveFile);
 
@@ -1568,7 +1567,6 @@ void CodeGenerator::generateMkdownTable(QString protocolName, QList<Command *> c
         dir.mkpath(".");
     }
     QString fileName = dirPath + "/LCSF_" + protocolName + "_MkdownTables.md";
-    qDebug() << "File selected: " << fileName;
     QFile saveFile(fileName);
     QFileInfo fileInfo(saveFile);
 
