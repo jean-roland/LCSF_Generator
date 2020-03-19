@@ -6,3 +6,6 @@ target_link_libraries(LCSF_Generator_lib Qt5::Core)
 add_executable(LCSF_Generator mainwindow.ui mainwindow.cpp mainwindow.h main.cpp)
 target_link_libraries(LCSF_Generator LCSF_Generator_lib)
 target_link_libraries(LCSF_Generator Qt5::Widgets)
+
+add_executable(LCSF_Generator_CLI CLI_main.cpp)
+target_link_libraries(LCSF_Generator_CLI LCSF_Generator_lib)
