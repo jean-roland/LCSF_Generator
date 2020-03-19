@@ -9,7 +9,10 @@
 // Custom include
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <version.h>
+// Cmake/qmake coexistence issue
+#ifndef APP_VERSION
+    #include <version.h>
+#endif
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);

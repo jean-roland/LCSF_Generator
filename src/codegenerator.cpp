@@ -1,7 +1,11 @@
-#include "codegenerator.h"
-#include <version.h>
-
 #include <QStringBuilder>
+
+#include "codegenerator.h"
+
+// Cmake/qmake coexistence issue
+#ifndef APP_VERSION
+    #include <version.h>
+#endif
 
 CodeGenerator::CodeGenerator() {
 
