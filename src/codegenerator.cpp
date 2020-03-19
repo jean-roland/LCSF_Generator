@@ -1,10 +1,7 @@
 #include "codegenerator.h"
+#include <version.h>
 
 #include <QStringBuilder>
-
-#ifndef APP_VERSION
-#define APP_VERSION "@PROJECT_VERSION@"
-#endif
 
 CodeGenerator::CodeGenerator() {
 

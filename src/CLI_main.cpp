@@ -1,3 +1,4 @@
+// Qt include
 #include <QCoreApplication>
 #include <QCommandLineParser>
 #include <QTextStream>
@@ -10,16 +11,13 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
-
+// Custom include
 #include "command.h"
 #include "attribute.h"
 #include "enumtype.h"
 #include "codegenerator.h"
 #include "codeextractor.h"
-
-#ifndef APP_VERSION
-#define APP_VERSION "@PROJECT_VERSION@"
-#endif
+#include <version.h>
 
 // Private variables
 static QString protocolName;

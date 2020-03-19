@@ -1,7 +1,7 @@
 /**
  * \file Test_Main.c
  * \brief Test protocol module (A)
- * \author LCSF Generator v@PROJECT_VERSION@
+ * \author LCSF Generator v1.1
  *
  */
 
