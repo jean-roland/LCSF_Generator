@@ -174,3 +174,38 @@ TEST(test_generator, gen_output) {
     model_file.close();
     output_file.close();
 }
+
+TEST(test_generator, doc_output) {
+    CodeGenerator test_generator;
+    QString path = "gen_out/";
+    QFile model_file, output_file;
+    QStringList model_content, output_content;
+
+    // Generate doc
+    test_generator.generateWikiTable(protocol_name, cmd_list, path);
+    test_generator.generateMkdownTable(protocol_name, cmd_list, path);
+
+    // Check wiki
+    openFile(&model_file, modelDir, "model_wiki.txt");
+    openFile(&output_file, outputDir, "LCSF_Test_WikiTables.txt");
+    model_content = readFileContent(&model_file);
+    output_content = readFileContent(&output_file);
+    ASSERT_EQ(output_content.count(), model_content.count());
+    for(int idx = 0; idx < output_content.count(); idx++) {
+        ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
+    }
+    model_file.close();
+    output_file.close();
+
+    // Check mkdown
+    openFile(&model_file, modelDir, "model_mkdown.md");
+    openFile(&output_file, outputDir, "LCSF_Test_MkdownTables.md");
+    model_content = readFileContent(&model_file);
+    output_content = readFileContent(&output_file);
+    ASSERT_EQ(output_content.count(), model_content.count());
+    for(int idx = 0; idx < output_content.count(); idx++) {
+        ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
+    }
+    model_file.close();
+    output_file.close();
+}
