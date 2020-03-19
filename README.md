@@ -4,6 +4,8 @@ LCSF Generator is a C++/Qt graphical tool used to create, edit and deploy LCSF p
 
 It generates code for the [LCSF C stack](https://github.com/jean-roland/LCSF_C_Stack) as well as documentation (markdown and wiki format).
 
+There is also a CLI variant to help automate things or if you can't be bothered with a GUI.
+
 ## About LCSF
 
 LCSF (Light Command Set Format) is a specification to easily create and deploy custom command sets.
@@ -26,7 +28,20 @@ For more information, check the official LCSF documentation [here](https://jean-
 
 ## How to use
 
+### GUI
 Refer to the project user manual found [here](https://jean-roland.github.io/LCSF_Generator/).
+
+### CLI
+The CLI is used to generate C code directly from a protocol description json file.
+It can be generated beforehand through the GUI or you can make one based on the one found in `example/`.
+Like the GUI, you can import previous C code if you're updating your protocol.
+
+Options:
+* -h, --help     Print a help message.
+* -v, --version     Displays version information.
+* -l, --load <path/to/file>     Load a protocol description file (REQUIRED)
+* -a, --import-a <path/to/file>     Import specific protocol code, A point of view
+* -b, --import-b <path/to/file>     Import specific protocol code, B point of view
 
 ## How to build
 
