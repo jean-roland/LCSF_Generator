@@ -42,6 +42,39 @@ public:
     static QList<Command *> sortListById(QList<Command *> cmdList);
     static int findCmdIdx(QString cmdName, QList<Command *> cmdList);
     static QStringList getListCmdNames(QList<Command *> cmdList);
+    static bool compareRefCmdList(QList<Command *> a_list, QList<Command *> b_list, int& err_idx);
+
+    friend bool operator==(const Command& lhs, const Command& rhs) {
+        if (lhs.m_name != rhs.m_name) {
+            return false;
+        }
+        if (lhs.m_id != rhs.m_id) {
+            return false;
+        }
+        if (lhs.m_hasAttributes != rhs.m_hasAttributes) {
+            return false;
+        }
+        if (lhs.m_direction != rhs.m_direction) {
+            return false;
+        }
+        if (lhs.m_desc != rhs.m_desc) {
+            return false;
+        }
+        if (lhs.m_attArray.count() != rhs.m_attArray.count()) {
+            return false;
+        }
+        if (lhs.m_attArray.count() > 0) {
+            int err_val;
+            if(!Attribute::compareRefAttList(lhs.m_attArray, rhs.m_attArray, err_val)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    friend bool operator!=(const Command& lhs, const Command& rhs) {
+        return !(lhs == rhs);
+    }
 };
 
 #endif // COMMAND_H

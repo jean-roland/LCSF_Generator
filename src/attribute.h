@@ -39,6 +39,41 @@ public:
     void clearArray_rec(void);
     void removeAtt(QString attName);
     Attribute *getSubAttPointer(QString subAttName);
+
+    static bool compareRefAttList(QList<Attribute *> a_list, QList<Attribute *> b_list, int& err_idx);
+
+    friend bool operator==(const Attribute& lhs, const Attribute& rhs) {
+        if (lhs.m_name != rhs.m_name) {
+            return false;
+        }
+        if (lhs.m_id != rhs.m_id) {
+            return false;
+        }
+        if (lhs.m_isOptional != rhs.m_isOptional) {
+            return false;
+        }
+        if (lhs.m_dataType != rhs.m_dataType) {
+            return false;
+        }
+        if (lhs.m_desc != rhs.m_desc) {
+            return false;
+        }
+        if (lhs.m_subAttArray.count() != rhs.m_subAttArray.count()) {
+            return false;
+        }
+        if (lhs.m_subAttArray.count() > 0) {
+            int err_val;
+            if(!Attribute::compareRefAttList(lhs.m_subAttArray, rhs.m_subAttArray, err_val)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    friend bool operator!=(const Attribute& lhs, const Attribute& rhs) {
+        return !(lhs == rhs);
+    }
+
 };
 
 #endif // ATTRIBUTE_H

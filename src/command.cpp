@@ -223,8 +223,22 @@ int Command::findCmdIdx(QString cmdName, QList<Command *> cmdList) {
 QStringList Command::getListCmdNames(QList<Command *> cmdList) {
    QStringList cmdNames = QStringList();
 
-   for (Command  *command : cmdList) {
+   for (Command *command : cmdList) {
       cmdNames.append(command->getName());
    }
    return cmdNames;
+}
+
+bool Command::compareRefCmdList(QList<Command *> a_list, QList<Command *> b_list, int& err_idx) {
+    if (a_list.count() != b_list.count()) {
+        err_idx = -1;
+        return false;
+    }
+    for (int idx = 0; idx < a_list.count(); idx++) {
+        if (*a_list.at(idx) != *b_list.at(idx)) {
+            err_idx = idx;
+            return false;
+        }
+    }
+    return true;
 }

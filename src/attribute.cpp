@@ -153,3 +153,17 @@ Attribute *Attribute::getSubAttPointer(QString subAttName) {
     }
     return subAttPointer;
 }
+
+bool Attribute::compareRefAttList(QList<Attribute *> a_list, QList<Attribute *> b_list, int& err_idx) {
+    if (a_list.count() != b_list.count()) {
+        err_idx = -1;
+        return false;
+    }
+    for (int idx = 0; idx < a_list.count(); idx++) {
+        if (*a_list.at(idx) != *b_list.at(idx)) {
+            err_idx = idx;
+            return false;
+        }
+    }
+    return true;
+}
