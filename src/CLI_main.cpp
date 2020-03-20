@@ -13,7 +13,11 @@
 #include "codegenerator.h"
 #include "codeextractor.h"
 #include "deschandler.h"
-#include <version.h>
+
+// Cmake/qmake coexistence issue
+#ifndef APP_VERSION
+    #include <version.h>
+#endif
 
 // Private variables
 static QString protocolName;
