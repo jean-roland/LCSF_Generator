@@ -3,31 +3,12 @@
 
 #include "codeextractor.h"
 #include "codegenerator.h"
-#include "data/generator_data.h"
+#include "test_data.h"
 
 #define modelDir "../tests/data/"
 #define outputDir "gen_out/"
 
 // Note: Test should be run from build/ for file paths to work
-
-void openFile(QFile *pFile, QString filedir, QString fileName) {
-    pFile->setFileName(filedir + fileName);
-
-    if(!pFile->open(QIODevice::ReadOnly)) {
-        FAIL() << " Couldn't open " + fileName.toStdString() + ": " + pFile->errorString().toStdString();
-    }
-}
-
-QStringList readFileContent(QFile *pFile) {
-    QTextStream file_content(pFile);
-    QStringList output;
-
-    while (!file_content.atEnd()) {
-        QString line = file_content.readLine();
-        output.append(line);
-    }
-    return output;
-}
 
 TEST(test_generator, gen_output) {
     CodeGenerator test_generator;
@@ -44,8 +25,8 @@ TEST(test_generator, gen_output) {
     test_generator.generateDescription(protocol_name, cmd_list, path);
 
     // Check Main
-    openFile(&model_file, modelDir, "model_raw_main.c");
-    openFile(&output_file, outputDir, "Test_Main.c");
+    ASSERT_TRUE(openFile(&model_file, modelDir, "model_raw_main.c"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "Test_Main.c"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     ASSERT_EQ(output_content.count(), model_content.count());
@@ -56,8 +37,8 @@ TEST(test_generator, gen_output) {
     output_file.close();
 
     // Check Main header
-    openFile(&model_file, modelDir, "model_raw_main.h");
-    openFile(&output_file, outputDir, "Test_Main.h");
+    ASSERT_TRUE(openFile(&model_file, modelDir, "model_raw_main.h"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "Test_Main.h"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     ASSERT_EQ(output_content.count(), model_content.count());
@@ -68,8 +49,8 @@ TEST(test_generator, gen_output) {
     output_file.close();
 
     // Check Bridge
-    openFile(&model_file, modelDir, "model_bridge.c");
-    openFile(&output_file, outputDir, "LCSF_Bridge_Test.c");
+    ASSERT_TRUE(openFile(&model_file, modelDir, "model_bridge.c"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Bridge_Test.c"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     ASSERT_EQ(output_content.count(), model_content.count());
@@ -80,8 +61,8 @@ TEST(test_generator, gen_output) {
     output_file.close();
 
     // Check Bridge header
-    openFile(&model_file, modelDir, "model_bridge.h");
-    openFile(&output_file, outputDir, "LCSF_Bridge_Test.h");
+    ASSERT_TRUE(openFile(&model_file, modelDir, "model_bridge.h"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Bridge_Test.h"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     ASSERT_EQ(output_content.count(), model_content.count());
@@ -92,8 +73,8 @@ TEST(test_generator, gen_output) {
     output_file.close();
 
     // Check Desc
-    openFile(&model_file, modelDir, "model_desc.h");
-    openFile(&output_file, outputDir, "LCSF_Desc_Test.h");
+    ASSERT_TRUE(openFile(&model_file, modelDir, "model_desc.h"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Desc_Test.h"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     ASSERT_EQ(output_content.count(), model_content.count());
@@ -104,7 +85,7 @@ TEST(test_generator, gen_output) {
     output_file.close();
 
     // Check imported generation
-    openFile(&model_file, modelDir, "model_main.c");
+    ASSERT_TRUE(openFile(&model_file, modelDir, "model_main.c"));
     QTextStream file_content(&model_file);
     test_extractor.extractFromSourceFile(protocol_name, &file_content, cmd_list);
     model_file.close();
@@ -115,8 +96,8 @@ TEST(test_generator, gen_output) {
     test_generator.generateDescription(protocol_name, cmd_list, path);
 
     // Check Main
-    openFile(&model_file, modelDir, "model_main.c");
-    openFile(&output_file, outputDir, "Test_Main.c");
+    ASSERT_TRUE(openFile(&model_file, modelDir, "model_main.c"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "Test_Main.c"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     ASSERT_EQ(output_content.count(), model_content.count());
@@ -127,8 +108,8 @@ TEST(test_generator, gen_output) {
     output_file.close();
 
     // Check Main header
-    openFile(&model_file, modelDir, "model_main.h");
-    openFile(&output_file, outputDir, "Test_Main.h");
+    ASSERT_TRUE(openFile(&model_file, modelDir, "model_main.h"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "Test_Main.h"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     ASSERT_EQ(output_content.count(), model_content.count());
@@ -139,8 +120,8 @@ TEST(test_generator, gen_output) {
     output_file.close();
 
     // Check Bridge
-    openFile(&model_file, modelDir, "model_bridge.c");
-    openFile(&output_file, outputDir, "LCSF_Bridge_Test.c");
+    ASSERT_TRUE(openFile(&model_file, modelDir, "model_bridge.c"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Bridge_Test.c"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     ASSERT_EQ(output_content.count(), model_content.count());
@@ -151,8 +132,8 @@ TEST(test_generator, gen_output) {
     output_file.close();
 
     // Check Bridge header
-    openFile(&model_file, modelDir, "model_bridge.h");
-    openFile(&output_file, outputDir, "LCSF_Bridge_Test.h");
+    ASSERT_TRUE(openFile(&model_file, modelDir, "model_bridge.h"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Bridge_Test.h"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     ASSERT_EQ(output_content.count(), model_content.count());
@@ -163,8 +144,8 @@ TEST(test_generator, gen_output) {
     output_file.close();
 
     // Check Desc
-    openFile(&model_file, modelDir, "model_desc.h");
-    openFile(&output_file, outputDir, "LCSF_Desc_Test.h");
+    ASSERT_TRUE(openFile(&model_file, modelDir, "model_desc.h"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Desc_Test.h"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     ASSERT_EQ(output_content.count(), model_content.count());
@@ -186,8 +167,8 @@ TEST(test_generator, doc_output) {
     test_generator.generateMkdownTable(protocol_name, cmd_list, path);
 
     // Check wiki
-    openFile(&model_file, modelDir, "model_wiki.txt");
-    openFile(&output_file, outputDir, "LCSF_Test_WikiTables.txt");
+    ASSERT_TRUE(openFile(&model_file, modelDir, "model_wiki.txt"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Test_WikiTables.txt"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     ASSERT_EQ(output_content.count(), model_content.count());
@@ -198,8 +179,8 @@ TEST(test_generator, doc_output) {
     output_file.close();
 
     // Check mkdown
-    openFile(&model_file, modelDir, "model_mkdown.md");
-    openFile(&output_file, outputDir, "LCSF_Test_MkdownTables.md");
+    ASSERT_TRUE(openFile(&model_file, modelDir, "model_mkdown.md"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Test_MkdownTables.md"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     ASSERT_EQ(output_content.count(), model_content.count());

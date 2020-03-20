@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <QFile>
 #include "codeextractor.h"
-#include "data/extractor_data.h"
+#include "test_data.h"
 
 TEST(test_extractor, extraction) {
     // Get model file data
@@ -15,7 +15,7 @@ TEST(test_extractor, extraction) {
 
     // Check extraction and extraction status
     ASSERT_FALSE(test_extractor.getExtractionComplete());
-    test_extractor.extractFromSourceFile(prot_name, &file_content, cmd_list);
+    test_extractor.extractFromSourceFile(protocol_name, &file_content, cmd_list);
     ASSERT_TRUE(test_extractor.getExtractionComplete());
     file.close();
 
