@@ -21,17 +21,22 @@ static QString correctInputString(QString input) {
 }
 
 static void loadAtt_Rec(Command *pParentCmd, Attribute *pParentAtt, const QJsonObject& attribute) {
+    int datatype = attribute.value(QLatin1String("dataType")).toInt();
+    if (datatype >= NS_AttDataType::SL_AttDataType.size()) {
+        datatype = 0;
+    }
+
     Attribute *Attr(new Attribute(attribute.value(QLatin1String("name")).toString(),
                                 static_cast<short>(attribute.value(QLatin1String("id")).toInt()),
                                 attribute.value(QLatin1String("isOptional")).toBool(),
-                                NS_AttDataType::SLAttDataType2Enum[attribute.value(QLatin1String("dataType")).toInt()],
+                                NS_AttDataType::SLAttDataType2Enum[datatype],
                                 attribute.value(QLatin1String("desc")).toString()));
     // If this is a sub-attribute
     if (pParentAtt != nullptr) {
         pParentAtt->addSubAtt(Attr);
     }
     // Parse sub-attributes
-    if (NS_AttDataType::SLAttDataType2Enum[attribute.value(QLatin1String("dataType")).toInt()] == NS_AttDataType::SUB_ATTRIBUTES) {
+    if (NS_AttDataType::SLAttDataType2Enum[datatype] == NS_AttDataType::SUB_ATTRIBUTES) {
         for (const QJsonValueRef SubAttr : attribute.value(QLatin1String("subAttr")).toArray()) {
             QJsonObject SubAttrObject(SubAttr.toObject());
             loadAtt_Rec(nullptr, Attr, SubAttrObject);
@@ -83,11 +88,15 @@ void DescHandler::load_desc(QFile& file, QList<Command *>& cmdArray, QString& pr
         QJsonObject CmdObject(CmdRef.toObject());
         // Force command name correction
         QString cmdName = correctInputString(CmdObject.value(QLatin1String("name")).toString());
+        int direction = CmdObject.value(QLatin1String("direction")).toInt();
+        if (direction >= NS_DirectionType::SL_DirectionType.size()) {
+          direction = 0;
+        }
         // Command creation
         Command *Cmd(new Command(cmdName,
                     static_cast<short>(CmdObject.value(QLatin1String("id")).toInt()),
                     CmdObject.value(QLatin1String("hasAtt")).toBool(),
-                    NS_DirectionType::SLDirectionType2Enum[CmdObject.value(QLatin1String("direction")).toInt()],
+                    NS_DirectionType::SLDirectionType2Enum[direction],
                     CmdObject.value(QLatin1String("description")).toString()));
         // Parse sub-attributes
         if (CmdObject.value(QLatin1String("hasAtt")).toBool()) {
