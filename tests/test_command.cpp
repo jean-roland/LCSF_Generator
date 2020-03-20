@@ -88,8 +88,9 @@ TEST(test_command, cmd_att) {
     Attribute *test_att2 = new Attribute("sub_att2", 12, false, NS_AttDataType::UINT16, "This is a sub-attribute");
     Attribute *test_att3 = new Attribute("sub_att3", 13, false, NS_AttDataType::UINT32, "This is a sub-attribute");
     Attribute *test_att4 = new Attribute("sub_att4", 14, false, NS_AttDataType::STRING, "This is a sub-attribute");
-    test_att0->addSubAtt(test_att4);
     QList<Attribute *> att_array = {test_att1, test_att0, test_att3, test_att2};
+
+    test_att0->addSubAtt(test_att4);
     test_cmd.addAttribute(test_att1);
     test_cmd.addAttribute(test_att0);
     test_cmd.addAttribute(test_att3);
@@ -141,4 +142,37 @@ TEST(test_command, cmd_static) {
     // Check sortListById
     QList<Command *> sorted_array = {&test_cmd0, &test_cmd1, &test_cmd2, &test_cmd3, &test_cmd4};
     ASSERT_EQ(Command::sortListById(cmd_array), sorted_array);
+}
+
+TEST(test_attribute, cmd_comparison) {
+    Command test_cmd0("cmd0", 10, false, NS_DirectionType::BIDIRECTIONAL, "Test description");
+    Command test_cmd1("cmd1", 11, false, NS_DirectionType::BIDIRECTIONAL, "Test description");
+    Command test_cmd2("cmd2", 12, false, NS_DirectionType::BIDIRECTIONAL, "Test description");
+    Command test_cmd3("cmd3", 13, false, NS_DirectionType::BIDIRECTIONAL, "Test description");
+    Command test_cmd4("cmd4", 14, false, NS_DirectionType::BIDIRECTIONAL, "Test description");
+    Command test_cmd5("cmd4", 14, false, NS_DirectionType::BIDIRECTIONAL, "Test description");
+    QList<Command *> cmd_array = {&test_cmd1, &test_cmd3, &test_cmd0, &test_cmd4, &test_cmd2, &test_cmd5};
+    QList<Command *> cmd_array2 = {&test_cmd2, &test_cmd0, &test_cmd4, &test_cmd1, &test_cmd5};
+    QList<Command *> cmd_array3 = {&test_cmd1, &test_cmd3, &test_cmd2, &test_cmd4, &test_cmd2, &test_cmd5};
+
+    Attribute *test_att0 = new Attribute("sub_att0", 10, false, NS_AttDataType::SUB_ATTRIBUTES, "This is a sub-attribute");
+    Attribute *test_att1 = new Attribute("sub_att1", 11, false, NS_AttDataType::UINT8, "This is a sub-attribute");
+    Attribute *test_att2 = new Attribute("sub_att2", 12, false, NS_AttDataType::UINT16, "This is a sub-attribute");
+    Attribute *test_att3 = new Attribute("sub_att3", 13, false, NS_AttDataType::UINT32, "This is a sub-attribute");
+    Attribute *test_att4 = new Attribute("sub_att4", 14, false, NS_AttDataType::STRING, "This is a sub-attribute");
+    QList<Attribute *> att_array = {test_att1, test_att0, test_att3, test_att2};
+
+    // Simple comparison
+    ASSERT_FALSE(test_cmd0 == test_cmd1);
+    ASSERT_TRUE(test_cmd4 == test_cmd5);
+    ASSERT_TRUE(test_cmd0 != test_cmd1);
+    ASSERT_FALSE(test_cmd4 != test_cmd5);
+
+    // List comparison
+    int err_val;
+    ASSERT_FALSE(Command::compareRefCmdList(cmd_array, cmd_array2, err_val));
+    ASSERT_EQ(err_val, -1);
+    ASSERT_FALSE(Command::compareRefCmdList(cmd_array, cmd_array3, err_val));
+    ASSERT_EQ(err_val, 2);
+    ASSERT_TRUE(Command::compareRefCmdList(cmd_array, cmd_array, err_val));
 }

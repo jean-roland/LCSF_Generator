@@ -89,3 +89,31 @@ TEST(test_attribute, subatt) {
     test_att.clearArray_rec();
     ASSERT_EQ(test_att.getSubAttArray(), QList<Attribute *>());
 }
+
+TEST(test_attribute, att_comparison) {
+    Attribute test_att("Test_att", 01, false, NS_AttDataType::SUB_ATTRIBUTES, "This is a test attribute");
+    Attribute sub_att0("sub_att0", 10, false, NS_AttDataType::SUB_ATTRIBUTES, "This is a sub-attribute");
+    Attribute sub_att1("sub_att1", 11, true, NS_AttDataType::UINT8, "This is a sub-attribute");
+    Attribute sub_att2("sub_att2", 12, false, NS_AttDataType::UINT16, "This is a sub-attribute");
+    Attribute sub_att3("sub_att3", 13, false, NS_AttDataType::UINT32, "This is a sub-attribute");
+    Attribute sub_att4("sub_att4", 14, true, NS_AttDataType::BYTE_ARRAY, "This is a sub-attribute");
+    sub_att0.addSubAtt(&sub_att4);
+    QList<Attribute *> subAttArray = {&sub_att2, &sub_att1, &sub_att3, &sub_att0};
+    QList<Attribute *> subAttArray2 = {&sub_att2, &sub_att1, &sub_att3};
+    QList<Attribute *> subAttArray3 = {&sub_att2, &sub_att1, &sub_att3, &sub_att4};
+    test_att.setSubAttArray(subAttArray);
+
+    // Simple comparison
+    ASSERT_FALSE(sub_att0 == sub_att1);
+    ASSERT_TRUE(test_att == test_att);
+    ASSERT_TRUE(sub_att0 != sub_att1);
+    ASSERT_FALSE(test_att != test_att);
+
+    // List comparison
+    int err_val;
+    ASSERT_FALSE(Attribute::compareRefAttList(subAttArray, subAttArray2, err_val));
+    ASSERT_EQ(err_val, -1);
+    ASSERT_FALSE(Attribute::compareRefAttList(subAttArray, subAttArray3, err_val));
+    ASSERT_EQ(err_val, 3);
+    ASSERT_TRUE(Attribute::compareRefAttList(subAttArray, subAttArray, err_val));
+}
