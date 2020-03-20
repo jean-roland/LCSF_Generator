@@ -15,7 +15,7 @@ if (GTEST_FOUND)
     endmacro()
 
     # Test Executables
-   	package_add_test(LCSF_Generator_lib_tests test_attribute.cpp test_command.cpp test_extractor.cpp test_generator.cpp)
+   	package_add_test(LCSF_Generator_lib_tests test_attribute.cpp test_command.cpp test_extractor.cpp test_generator.cpp test_deschandler.cpp test_data.cpp)
     target_link_libraries(LCSF_Generator_lib_tests LCSF_Generator_lib)
 else()
     message(WARNING "Google test not found, tests will not be built")
