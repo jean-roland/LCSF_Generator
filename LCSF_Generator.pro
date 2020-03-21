@@ -27,25 +27,25 @@ DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 CONFIG += c++11
 
 SOURCES += \
-        attribute.cpp \
-        codeextractor.cpp \
-        codegenerator.cpp \
-        command.cpp \
-        deschandler.cpp \
-        main.cpp \
-        mainwindow.cpp
+        src/attribute.cpp \
+        src/codeextractor.cpp \
+        src/codegenerator.cpp \
+        src/command.cpp \
+        src/deschandler.cpp \
+        src/main.cpp \
+        src/mainwindow.cpp
 
 HEADERS += \
-        attribute.h \
-        codeextractor.h \
-        codegenerator.h \
-        command.h \
-        deschandler.h \
-        enumtype.h \
-        mainwindow.h
+        src/attribute.h \
+        src/codeextractor.h \
+        src/codegenerator.h \
+        src/command.h \
+        src/deschandler.h \
+        src/enumtype.h \
+        src/mainwindow.h
 
 FORMS += \
-        mainwindow.ui
+        src/mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
