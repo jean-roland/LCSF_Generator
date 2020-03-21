@@ -112,7 +112,7 @@ $RECYCLE.BIN/
 
 *.stash
 
-src/LCSF_Generator_resource.rc
+*.rc
 build/
 
 # CMake
