@@ -11,14 +11,23 @@ extern QString protocol_id;
 // Command list
 extern const QList<Command *> cmd_list;
 
-// Extractor data
-extern const QString unk_inc;
-extern const QString unk_def;
-extern const QString unk_pri_fct;
-extern const QString unk_pub_fct;
-extern const QString unk_pub_hdr;
-extern const QString def_cmd_hdl;
-extern const QStringList cmd_fct;
+// Extractor A data
+extern const QString a_unk_inc;
+extern const QString a_unk_def;
+extern const QString a_unk_pri_fct;
+extern const QString a_unk_pub_fct;
+extern const QString a_unk_pub_hdr;
+extern const QString a_def_cmd_hdl;
+extern const QStringList a_cmd_fct;
+
+// Extractor B data
+extern const QString b_unk_inc;
+extern const QString b_unk_def;
+extern const QString b_unk_pri_fct;
+extern const QString b_unk_pub_fct;
+extern const QString b_unk_pub_hdr;
+extern const QString b_def_cmd_hdl;
+extern const QStringList b_cmd_fct;
 
 // File test functions
 bool openFile(QFile *pFile, QString filedir, QString fileName);

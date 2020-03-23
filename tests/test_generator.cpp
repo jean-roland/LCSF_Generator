@@ -10,14 +10,14 @@
 
 // Note: Test should be run from build/ for file paths to work
 
-TEST(test_generator, gen_output) {
+TEST(test_generator, gen_A_output) {
     CodeGenerator test_generator;
     CodeExtractor test_extractor;
     QString path = "gen_out/";
     QFile model_file, output_file;
     QStringList model_content, output_content;
 
-    // Check raw generation
+    // Check raw A generation
     test_generator.generateMainHeader(protocol_name, cmd_list, test_extractor, path);
     test_generator.generateMain(protocol_name, cmd_list, test_extractor, true, path);
     test_generator.generateBridgeHeader(protocol_name, protocol_id, cmd_list, path);
@@ -25,7 +25,7 @@ TEST(test_generator, gen_output) {
     test_generator.generateDescription(protocol_name, cmd_list, path);
 
     // Check Main
-    ASSERT_TRUE(openFile(&model_file, modelDir, "model_raw_main.c"));
+    ASSERT_TRUE(openFile(&model_file, modelDir, "model_raw_main_a.c"));
     ASSERT_TRUE(openFile(&output_file, outputDir, "Test_Main.c"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
@@ -49,7 +49,7 @@ TEST(test_generator, gen_output) {
     output_file.close();
 
     // Check Bridge
-    ASSERT_TRUE(openFile(&model_file, modelDir, "model_bridge.c"));
+    ASSERT_TRUE(openFile(&model_file, modelDir, "model_bridge_a.c"));
     ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Bridge_Test.c"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
@@ -84,8 +84,8 @@ TEST(test_generator, gen_output) {
     model_file.close();
     output_file.close();
 
-    // Check imported generation
-    ASSERT_TRUE(openFile(&model_file, modelDir, "model_main.c"));
+    // Check imported A generation
+    ASSERT_TRUE(openFile(&model_file, modelDir, "model_main_a.c"));
     QTextStream file_content(&model_file);
     test_extractor.extractFromSourceFile(protocol_name, &file_content, cmd_list);
     model_file.close();
@@ -96,7 +96,7 @@ TEST(test_generator, gen_output) {
     test_generator.generateDescription(protocol_name, cmd_list, path);
 
     // Check Main
-    ASSERT_TRUE(openFile(&model_file, modelDir, "model_main.c"));
+    ASSERT_TRUE(openFile(&model_file, modelDir, "model_main_a.c"));
     ASSERT_TRUE(openFile(&output_file, outputDir, "Test_Main.c"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
@@ -120,7 +120,7 @@ TEST(test_generator, gen_output) {
     output_file.close();
 
     // Check Bridge
-    ASSERT_TRUE(openFile(&model_file, modelDir, "model_bridge.c"));
+    ASSERT_TRUE(openFile(&model_file, modelDir, "model_bridge_a.c"));
     ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Bridge_Test.c"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
@@ -146,6 +146,77 @@ TEST(test_generator, gen_output) {
     // Check Desc
     ASSERT_TRUE(openFile(&model_file, modelDir, "model_desc.h"));
     ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Desc_Test.h"));
+    model_content = readFileContent(&model_file);
+    output_content = readFileContent(&output_file);
+    ASSERT_EQ(output_content.count(), model_content.count());
+    for(int idx = 0; idx < output_content.count(); idx++) {
+        ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
+    }
+    model_file.close();
+    output_file.close();
+}
+
+TEST(test_generator, gen_B_output) {
+    CodeGenerator test_generator;
+    CodeExtractor test_extractor;
+    QString path = "gen_out/";
+    QFile model_file, output_file;
+    QStringList model_content, output_content;
+
+    // Check raw B generation
+    test_generator.generateMainHeader(protocol_name, cmd_list, test_extractor, path);
+    test_generator.generateMain(protocol_name, cmd_list, test_extractor, false, path);
+    test_generator.generateBridgeHeader(protocol_name, protocol_id, cmd_list, path);
+    test_generator.generateBridge(protocol_name, cmd_list, false, path);
+    test_generator.generateDescription(protocol_name, cmd_list, path);
+
+    // Check Main
+    ASSERT_TRUE(openFile(&model_file, modelDir, "model_raw_main_b.c"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "Test_Main.c"));
+    model_content = readFileContent(&model_file);
+    output_content = readFileContent(&output_file);
+    ASSERT_EQ(output_content.count(), model_content.count());
+    for(int idx = 0; idx < output_content.count(); idx++) {
+        ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
+    }
+    model_file.close();
+    output_file.close();
+
+    // Check Bridge
+    ASSERT_TRUE(openFile(&model_file, modelDir, "model_bridge_b.c"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Bridge_Test.c"));
+    model_content = readFileContent(&model_file);
+    output_content = readFileContent(&output_file);
+    ASSERT_EQ(output_content.count(), model_content.count());
+    for(int idx = 0; idx < output_content.count(); idx++) {
+        ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
+    }
+    model_file.close();
+    output_file.close();
+
+    // Check imported B generation
+    ASSERT_TRUE(openFile(&model_file, modelDir, "model_main_b.c"));
+    QTextStream file_content(&model_file);
+    test_extractor.extractFromSourceFile(protocol_name, &file_content, cmd_list);
+    model_file.close();
+    test_generator.generateMainHeader(protocol_name, cmd_list, test_extractor, path);
+    test_generator.generateMain(protocol_name, cmd_list, test_extractor, false, path);
+
+    // Check Main
+    ASSERT_TRUE(openFile(&model_file, modelDir, "model_main_b.c"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "Test_Main.c"));
+    model_content = readFileContent(&model_file);
+    output_content = readFileContent(&output_file);
+    EXPECT_EQ(output_content.count(), model_content.count());
+    for(int idx = 0; idx < model_content.count(); idx++) {
+        ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
+    }
+    model_file.close();
+    output_file.close();
+
+    // Check Main header
+    ASSERT_TRUE(openFile(&model_file, modelDir, "model_main.h"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "Test_Main.h"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     ASSERT_EQ(output_content.count(), model_content.count());
