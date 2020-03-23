@@ -37,11 +37,15 @@ It can be generated beforehand through the GUI or you can make one based on the 
 Like the GUI, you can import previous C code if you're updating your protocol.
 
 Options:
-* -h, --help     Print a help message.
-* -v, --version     Displays version information.
-* -l, --load <path/to/file>     Load a protocol description file (REQUIRED)
-* -a, --import-a <path/to/file>     Import specific protocol code, A point of view
-* -b, --import-b <path/to/file>     Import specific protocol code, B point of view
+* `-h, --help` Print a help message.
+* `-v, --version` Displays version information.
+* `-l, --load <path/to/file>` Load a protocol description file (REQUIRED)
+* `-a, --import-a <path/to/file>` Import specific protocol code, A point of view
+* `-b, --import-b <path/to/file>` Import specific protocol code, B point of view
+
+Examples:
+For a raw generation: `./LCSG_Generator_CLI -l Description/Test.json`
+For a generation with code imported for the A point of view: `./LCSG_Generator_CLI -l Description/Test.json -a OutputA/Test_Main.c`
 
 ## How to build
 
