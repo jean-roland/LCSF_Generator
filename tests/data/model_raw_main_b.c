@@ -9,7 +9,7 @@
 // Standard lib
 #include <stdlib.h>
 // Custom lib
-#include <MemAlloc.h>
+#include <LCSF_config.h>
 #include <LCSF_Bridge_Test.h>
 #include <Test_Main.h>
 
@@ -279,7 +279,7 @@ static bool TestExecuteCC6(test_cmd_payload_t *pCmdPayload) {
  */
 bool Test_MainInit(const void *pDescInit) {
     TestInfo.pInitDesc = pDescInit;
-    TestInfo.pSendCmdPayload = (test_cmd_payload_t *)MemAllocCalloc(sizeof(test_cmd_payload_t));
+    TestInfo.pSendCmdPayload = (test_cmd_payload_t *)MEM_ALLOC(sizeof(test_cmd_payload_t));
     return true;
 }
 

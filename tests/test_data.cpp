@@ -170,7 +170,7 @@ const QString a_unk_inc = R"(/**
 #include <stdlib.h>
 #include <string.h>
 // Custom lib
-#include <MemAlloc.h>
+#include <LCSF_config.h>
 #include <LCSF_Bridge_Test.h>
 #include <Test_Main.h>
 
@@ -258,7 +258,7 @@ const QString a_unk_pub_fct = R"(/**
  * \return bool: true if operation was a success
  */
 bool Test_MainInit(void) {
-    TestInfo.pSendCmdPayload = (test_cmd_payload_t *)MemAllocCalloc(sizeof(test_cmd_payload_t));
+    TestInfo.pSendCmdPayload = (test_cmd_payload_t *)MEM_ALLOC(sizeof(test_cmd_payload_t));
     return true;
 }
 
@@ -680,7 +680,7 @@ const QString b_unk_inc = R"(/**
 #include <stdlib.h>
 #include <string.h>
 // Custom lib
-#include <MemAlloc.h>
+#include <LCSF_config.h>
 #include <LCSF_Bridge_Test.h>
 #include <Test_Main.h>
 
@@ -768,7 +768,7 @@ const QString b_unk_pub_fct = R"(/**
  * \return bool: true if operation was a success
  */
 bool Test_MainInit(void) {
-    TestInfo.pSendCmdPayload = (test_cmd_payload_t *)MemAllocCalloc(sizeof(test_cmd_payload_t));
+    TestInfo.pSendCmdPayload = (test_cmd_payload_t *)MEM_ALLOC(sizeof(test_cmd_payload_t));
     return true;
 }
 
