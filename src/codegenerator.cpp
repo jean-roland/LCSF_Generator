@@ -678,7 +678,7 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
           out << "// Standard lib" << endl;
           out << "#include <stdlib.h>" << endl;
           out << "// Custom lib" << endl;
-          out << "#include <MemAlloc.h>" << endl;
+          out << "#include <LCSF_config.h>" << endl;
           out << "#include <LCSF_Bridge_" << protocolName << ".h>" << endl;
           out << "#include <" << protocolName << "_Main.h>" << endl;
           out << endl;
@@ -851,7 +851,7 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
          out << " */" << endl;
          out << "bool " << protocolName << "_MainInit(const void *pDescInit) {" << endl;
          out << "    " << protocolName << "Info.pInitDesc = pDescInit;" << endl;
-         out << "    " << protocolName << "Info.pSendCmdPayload = ("<< protocolName.toLower() << "_cmd_payload_t *)MemAllocCalloc(sizeof("<< protocolName.toLower() << "_cmd_payload_t));" << endl;
+         out << "    " << protocolName << "Info.pSendCmdPayload = ("<< protocolName.toLower() << "_cmd_payload_t *)MEM_ALLOC(sizeof("<< protocolName.toLower() << "_cmd_payload_t));" << endl;
          out << "    return true;" << endl;
          out << "}" << endl;
          out << endl;
@@ -1058,7 +1058,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       out << "// Standard lib" << endl;
       out << "#include <string.h>" << endl;
       out << "// Custom lib" << endl;
-      out << "#include <MemAlloc.h>" << endl;
+      out << "#include <LCSF_config.h>" << endl;
       out << "#include <Filo.h>" << endl;
       out << "#include <LCSF_Transcoder.h>" << endl;
       out << "#include <LCSF_Validator.h>" << endl;
@@ -1348,7 +1348,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
 
       out << "bool LCSF_Bridge_" <<  protocolName << "Init(uint16_t filoSize) {" << endl;
       out << "    LcsfBridge" << protocolName << "Info.pFilo = FiloCreate(filoSize, sizeof(lcsf_valid_att_t));" << endl;
-      out << "    LcsfBridge" << protocolName << "Info.pCmdPayload = (" << protocolName.toLower() << "_cmd_payload_t *)MemAllocCalloc(sizeof(" << protocolName.toLower() << "_cmd_payload_t));" << endl;
+      out << "    LcsfBridge" << protocolName << "Info.pCmdPayload = (" << protocolName.toLower() << "_cmd_payload_t *)MEM_ALLOC(sizeof(" << protocolName.toLower() << "_cmd_payload_t));" << endl;
       out << "    return true;" << endl;
       out << "}" << endl;
       out << endl;
