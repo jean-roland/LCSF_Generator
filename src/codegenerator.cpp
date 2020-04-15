@@ -679,8 +679,8 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
           out << "#include <stdlib.h>" << endl;
           out << "// Custom lib" << endl;
           out << "#include <LCSF_config.h>" << endl;
-          out << "#include <LCSF_Bridge_" << protocolName << ".h>" << endl;
-          out << "#include <" << protocolName << "_Main.h>" << endl;
+          out << "#include \"LCSF_Bridge_" << protocolName << ".h\"" << endl;
+          out << "#include \"" << protocolName << "_Main.h\"" << endl;
           out << endl;
           out << "// *** Definitions ***" << endl;
       }
@@ -930,7 +930,7 @@ void CodeGenerator::generateBridgeHeader(QString protocolName, QString protocolI
       out << "#include <stdint.h>" << endl;
       out << "// Custom lib" << endl;
       out << "#include <LCSF_Validator.h>" << endl;
-      out << "#include <" << protocolName << "_Main.h>" << endl;
+      out << "#include \"" << protocolName << "_Main.h\"" << endl;
       out << endl;
       out << "// *** Definitions ***" << endl;
       out << "// --- Public Types ---" << endl;
@@ -1062,7 +1062,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       out << "#include <Filo.h>" << endl;
       out << "#include <LCSF_Transcoder.h>" << endl;
       out << "#include <LCSF_Validator.h>" << endl;
-      out << "#include <LCSF_Bridge_" << protocolName << ".h>" << endl;
+      out << "#include \"LCSF_Bridge_" << protocolName << ".h\"" << endl;
       out << endl;
       out << "// *** Definitions ***" << endl;
       out << "// --- Private Types ---" << endl;
