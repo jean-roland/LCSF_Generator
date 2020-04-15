@@ -1407,7 +1407,7 @@ void CodeGenerator::generateDescription(QString protocolName, QList<Command *> c
       out << "#include <stdbool.h>" << endl;
       out << "#include <stdint.h>" << endl;
       out << "// Custom lib" << endl;
-      out << "#include <LCSF_Bridge_" << protocolName << ".h>" << endl;
+      out << "#include \"LCSF_Bridge_" << protocolName << ".h\"" << endl;
       out << endl;
       out << "// *** Definitions ***" << endl;
       out << "// --- Public Constants ---" << endl;
