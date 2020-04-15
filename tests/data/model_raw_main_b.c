@@ -10,8 +10,8 @@
 #include <stdlib.h>
 // Custom lib
 #include <LCSF_config.h>
-#include <LCSF_Bridge_Test.h>
-#include <Test_Main.h>
+#include "LCSF_Bridge_Test.h"
+#include "Test_Main.h"
 
 // *** Definitions ***
 // --- Private Types ---

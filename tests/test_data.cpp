@@ -171,8 +171,8 @@ const QString a_unk_inc = R"(/**
 #include <string.h>
 // Custom lib
 #include <LCSF_config.h>
-#include <LCSF_Bridge_Test.h>
-#include <Test_Main.h>
+#include "LCSF_Bridge_Test.h"
+#include "Test_Main.h"
 
 // *** Definitions ***
 )";
@@ -681,8 +681,8 @@ const QString b_unk_inc = R"(/**
 #include <string.h>
 // Custom lib
 #include <LCSF_config.h>
-#include <LCSF_Bridge_Test.h>
-#include <Test_Main.h>
+#include "LCSF_Bridge_Test.h"
+#include "Test_Main.h"
 
 // *** Definitions ***
 )";
