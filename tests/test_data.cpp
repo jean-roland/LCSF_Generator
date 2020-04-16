@@ -229,7 +229,7 @@ const QString a_unk_pri_fct = R"(/**
  }
 
 /**
- * \fn static bool Test_MainSendCommand(uint16_t cmdName, bool hasPayload)
+ * \fn static bool TestSendCommand(uint16_t cmdName, bool hasPayload)
  * \brief Send a command
  *=
  * \param cmdName name of the command to send
@@ -739,7 +739,7 @@ const QString b_unk_pri_fct = R"(/**
  }
 
 /**
- * \fn static bool Test_MainSendCommand(uint16_t cmdName, bool hasPayload)
+ * \fn static bool TestSendCommand(uint16_t cmdName, bool hasPayload)
  * \brief Send a command
  *=
  * \param cmdName name of the command to send
