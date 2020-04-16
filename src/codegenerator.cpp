@@ -725,7 +725,7 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
          out << codeExtract.getUnknownPrivateFunctions();
       } else {
          out << "/**" << endl;
-         out << " * \\fn static bool " << protocolName << "_MainSendCommand(uint16_t cmdName, bool hasPayload)" << endl;
+         out << " * \\fn static bool " << protocolName << "SendCommand(uint16_t cmdName, bool hasPayload)" << endl;
          out << " * \\brief Send a command" << endl;
          out << " *=" << endl;
          out << " * \\param cmdName name of the command to send" << endl;
