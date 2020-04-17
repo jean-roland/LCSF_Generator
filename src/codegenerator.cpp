@@ -80,7 +80,7 @@ QString CodeGenerator::getFlagTypeStringFromAttNb(int attNb, QString varName) {
 }
 
 QString CodeGenerator::getTypeStringFromDataType(NS_AttDataType::T_AttDataType dataType) {
-   QString typeString;
+  QString typeString;
   switch (dataType) {
       case NS_AttDataType::UINT8 :
          typeString = "uint8_t ";
@@ -107,6 +107,25 @@ QString CodeGenerator::getTypeStringFromDataType(NS_AttDataType::T_AttDataType d
          break;
    }
    return typeString;
+}
+
+QString CodeGenerator::getInitStringFromDataType(NS_AttDataType::T_AttDataType dataType) {
+  QString initString;
+  switch (dataType) {
+      case NS_AttDataType::UINT8 :
+      case NS_AttDataType::UINT16 :
+      case NS_AttDataType::UINT32 :
+      default:
+         initString = " = 0";
+      break;
+
+      case NS_AttDataType::BYTE_ARRAY :
+      case NS_AttDataType::STRING :
+         initString = " = NULL";
+      break;
+
+   }
+   return initString;
 }
 
 QString CodeGenerator::getAttDescString(QString protocolName, QString parentName, Attribute *attribute) {
@@ -348,7 +367,8 @@ void CodeGenerator::declareAtt_REC(QString parentName, QList<Attribute *> attLis
             this->declareAtt_REC(attribute->getName(), attribute->getSubAttArray(), pOut);
         } else {
             QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
-            *pOut << indent << typeString << "m_" << parentName.toLower() << "_" << attribute->getName().toLower() << ";" << endl;
+            QString initString = this->getInitStringFromDataType(attribute->getDataType());
+            *pOut << indent << typeString << "m_" << parentName.toLower() << "_" << attribute->getName().toLower() << initString << ";" << endl;
         }
     }
 }
