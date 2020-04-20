@@ -308,7 +308,7 @@ void CodeGenerator::fillSubAttPayload_Rec(QString protocolName, QStringList pare
                 *pOut << indent << "// Intermediary variable" << endl;
                 *pOut << indent << "pSubAttArray = &(" << attDataPath << "Payload.pSubAttArray);" << endl;
                 *pOut << indent << "// Allocate sub-attribute array" << endl;
-                *pOut << indent << "if (!FiloGet(LcsfBridge" << protocolName << "Info.pFilo, LCSF_" << protocolName.toUpper() << "_ATT_"
+                *pOut << indent << "if (!FiloGet(&LcsfBridge" << protocolName << "Info.Filo, LCSF_" << protocolName.toUpper() << "_ATT_"
                 << attribute->getName().toUpper() << "_SUBATT_NB, (void *)pSubAttArray)) {" << endl;
                 *pOut << indent << "    return false;" << endl;
                 *pOut << indent << "}" << endl;
@@ -335,7 +335,7 @@ void CodeGenerator::fillSubAttPayload_Rec(QString protocolName, QStringList pare
                 *pOut << indent << "// Intermediary variable" << endl;
                 *pOut << indent << "pSubAttArray = &(" << attDataPath << "Payload.pSubAttArray);" << endl;
                 *pOut << indent << "// Allocate sub-attribute array" << endl;
-                *pOut << indent << "if (!FiloGet(LcsfBridge" << protocolName << "Info.pFilo, LCSF_" << protocolName.toUpper() << "_ATT_"
+                *pOut << indent << "if (!FiloGet(&LcsfBridge" << protocolName << "Info.Filo, LCSF_" << protocolName.toUpper() << "_ATT_"
                 << attribute->getName().toUpper() << "_SUBATT_NB, (void *)pSubAttArray)) {" << endl;
                 *pOut << indent << "    return false;" << endl;
                 *pOut << indent << "}" << endl;
@@ -1089,7 +1089,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       out << endl;
       out << "// Module information structure" << endl;
       out << "typedef struct _lcsf_bridge_" << protocolName.toLower() << "_info {" << endl;
-      out << "    filo_desc_t *pFilo;" << endl;
+      out << "    filo_desc_t Filo;" << endl;
       out << "    " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload;" << endl;
       out << "} lcsf_bridge_" << protocolName.toLower() << "_info_t;" << endl;
       out << endl;
@@ -1257,7 +1257,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
             out << "        return false;" << endl;
             out << "    }" << endl;
             out << "    // Allocate attribute array" << endl;
-            out << "    if (!FiloGet(LcsfBridge" << protocolName << "Info.pFilo, LCSF_" << protocolName.toUpper() << "_CMD_"
+            out << "    if (!FiloGet(&LcsfBridge" << protocolName << "Info.Filo, LCSF_" << protocolName.toUpper() << "_CMD_"
                    << command->getName().toUpper() << "_ATT_NB, (void *)pAttArrayAddr)) {" << endl;
             out << "        return false;" << endl;
             out << "    }" << endl;
@@ -1273,7 +1273,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
                      out << "        lcsf_valid_att_t **pSubAttArray = &(pAttArray[" << protocolName.toUpper() << "_"
                             << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper() << "].Payload.pSubAttArray);" << endl;
                      out << "        // Allocate sub-attribute array" << endl;
-                     out << "        if (!FiloGet(LcsfBridge" << protocolName << "Info.pFilo, LCSF_" << protocolName.toUpper() << "_ATT_"
+                     out << "        if (!FiloGet(&LcsfBridge" << protocolName << "Info.Filo, LCSF_" << protocolName.toUpper() << "_ATT_"
                             << attribute->getName().toUpper() << "_SUBATT_NB, (void *)pSubAttArray)) {" << endl;
                      out << "            return false;" << endl;
                      out << "        }" << endl;
@@ -1304,7 +1304,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
                       out << "    lcsf_valid_att_t **pSubAttArray = &(pAttArray[" << protocolName.toUpper() << "_"
                              << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper() << "].Payload.pSubAttArray);" << endl;
                       out << "    // Allocate sub-attribute array" << endl;
-                      out << "    if (!FiloGet(LcsfBridge" << protocolName << "Info.pFilo, LCSF_" << protocolName.toUpper() << "_ATT_"
+                      out << "    if (!FiloGet(&LcsfBridge" << protocolName << "Info.Filo, LCSF_" << protocolName.toUpper() << "_ATT_"
                              << attribute->getName().toUpper() << "_SUBATT_NB, (void *)pSubAttArray)) {" << endl;
                       out << "        return false;" << endl;
                       out << "    }" << endl;
@@ -1367,7 +1367,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       out << endl;
 
       out << "bool LCSF_Bridge_" <<  protocolName << "Init(uint16_t filoSize) {" << endl;
-      out << "    LcsfBridge" << protocolName << "Info.pFilo = FiloCreate(filoSize, sizeof(lcsf_valid_att_t));" << endl;
+      out << "    FiloInit(&LcsfBridge" << protocolName << "Info.Filo, filoSize, sizeof(lcsf_valid_att_t));" << endl;
       out << "    LcsfBridge" << protocolName << "Info.pCmdPayload = (" << protocolName.toLower() << "_cmd_payload_t *)MEM_ALLOC(sizeof(" << protocolName.toLower() << "_cmd_payload_t));" << endl;
       out << "    return true;" << endl;
       out << "}" << endl;
@@ -1386,7 +1386,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       out << "bool LCSF_Bridge_" << protocolName << "Send(uint16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload) {" << endl;
       out << "    lcsf_valid_cmd_t sendCmd;" << endl;
       out << "    sendCmd.CmdId = LCSF_Bridge_" << protocolName << "_CMDNAME2CMDID[cmdName];" << endl;
-      out << "    FiloFreeAll(LcsfBridge" << protocolName << "Info.pFilo);" << endl;
+      out << "    FiloFreeAll(&LcsfBridge" << protocolName << "Info.Filo);" << endl;
       out << endl;
       out << "    if (!LCSF_Bridge_" << protocolName << "FillCmdAtt(cmdName, &(sendCmd.pAttArray), pCmdPayload)) {" << endl;
       out << "        return false;" << endl;
