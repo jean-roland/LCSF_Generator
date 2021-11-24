@@ -44,8 +44,8 @@ Options:
 * `-b, --import-b <path/to/file>` Import specific protocol code, B point of view
 
 Examples:
-For a raw generation: `./LCSG_Generator_CLI -l Description/Test.json`
-For a generation with code imported for the A point of view: `./LCSG_Generator_CLI -l Description/Test.json -a OutputA/Test_Main.c`
+* For a raw generation: `./LCSG_Generator_CLI -l Description/Test.json`
+* For a generation with code imported for the A point of view: `./LCSG_Generator_CLI -l Description/Test.json -a OutputA/Test_Main.c`
 
 ## How to build
 
