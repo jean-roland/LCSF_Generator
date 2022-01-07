@@ -49,8 +49,25 @@ Examples:
 
 ## How to build
 
-If for some reasons you want or need to build the application yourself you have two options:
-* Use CMake (3.10 or higher) in the project root directory after indicating your Qt directories in `CMakeLists.txt` also at the project root directory.
-* Use the Qt Creator IDE, the project file is found at `src/LCSF_Generator.pro`
+If for some reasons you want or need to build the application yourself, you will need to have Qt5.10 or higher installed on your machine.
 
-For both, you will need to have Qt5.10 or higher installed on your machine.
+Next, you have two options:
+* Use the Qt Creator IDE, the project file is found at `src/LCSF_Generator.pro`, and compile from here.
+* Use CMake 3.10 or higher (indicate your Qt directories in the `CMakeLists.txt` in the project root directory if needed).
+
+If you're new with CMake, here's my process:
+* Install [Ninja](https://ninja-build.org/)
+* Run the command `cmake -B build/ -G Ninja` at the project root directory.
+* `cd build/`
+* `ninja`
+
+Everything should now be compiling without issues.
+
+## How to run tests
+
+To test, you'll need [googletest](https://github.com/google/googletest) and (re)build the project using CMake.
+
+After that:
+* Go to build/
+* Run `./tests/LCSF_Generator_lib_tests`
+
