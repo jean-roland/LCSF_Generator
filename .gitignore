@@ -137,3 +137,6 @@ LCSF_Generator
 #Tests CMake
 test_attribute_autogen
 test_attribute
+
+#other
+Export/*
