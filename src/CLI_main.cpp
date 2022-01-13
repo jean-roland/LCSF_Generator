@@ -195,7 +195,9 @@ int main(int argc, char *argv[]) {
     // End output
     out << "Generation complete." << endl;
     out << "Code A generated in: " << outAPath << ", code B generated in: " << outBPath << endl;
-    out << "Documentation generated in: " << docPath << endl;
+    if (parser.isSet("d")) {
+        out << "Documentation generated in: " << docPath << endl;
+    }
     exit(EXIT_FAILURE);
     return a.exec();
 }
