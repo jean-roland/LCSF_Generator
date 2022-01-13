@@ -83,10 +83,15 @@ int main(int argc, char *argv[]) {
     parser.addVersionOption();
 
     // Add specific options
+
     QCommandLineOption loadDescOption(QStringList() << "l" << "load",
-            QCoreApplication::translate("main", "Load a protocol description file (REQUIRED)"),
+            QCoreApplication::translate("main", "(REQUIRED) Load a protocol description file"),
             QCoreApplication::translate("main", "path/to/file"));
     parser.addOption(loadDescOption);
+
+    QCommandLineOption docGenOption(QStringList() << "d" << "doc",
+            QCoreApplication::translate("main", "Activate doc generation"));
+    parser.addOption(docGenOption);
 
     QCommandLineOption importAOption(QStringList() << "a" << "import-a",
             QCoreApplication::translate("main", "Import specific protocol code, A point of view"),
@@ -182,9 +187,11 @@ int main(int argc, char *argv[]) {
     codegen.generateBridgeHeader(protocolName, protocolId, cmdArray, outBPath);
     codegen.generateBridge(protocolName, cmdArray, false, outBPath);
     codegen.generateDescription(protocolName, cmdArray, outBPath);
-    // Generate doc
-    codegen.generateWikiTable(protocolName, cmdArray, docPath);
-    codegen.generateMkdownTable(protocolName, cmdArray, docPath);
+    // Generate doc (if needed)
+    if (parser.isSet("d")) {
+        codegen.generateWikiTable(protocolName, cmdArray, docPath);
+        codegen.generateMkdownTable(protocolName, cmdArray, docPath);
+    }
     // End output
     out << "Generation complete." << endl;
     out << "Code A generated in: " << outAPath << ", code B generated in: " << outBPath << endl;
