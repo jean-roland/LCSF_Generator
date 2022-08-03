@@ -78,6 +78,7 @@ private:
     Attribute *findAttStorage_REC(QTreeWidgetItem *item, QList<Attribute *> attList);
     Attribute *findAttStorage(QTreeWidgetItem *item);
     bool saveAttTable(QTreeWidgetItem *item);
+    void preFillCmdIdxCell(int lineIdx);
     void deleteCommand(QString cmdName);
     void deleteCommandAtt(QString cmdName, QString attName);
     void deleteAttribute(QString attName, QTreeWidgetItem *attItem);

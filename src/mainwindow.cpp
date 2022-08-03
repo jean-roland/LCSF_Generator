@@ -330,7 +330,9 @@ void MainWindow::showCommandArray(void) {
     ui->twDescTableView->setRowCount(1);
     ui->twDescTableView->setColumnCount(5);
     ui->twDescTableView->setHorizontalHeaderLabels(Headers);
+    this->fillCellItems(0);
     this->fillCellWidgets(0);
+    this->preFillCmdIdxCell(0);
 }
 
 void MainWindow::loadCommandArray(void) {
@@ -972,11 +974,30 @@ void MainWindow::on_pbSaveTable_clicked(void) {
    }
 }
 
+void MainWindow::preFillCmdIdxCell(int lineIdx) {
+    int cmdIdx = 0;
+    // Find previous idx
+    if (lineIdx > 0) {
+        int prevLineIdx = lineIdx - 1;
+        QTableWidgetItem *prevCell = ui->twDescTableView->item(prevLineIdx, 1);
+        // Increment if possible
+        if (prevCell != nullptr) {
+            cmdIdx = prevCell->text().toShort(nullptr, 16) + 1;
+        }
+    }
+    // Fill idx
+    QTableWidgetItem *newCell = ui->twDescTableView->item(lineIdx, 1);
+    if (newCell != nullptr) {
+        newCell->setText(QString::number(cmdIdx, 16).rightJustified(2, '0'));
+    }
+}
 
 void MainWindow::on_pbAddTableLine_clicked(void) {
    int newLineIdx = ui->twDescTableView->rowCount();
    ui->twDescTableView->insertRow(newLineIdx);
+   this->fillCellItems(newLineIdx);
    this->fillCellWidgets(newLineIdx);
+   this->preFillCmdIdxCell(newLineIdx);
 }
 
 void MainWindow::deleteCommand(QString cmdName) {
