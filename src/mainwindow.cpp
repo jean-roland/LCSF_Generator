@@ -1393,19 +1393,23 @@ void MainWindow::on_twDescTableView_itemChanged(QTableWidgetItem *item) {
       if (item == ItemCell) {
          continue;
       }
-      if (ItemCell != nullptr) {
-         // Indicates error if text empty or duplicate
-         const QString RowItemText(ItemCell->text());
-         if (ItemText == RowItemText) {
-            item->setBackground(Qt::red);
-            ui->pbSaveTable->setDisabled(true);
-            WeHaveEncounteredAnError = true;
-         }
+      if (ItemCell == nullptr) {
+        continue;
       }
+      const QString RowItemText(ItemCell->text());
+
+      if ((ItemColumn == 0) && (ItemText != RowItemText)) {
+        continue;
+      }
+      if ((ItemColumn == 1) && (ItemText.toShort(nullptr, 16) != RowItemText.toShort(nullptr, 16))) {
+        continue;
+      }
+      // Indicates error if duplicate
+      item->setBackground(Qt::yellow);
+      WeHaveEncounteredAnError = true;
    }
    if (!WeHaveEncounteredAnError) {
       // Reinitialize table view
       item->setBackground(Qt::white);
-      ui->pbSaveTable->setDisabled(false);
    }
 }
