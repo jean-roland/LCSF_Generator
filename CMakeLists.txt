@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 # Project
-project(LCSF_Generator VERSION 1.1 LANGUAGES CXX)
+project(LCSF_Generator LANGUAGES CXX VERSION 1.2)
 
 #CMAKE_ variables
 #set(CMAKE_CXX_STANDARD 14)
