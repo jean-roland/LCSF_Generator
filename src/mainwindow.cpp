@@ -33,7 +33,7 @@ MainWindow::~MainWindow(void) {
 }
 
 void MainWindow::on_actionNew_protocol_triggered(void) {
-    QString msgString = "Do you want to reinitialize the interface (all unsaved progress will be lost) ?";
+    QString msgString = "Do you want to reinitialize the interface (all unsaved progress will be lost)?";
     int questionAnswer = QMessageBox::question(this, "Question", msgString, QMessageBox::Yes | QMessageBox::No);
 
     if (questionAnswer == QMessageBox::Yes) {
@@ -326,7 +326,7 @@ void MainWindow::clearArray(void) {
 void MainWindow::showCommandArray(void) {
     QStringList Headers;
     this->clearArray();
-    Headers << "Command Name" << "Command Id (0x)" << "Attributes ?" << "Direction" << "Description";
+    Headers << "Command Name" << "Command Id (0x)" << "Attributes?" << "Direction" << "Description";
     ui->twDescTableView->setRowCount(1);
     ui->twDescTableView->setColumnCount(5);
     ui->twDescTableView->setHorizontalHeaderLabels(Headers);
@@ -421,7 +421,7 @@ void MainWindow::loadAttArray(QTreeWidgetItem *item) {
 void MainWindow::showAttributeArray(void) {
     QStringList Headers;
     this->clearArray();
-    Headers << "Attribute Name" << "Attribute Id (0x)" << "Optional ?" << "Data Type" << "Description";
+    Headers << "Attribute Name" << "Attribute Id (0x)" << "Optional?" << "Data Type" << "Description";
     ui->twDescTableView->setRowCount(1);
     ui->twDescTableView->setColumnCount(5);
     ui->twDescTableView->setHorizontalHeaderLabels(Headers);

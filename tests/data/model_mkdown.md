@@ -2,7 +2,7 @@
 
 ## Commands table
 
-| Name | Id | Direction | Description | Attributes ? |
+| Name | Id | Direction | Description | Attributes? |
 |:----:|:--:|:---------:|:-----------:|:------------:|
 | SC1 | `0x00` | `A to B` | Simple command A to B | No |
 | SC2 | `0x01` | `B to A` | Simple command B to A | No |
@@ -16,7 +16,7 @@
 
 ## CC1 attributes table
 
-| Name | Id | Optional ? | Data type | Attribute Description |
+| Name | Id | Optional? | Data type | Attribute Description |
 |:----:|:--:|:----------:|:---------:|:---------------------:|
 | SA1 | `0x00` | No | `(u)int8` | Non optional uint8 simple attribute |
 | SA2 | `0x01` | No | `(u)int16` | Non optional uint16 simple attribute |
@@ -31,7 +31,7 @@
 
 ## CC2 attributes table
 
-| Name | Id | Optional ? | Data type | Attribute Description |
+| Name | Id | Optional? | Data type | Attribute Description |
 |:----:|:--:|:----------:|:---------:|:---------------------:|
 | SA1 | `0x00` | No | `(u)int8` | Non optional uint8 simple attribute |
 | SA2 | `0x01` | No | `(u)int16` | Non optional uint16 simple attribute |
@@ -46,7 +46,7 @@
 
 ## CC3 attributes table
 
-| Name | Id | Optional ? | Data type | Attribute Description |
+| Name | Id | Optional? | Data type | Attribute Description |
 |:----:|:--:|:----------:|:---------:|:---------------------:|
 | SA1 | `0x00` | No | `(u)int8` | Non optional uint8 simple attribute |
 | SA2 | `0x01` | No | `(u)int16` | Non optional uint16 simple attribute |
@@ -61,7 +61,7 @@
 
 ## CC4 attributes table
 
-| Name | Id | Optional ? | Data type | Attribute Description |
+| Name | Id | Optional? | Data type | Attribute Description |
 |:----:|:--:|:----------:|:---------:|:---------------------:|
 | SA1 | `0x00` | No | `(u)int8` | Non optional uint8 simple attribute |
 | CA1 | `0x0a` | No | `sub-attributes` | Non optional complex attribute |
@@ -69,7 +69,7 @@
 
 ## CC5 attributes table
 
-| Name | Id | Optional ? | Data type | Attribute Description |
+| Name | Id | Optional? | Data type | Attribute Description |
 |:----:|:--:|:----------:|:---------:|:---------------------:|
 | SA2 | `0x01` | No | `(u)int16` | Non optional uint16 simple attribute |
 | CA5 | `0x0a` | No | `sub-attributes` | Non optional complex attribute |
@@ -77,7 +77,7 @@
 
 ## CC6 attributes table
 
-| Name | Id | Optional ? | Data type | Attribute Description |
+| Name | Id | Optional? | Data type | Attribute Description |
 |:----:|:--:|:----------:|:---------:|:---------------------:|
 | SA4 | `0x03` | No | `byte array` | Non optional byte array simple attribute |
 | CA9 | `0x0a` | No | `sub-attributes` | Non optional complex attribute |
@@ -85,7 +85,7 @@
 
 ## CA1 sub-attributes table
 
-| Name | Id | Optional ? | Data type | Description |
+| Name | Id | Optional? | Data type | Description |
 |:----:|:--:|:----------:|:---------:|:-----------:|
 | SA1 | `0x00` | No | `(u)int8` | Non optional uint8 simple attribute
 | SA2 | `0x01` | No | `(u)int16` | Non optional uint16 simple attribute
@@ -93,47 +93,47 @@
 
 ## CA10 sub-attributes table
 
-| Name | Id | Optional ? | Data type | Description |
+| Name | Id | Optional? | Data type | Description |
 |:----:|:--:|:----------:|:---------:|:-----------:|
 | SA1 | `0x00` | Yes | `(u)int8` | Optional uint8 simple attribute
 | CA11 | `0x0b` | No | `sub-attributes` | Non-optional complex attribute
 
 ## CA11 sub-attributes table
 
-| Name | Id | Optional ? | Data type | Description |
+| Name | Id | Optional? | Data type | Description |
 |:----:|:--:|:----------:|:---------:|:-----------:|
 | SA1 | `0x00` | Yes | `(u)int8` | Optional uint8 simple attribute
 | CA12 | `0x0a` | No | `sub-attributes` | Non-optional complex attribute
 
 ## CA12 sub-attributes table
 
-| Name | Id | Optional ? | Data type | Description |
+| Name | Id | Optional? | Data type | Description |
 |:----:|:--:|:----------:|:---------:|:-----------:|
 | SA4 | `0x03` | No | `byte array` | Non-optional byte array simple attribute
 
 ## CA2 sub-attributes table
 
-| Name | Id | Optional ? | Data type | Description |
+| Name | Id | Optional? | Data type | Description |
 |:----:|:--:|:----------:|:---------:|:-----------:|
 | SA1 | `0x00` | Yes | `(u)int8` | Optional uint8 simple attribute
 | CA3 | `0x0b` | No | `sub-attributes` | Non-optional complex attribute
 
 ## CA3 sub-attributes table
 
-| Name | Id | Optional ? | Data type | Description |
+| Name | Id | Optional? | Data type | Description |
 |:----:|:--:|:----------:|:---------:|:-----------:|
 | SA1 | `0x00` | Yes | `(u)int8` | Optional uint8 simple attribute
 | CA4 | `0x0a` | No | `sub-attributes` | Non-optional complex attribute
 
 ## CA4 sub-attributes table
 
-| Name | Id | Optional ? | Data type | Description |
+| Name | Id | Optional? | Data type | Description |
 |:----:|:--:|:----------:|:---------:|:-----------:|
 | SA4 | `0x03` | No | `byte array` | Non-optional byte array simple attribute
 
 ## CA5 sub-attributes table
 
-| Name | Id | Optional ? | Data type | Description |
+| Name | Id | Optional? | Data type | Description |
 |:----:|:--:|:----------:|:---------:|:-----------:|
 | SA1 | `0x00` | No | `(u)int8` | Non optional uint8 simple attribute
 | SA2 | `0x01` | No | `(u)int16` | Non optional uint16 simple attribute
@@ -141,27 +141,27 @@
 
 ## CA6 sub-attributes table
 
-| Name | Id | Optional ? | Data type | Description |
+| Name | Id | Optional? | Data type | Description |
 |:----:|:--:|:----------:|:---------:|:-----------:|
 | SA1 | `0x00` | Yes | `(u)int8` | Optional uint8 simple attribute
 | CA7 | `0x0b` | No | `sub-attributes` | Non-optional complex attribute
 
 ## CA7 sub-attributes table
 
-| Name | Id | Optional ? | Data type | Description |
+| Name | Id | Optional? | Data type | Description |
 |:----:|:--:|:----------:|:---------:|:-----------:|
 | SA1 | `0x00` | Yes | `(u)int8` | Optional uint8 simple attribute
 | CA8 | `0x0a` | No | `sub-attributes` | Non-optional complex attribute
 
 ## CA8 sub-attributes table
 
-| Name | Id | Optional ? | Data type | Description |
+| Name | Id | Optional? | Data type | Description |
 |:----:|:--:|:----------:|:---------:|:-----------:|
 | SA4 | `0x03` | No | `byte array` | Non-optional byte array simple attribute
 
 ## CA9 sub-attributes table
 
-| Name | Id | Optional ? | Data type | Description |
+| Name | Id | Optional? | Data type | Description |
 |:----:|:--:|:----------:|:---------:|:-----------:|
 | SA1 | `0x00` | No | `(u)int8` | Non optional uint8 simple attribute
 | SA2 | `0x01` | No | `(u)int16` | Non optional uint16 simple attribute

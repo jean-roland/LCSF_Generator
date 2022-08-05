@@ -1511,7 +1511,7 @@ void CodeGenerator::generateWikiTable(QString protocolName, QList<Command *> cmd
       out << endl;
       out << "{| class=\"wikitable sortable\"" << endl;
       out << "|-" << endl;
-      out << "! Name !! Id !! Direction !! Description !! Attribute(s) Name !! Attribute(s) Id !! Optional ? !! Data type !! Attribute Desc" << endl;
+      out << "! Name !! Id !! Direction !! Description !! Attribute(s) Name !! Attribute(s) Id !! Optional? !! Data type !! Attribute Desc" << endl;
       out << "|-" << endl;
 
       for (Command *command : cmdList) {
@@ -1555,7 +1555,7 @@ void CodeGenerator::generateWikiTable(QString protocolName, QList<Command *> cmd
          out << endl;
          out << "{| class=\"wikitable sortable\"" << endl;
          out << "|-" << endl;
-         out << "! Name !! Id !! Optional ? !! Data type !! Description" << endl;
+         out << "! Name !! Id !! Optional? !! Data type !! Description" << endl;
          out << "|-" << endl;
          out << "| " << currentAttInfo.attName << " || '''" <<  QString::number(currentAttInfo.attId, 16).rightJustified(2, '0').prepend("0x") << "''' || "
              << ((currentAttInfo.isOptional) ? "Yes" : "No") << " || '''" << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << "''' || " << currentAttInfo.attDesc << endl;
@@ -1682,7 +1682,7 @@ void CodeGenerator::generateMkdownTable(QString protocolName, QList<Command *> c
         out << endl;
         out << "## Commands table" << endl;
         out << endl;
-        out << "| Name | Id | Direction | Description | Attributes ? |" << endl;
+        out << "| Name | Id | Direction | Description | Attributes? |" << endl;
         out << "|:----:|:--:|:---------:|:-----------:|:------------:|" << endl;
         for (Command *command : cmdList) {
             out << "| " << command->getName() << " | `" << QString::number(command->getId(), 16).rightJustified(2, '0').prepend("0x")
@@ -1697,7 +1697,7 @@ void CodeGenerator::generateMkdownTable(QString protocolName, QList<Command *> c
             }
             out << "## " << command->getName() << " attributes table" << endl;
             out << endl;
-            out << "| Name | Id | Optional ? | Data type | Attribute Description |" << endl;
+            out << "| Name | Id | Optional? | Data type | Attribute Description |" << endl;
             out << "|:----:|:--:|:----------:|:---------:|:---------------------:|" << endl;
             for (Attribute *attribute : command->getAttArray()) {
                 out << "| " << attribute->getName() << " | `" <<  QString::number(attribute->getId(), 16).rightJustified(2, '0').prepend("0x")
@@ -1717,7 +1717,7 @@ void CodeGenerator::generateMkdownTable(QString protocolName, QList<Command *> c
 
             out << "## " << previousParentName << " sub-attributes table" << endl;
             out << endl;
-            out << "| Name | Id | Optional ? | Data type | Description |" << endl;
+            out << "| Name | Id | Optional? | Data type | Description |" << endl;
             out << "|:----:|:--:|:----------:|:---------:|:-----------:|" << endl;
             out << "| " << currentAttInfo.attName << " | `" <<  QString::number(currentAttInfo.attId, 16).rightJustified(2, '0').prepend("0x") << "` | "
             << ((currentAttInfo.isOptional) ? "Yes" : "No") << " | `" << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << "` | " << currentAttInfo.attDesc << endl;
