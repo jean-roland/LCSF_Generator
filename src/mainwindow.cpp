@@ -1356,6 +1356,7 @@ void MainWindow::on_pbGenerateDoc_clicked(void) {
         return;
     }
     this->m_codegen.generateWikiTable(protocolName, this->m_cmdArray, exportDirPath);
+    this->m_codegen.generateDokuWikiTable(protocolName, this->m_cmdArray, exportDirPath);
     this->m_codegen.generateMkdownTable(protocolName, this->m_cmdArray, exportDirPath);
     QMessageBox::information(nullptr, "Info","Documentation was created at: "+ exportDirPath);
 }

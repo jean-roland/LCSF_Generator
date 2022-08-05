@@ -190,6 +190,7 @@ int main(int argc, char *argv[]) {
     // Generate doc (if needed)
     if (parser.isSet("d")) {
         codegen.generateWikiTable(protocolName, cmdArray, docPath);
+        codegen.generateDokuWikiTable(protocolName, cmdArray, docPath);
         codegen.generateMkdownTable(protocolName, cmdArray, docPath);
     }
     // End output

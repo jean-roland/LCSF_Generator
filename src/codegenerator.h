@@ -57,6 +57,7 @@ public:
     void generateBridge(QString protocolName, QList<Command *> cmdList, bool isA, QString dirPath);
     void generateDescription(QString protocolName, QList<Command *> cmdList, QString dirPath);
     void generateWikiTable(QString protocolName, QList<Command *> cmdList, QString dirPath);
+    void generateDokuWikiTable(QString protocolName, QList<Command *> cmdList, QString dirPath);
     void generateMkdownTable(QString protocolName, QList<Command *> cmdList, QString dirPath);
 };
 

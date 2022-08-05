@@ -1585,6 +1585,86 @@ void CodeGenerator::generateWikiTable(QString protocolName, QList<Command *> cmd
    }
 }
 
+void CodeGenerator::generateDokuWikiTable(QString protocolName, QList<Command *> cmdList, QString dirPath) {
+   QDir dir(dirPath);
+   if (!dir.exists()) {
+       dir.mkpath(".");
+   }
+   QString fileName = dirPath + "/LCSF_" + protocolName + "_DokuWikiTables.txt";
+   QFile saveFile(fileName);
+   QFileInfo fileInfo(saveFile);
+
+   if (saveFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+      QTextStream out(&saveFile);
+
+      // Main table
+      out << "=== " << protocolName << " protocol tables ===" << endl;
+      out << endl;
+      out << "== Commands table ==" << endl;
+      out << endl;
+      out << "^ Name ^ Id ^ Direction ^ Description ^ Attribute(s) Name ^ Attribute(s) Id ^ Optional? ^ Data type ^ Attribute Desc ^" << endl;
+
+      for (Command *command : cmdList) {
+         if ((command->getHasAtt()) && (command->getAttArray().size() > 0)) {
+            bool isFirtAttribute = true;
+            int attNb = command->getAttArray().size();
+            out << "| " << command->getName() << " | "
+                      << QString::number(command->getId(), 16).rightJustified(2, '0').prepend("0x") << " | "
+                      <<  NS_DirectionType::SL_DirectionType[command->getDirection()] << " | " << command->getDesc() << " | ";
+            for (Attribute *attribute : command->getAttArray()) {
+               if (isFirtAttribute) {
+                  isFirtAttribute = false;
+                  out << attribute->getName() << " | " <<  QString::number(attribute->getId(), 16).rightJustified(2, '0').prepend("0x") << " | "
+                      << ((attribute->getIsOptional()) ? "Yes" : "No") << " | " << NS_AttDataType::SL_DocAttDataType[attribute->getDataType()] << " | " << attribute->getDesc() << " |" << endl;
+               } else {
+                  out << "| ::: | ::: | ::: | ::: " << "| " << attribute->getName() << " | " <<  QString::number(attribute->getId(), 16).rightJustified(2, '0').prepend("0x") << " | "
+                      << ((attribute->getIsOptional()) ? "Yes" : "No") << " | " << NS_AttDataType::SL_DocAttDataType[attribute->getDataType()] << " | " << attribute->getDesc() << " |" << endl;
+               }
+            }
+         } else {
+            out << "| " << command->getName() << " | " << QString::number(command->getId(), 16).rightJustified(2, '0').prepend("0x") << " | "
+                      <<  NS_DirectionType::SL_DirectionType[command->getDirection()] << " | " << command->getDesc() << " | | | | | " << endl;
+         }
+      }
+      out << endl;
+
+      // Secondary tables
+      QList<CodeGenerator::T_attInfos> attInfosList = this->getAttInfos(cmdList);
+      QList<CodeGenerator::T_attInfos> sortedAttInfosList = this->insertSortAttInfosListByParentName(attInfosList);
+      QList<CodeGenerator::T_attInfos> trimmedAttInfosList = this->removeCommandAttributes(sortedAttInfosList, cmdList);
+
+      for (int idx = 0; idx < trimmedAttInfosList.size(); idx++) {
+         CodeGenerator::T_attInfos currentAttInfo = trimmedAttInfosList.at(idx);
+         QString previousParentName = currentAttInfo.parentName;
+
+         out << "== " << previousParentName << " sub-attributes table ==" << endl;
+         out << endl;
+         out << "^ Name ^ Id ^ Optional? ^ Data type ^ Description ^" << endl;
+         out << "| " << currentAttInfo.attName << " | " <<  QString::number(currentAttInfo.attId, 16).rightJustified(2, '0').prepend("0x") << " | "
+             << ((currentAttInfo.isOptional) ? "Yes" : "No") << " | " << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << " | " << currentAttInfo.attDesc << " |" << endl;
+
+         if (idx < trimmedAttInfosList.size() - 1) {
+            currentAttInfo = trimmedAttInfosList.at(idx+1);
+
+            while (currentAttInfo.parentName.compare(previousParentName) == 0) {
+               out << "| " << currentAttInfo.attName << " | " <<  QString::number(currentAttInfo.attId, 16).rightJustified(2, '0').prepend("0x") << " | "
+                   << ((currentAttInfo.isOptional) ? "Yes" : "No") << " | " << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << " | " << currentAttInfo.attDesc << " |" << endl;
+               previousParentName = currentAttInfo.parentName;
+               idx++;
+
+               if (idx < trimmedAttInfosList.size() - 1) {
+                  currentAttInfo = trimmedAttInfosList.at(idx+1);
+               } else {
+                  break;
+               }
+            }
+         }
+         out << endl;
+      }
+      saveFile.close();
+   }
+}
+
 void CodeGenerator::generateMkdownTable(QString protocolName, QList<Command *> cmdList, QString dirPath) {
     QDir dir(dirPath);
     if (!dir.exists()) {
