@@ -235,11 +235,24 @@ TEST(test_generator, doc_output) {
 
     // Generate doc
     test_generator.generateWikiTable(protocol_name, cmd_list, path);
+    test_generator.generateDokuWikiTable(protocol_name, cmd_list, path);
     test_generator.generateMkdownTable(protocol_name, cmd_list, path);
 
     // Check wiki
     ASSERT_TRUE(openFile(&model_file, modelDir, "model_wiki.txt"));
     ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Test_WikiTables.txt"));
+    model_content = readFileContent(&model_file);
+    output_content = readFileContent(&output_file);
+    ASSERT_EQ(output_content.count(), model_content.count());
+    for(int idx = 0; idx < output_content.count(); idx++) {
+        ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
+    }
+    model_file.close();
+    output_file.close();
+
+    // Check dokuwiki
+    ASSERT_TRUE(openFile(&model_file, modelDir, "model_dokuwiki.txt"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Test_DokuWikiTables.txt"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     ASSERT_EQ(output_content.count(), model_content.count());
