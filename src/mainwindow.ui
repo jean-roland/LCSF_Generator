@@ -368,20 +368,26 @@
           <item>
            <widget class="QPushButton" name="pbAddTableLine">
             <property name="toolTip">
-             <string>Add a row at the end of the table</string>
+             <string>Add a row at the end of the table, shortcut: Insert</string>
             </property>
             <property name="text">
              <string>Add Row</string>
+            </property>
+            <property name="shortcut">
+             <string>Insert</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QPushButton" name="pbDeleteTableLine">
             <property name="toolTip">
-             <string>Delete currently selected row</string>
+             <string>Delete currently selected row, shortcut: Del</string>
             </property>
             <property name="text">
              <string>Delete Row</string>
+            </property>
+            <property name="shortcut">
+             <string>Del</string>
             </property>
            </widget>
           </item>
@@ -410,10 +416,13 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>Reload table and cancel unsaved modifications</string>
+             <string>Reload table and cancel unsaved modifications, shortcut: F5</string>
             </property>
             <property name="text">
              <string>Reload Table</string>
+            </property>
+            <property name="shortcut">
+             <string>F5</string>
             </property>
            </widget>
           </item>
