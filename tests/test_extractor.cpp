@@ -1,3 +1,24 @@
+/**
+ * \file test_extractor.cpp
+ * \brief Code extractor unit test
+ * \author Jean-Roland Gosse
+
+    This file is part of LCSF Generator.
+
+    LCSF Generator is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    LCSF Generator is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this project. If not, see <https://www.gnu.org/licenses/>
+ */
+
 #include <gtest/gtest.h>
 #include <QFile>
 #include "codeextractor.h"
@@ -5,7 +26,7 @@
 
 TEST(test_extractor, a_extraction) {
     // Get model file data
-    QFile file("../tests/data/model_main_a.c"); // Note: Test should be run from build/ for this path to work
+    QFile file(MODEL_MAIN_A_PATH);
 
     if(!file.open(QIODevice::ReadOnly)) {
         FAIL() << " Couldn't open file: " + file.errorString().toStdString();
@@ -31,7 +52,7 @@ TEST(test_extractor, a_extraction) {
 
 TEST(test_extractor, b_extraction) {
     // Get model file data
-    QFile file("../tests/data/model_main_b.c"); // Note: Test should be run from build/ for this path to work
+    QFile file(MODEL_MAIN_B_PATH); // Note: Test should be run from build/ for this path to work
 
     if(!file.open(QIODevice::ReadOnly)) {
         FAIL() << " Couldn't open file: " + file.errorString().toStdString();

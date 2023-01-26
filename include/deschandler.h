@@ -1,6 +1,6 @@
 /**
- * \file main.cpp
- * \brief GUI main file.
+ * \file deschandler.h
+ * \brief Description file handler module
  * \author Jean-Roland Gosse
 
     This file is part of LCSF Generator.
@@ -19,14 +19,16 @@
     along with this project. If not, see <https://www.gnu.org/licenses/>
  */
 
-#include "mainwindow.h"
+#pragma once
 
-#include <QApplication>
+#include <QFile>
+#include "command.h"
 
-int main(int argc, char *argv[]) {
-    QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
+class DescHandler {
+private:
 
-    return a.exec();
-}
+public:
+    DescHandler();
+    static void load_desc(QFile& file, QList<Command *>& cmdArray, QString& protocolName, QString& protocolId);
+    static bool save_desc(QString filename, QList<Command *> cmdArray, QString protocolName, QString protocolId);
+};
