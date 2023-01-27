@@ -1511,8 +1511,8 @@ void CodeGenerator::generateDescription(QString protocolName, QList<Command *> c
       out << endl;
       // Protocol descriptor
       out << "// Protocol descriptor" << endl;
-      out << "const lcsf_protocol_desc_t LCSF_" << protocolName << "_ProtDesc = { .CmdNb = LCSF_"
-             << protocolName.toUpper() << "_CMD_NB, .pCmdDescArray = LCSF_" << protocolName << "_CmdDescArray };" << endl;
+      out << "const lcsf_protocol_desc_t LCSF_" << protocolName << "_ProtDesc = {.CmdNb = LCSF_"
+             << protocolName.toUpper() << "_CMD_NB, .pCmdDescArray = LCSF_" << protocolName << "_CmdDescArray};" << endl;
 
       file.close();
    }
