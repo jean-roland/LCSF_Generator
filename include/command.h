@@ -43,6 +43,7 @@ public:
     short getId(void);
     void setHasAtt(bool cmdHasAtt);
     bool getHasAtt(void);
+    bool hasSubAtt(void);
     void setDesc(QString cmdDesc);
     QString getDesc(void);
     void setDirection(NS_DirectionType::T_DirectionType cmdDirection);
@@ -52,6 +53,14 @@ public:
     void setAttArray(QList<Attribute *> attArray);
     void addAttribute(Attribute *newAtt);
     QList<Attribute *> getAttArray(void);
+
+    /**
+     * @brief      Gets command total attribute and sub-attribute number
+     *
+     * @return     The total attribute number
+     */
+    int getTotalAttNb(void);
+
     QStringList getAttNamesList(void);
     void sortAttArrayById(void);
     void editParameters(QString cmdName, short cmdCode, bool cmdHasAtt, NS_DirectionType::T_DirectionType cmdDirection , QString cmdDesc);
@@ -64,6 +73,7 @@ public:
     static int findCmdIdx(QString cmdName, QList<Command *> cmdList);
     static QStringList getListCmdNames(QList<Command *> cmdList);
     static bool compareRefCmdList(QList<Command *> a_list, QList<Command *> b_list, int& err_idx);
+    static int getMaxAttNb(QList<Command *> cmdList);
 
     friend bool operator==(const Command& lhs, const Command& rhs) {
         if (lhs.m_name != rhs.m_name) {

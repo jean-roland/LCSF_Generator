@@ -54,6 +54,14 @@ public:
     void setSubAttArray(QList<Attribute *> attSubAttArray);
     void addSubAtt(Attribute *newAtt);
     QList<Attribute *> getSubAttArray(void);
+
+    /**
+     * @brief      Gets attribute total attribute and sub-attribute number recursively
+     *
+     * @return     The total attribute number
+     */
+    int getTotalAttNb_rec(void);
+
     QStringList getSubAttNamesList(void);
     void sortArrayById(void);
     void editParams(QString attName, short attCode, bool attIsOptional, NS_AttDataType::T_AttDataType attDataType, QString attDesc);

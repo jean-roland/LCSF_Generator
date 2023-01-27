@@ -75,6 +75,16 @@ bool Command::getHasAtt(void) {
    return this->m_hasAttributes;
 }
 
+bool Command::hasSubAtt(void) {
+    for (Attribute *attribute : this->m_attArray) {
+        if (attribute->getSubAttArray().size() > 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
 
 
 void Command::setDesc(QString cmdDesc) {
@@ -128,6 +138,16 @@ void Command::addAttribute(Attribute  *newAtt) {
 
 QList<Attribute *> Command::getAttArray(void) {
     return this->m_attArray;
+}
+
+int Command::getTotalAttNb(void) {
+    // Note attribute nb
+    int attNb = this->getAttArray().size();
+    // Parse attribute array for sub-attributes
+    for (Attribute  *attribute : this->getAttArray()) {
+        attNb += attribute->getTotalAttNb_rec();
+    }
+    return attNb;
 }
 
 QStringList Command::getAttNamesList(void) {
@@ -262,4 +282,18 @@ bool Command::compareRefCmdList(QList<Command *> a_list, QList<Command *> b_list
         }
     }
     return true;
+}
+
+int Command::getMaxAttNb(QList<Command *> cmdList) {
+    int max = 0;
+
+    // Parse command list to find the max total attribute
+    for (Command *command : cmdList) {
+      int attNb = command->getTotalAttNb();
+      // Max comparison
+      if (attNb > max) {
+        max = attNb;
+      }
+    }
+    return max;
 }

@@ -108,6 +108,16 @@ QList<Attribute *> Attribute::getSubAttArray(void) {
     return this->m_subAttArray;
 }
 
+int Attribute::getTotalAttNb_rec(void) {
+    // Note sub attribute array size
+    int attNb = this->getSubAttArray().size();
+    // Parse sub attributes recursively
+    for (Attribute *attribute : this->getSubAttArray()) {
+        attNb += attribute->getTotalAttNb_rec();
+    }
+    return attNb;
+}
+
 QStringList Attribute::getSubAttNamesList(void) {
     QStringList subAttNames = QStringList();
 
