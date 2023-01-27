@@ -1,7 +1,7 @@
 /**
  * \file LCSF_Desc_Test.c
  * \brief Test LCSF descriptor
- * \author LCSF Generator v1.2
+ * \author LCSF Generator v1.3
  *
  */
 
