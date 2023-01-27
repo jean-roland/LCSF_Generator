@@ -47,7 +47,7 @@ TEST(test_generator, gen_A_output) {
     ASSERT_TRUE(openFile(&output_file, outputDir, "Test_Main.c"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
-    ASSERT_EQ(output_content.count(), model_content.count());
+    EXPECT_EQ(output_content.count(), model_content.count());
     for(int idx = 0; idx < output_content.count(); idx++) {
         ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
     }
@@ -59,7 +59,7 @@ TEST(test_generator, gen_A_output) {
     ASSERT_TRUE(openFile(&output_file, outputDir, "Test_Main.h"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
-    ASSERT_EQ(output_content.count(), model_content.count());
+    EXPECT_EQ(output_content.count(), model_content.count());
     for(int idx = 0; idx < output_content.count(); idx++) {
         ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
     }
@@ -71,7 +71,7 @@ TEST(test_generator, gen_A_output) {
     ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Bridge_Test.c"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
-    ASSERT_EQ(output_content.count(), model_content.count());
+    EXPECT_EQ(output_content.count(), model_content.count());
     for(int idx = 0; idx < output_content.count(); idx++) {
         ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
     }
@@ -83,7 +83,7 @@ TEST(test_generator, gen_A_output) {
     ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Bridge_Test.h"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
-    ASSERT_EQ(output_content.count(), model_content.count());
+    EXPECT_EQ(output_content.count(), model_content.count());
     for(int idx = 0; idx < output_content.count(); idx++) {
         ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
     }
@@ -95,7 +95,7 @@ TEST(test_generator, gen_A_output) {
     ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Desc_Test.h"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
-    ASSERT_EQ(output_content.count(), model_content.count());
+    EXPECT_EQ(output_content.count(), model_content.count());
     for(int idx = 0; idx < output_content.count(); idx++) {
         ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
     }
@@ -118,7 +118,7 @@ TEST(test_generator, gen_A_output) {
     ASSERT_TRUE(openFile(&output_file, outputDir, "Test_Main.c"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
-    ASSERT_EQ(output_content.count(), model_content.count());
+    EXPECT_EQ(output_content.count(), model_content.count());
     for(int idx = 0; idx < output_content.count(); idx++) {
         ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
     }
@@ -130,7 +130,7 @@ TEST(test_generator, gen_A_output) {
     ASSERT_TRUE(openFile(&output_file, outputDir, "Test_Main.h"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
-    ASSERT_EQ(output_content.count(), model_content.count());
+    EXPECT_EQ(output_content.count(), model_content.count());
     for(int idx = 0; idx < output_content.count(); idx++) {
         ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
     }
@@ -142,7 +142,7 @@ TEST(test_generator, gen_A_output) {
     ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Bridge_Test.c"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
-    ASSERT_EQ(output_content.count(), model_content.count());
+    EXPECT_EQ(output_content.count(), model_content.count());
     for(int idx = 0; idx < output_content.count(); idx++) {
         ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
     }
@@ -154,7 +154,7 @@ TEST(test_generator, gen_A_output) {
     ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Bridge_Test.h"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
-    ASSERT_EQ(output_content.count(), model_content.count());
+    EXPECT_EQ(output_content.count(), model_content.count());
     for(int idx = 0; idx < output_content.count(); idx++) {
         ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
     }
@@ -166,7 +166,7 @@ TEST(test_generator, gen_A_output) {
     ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Desc_Test.h"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
-    ASSERT_EQ(output_content.count(), model_content.count());
+    EXPECT_EQ(output_content.count(), model_content.count());
     for(int idx = 0; idx < output_content.count(); idx++) {
         ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
     }
@@ -193,7 +193,7 @@ TEST(test_generator, gen_B_output) {
     ASSERT_TRUE(openFile(&output_file, outputDir, "Test_Main.c"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
-    ASSERT_EQ(output_content.count(), model_content.count());
+    EXPECT_EQ(output_content.count(), model_content.count());
     for(int idx = 0; idx < output_content.count(); idx++) {
         ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
     }
@@ -205,7 +205,7 @@ TEST(test_generator, gen_B_output) {
     ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Bridge_Test.c"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
-    ASSERT_EQ(output_content.count(), model_content.count());
+    EXPECT_EQ(output_content.count(), model_content.count());
     for(int idx = 0; idx < output_content.count(); idx++) {
         ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
     }
@@ -237,7 +237,7 @@ TEST(test_generator, gen_B_output) {
     ASSERT_TRUE(openFile(&output_file, outputDir, "Test_Main.h"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
-    ASSERT_EQ(output_content.count(), model_content.count());
+    EXPECT_EQ(output_content.count(), model_content.count());
     for(int idx = 0; idx < output_content.count(); idx++) {
         ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
     }
@@ -261,7 +261,7 @@ TEST(test_generator, doc_output) {
     ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Test_WikiTables.txt"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
-    ASSERT_EQ(output_content.count(), model_content.count());
+    EXPECT_EQ(output_content.count(), model_content.count());
     for(int idx = 0; idx < output_content.count(); idx++) {
         ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
     }
@@ -273,7 +273,7 @@ TEST(test_generator, doc_output) {
     ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Test_DokuWikiTables.txt"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
-    ASSERT_EQ(output_content.count(), model_content.count());
+    EXPECT_EQ(output_content.count(), model_content.count());
     for(int idx = 0; idx < output_content.count(); idx++) {
         ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
     }
@@ -285,7 +285,7 @@ TEST(test_generator, doc_output) {
     ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Test_MkdownTables.md"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
-    ASSERT_EQ(output_content.count(), model_content.count());
+    EXPECT_EQ(output_content.count(), model_content.count());
     for(int idx = 0; idx < output_content.count(); idx++) {
         ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
     }
