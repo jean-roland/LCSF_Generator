@@ -91,8 +91,8 @@ TEST(test_generator, gen_A_output) {
     output_file.close();
 
     // Check Desc
-    ASSERT_TRUE(openFile(&model_file, MODEL_DIR_PATH, "model_desc.h"));
-    ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Desc_Test.h"));
+    ASSERT_TRUE(openFile(&model_file, MODEL_DIR_PATH, "model_desc.c"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Desc_Test.c"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     EXPECT_EQ(output_content.count(), model_content.count());
@@ -162,8 +162,8 @@ TEST(test_generator, gen_A_output) {
     output_file.close();
 
     // Check Desc
-    ASSERT_TRUE(openFile(&model_file, MODEL_DIR_PATH, "model_desc.h"));
-    ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Desc_Test.h"));
+    ASSERT_TRUE(openFile(&model_file, MODEL_DIR_PATH, "model_desc.c"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Desc_Test.c"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     EXPECT_EQ(output_content.count(), model_content.count());

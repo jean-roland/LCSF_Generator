@@ -10,9 +10,8 @@
 
 // *** Libraries include ***
 // Standard lib
-#include <stdbool.h>
-#include <stdint.h>
 // Custom lib
+#include <LCSF_Config.h>
 
 // *** Definitions ***
 // --- Public Types ---
@@ -333,13 +332,14 @@ typedef union _test_cmd_payload {
 // --- Public Function Prototypes ---
 
 /**
- * \fn bool Test_MainInit(const void *pInitDesc)
+ * \fn bool Test_MainInit(uint8_t *pBuffer, size_t buffSize)
  * \brief Initialize the module
  *
- * \param pInitDesc pointer to module initialization descriptor
+ * \param pBuffer pointer to send buffer
+ * \param buffSize buffer size
  * \return bool: true if operation was a success
  */
-bool Test_MainInit(const void *pDescInit);
+bool Test_MainInit(uint8_t *pBuffer, size_t buffSize);
 
 /**
  * \fn bool Test_MainExecute(uint_fast16_t cmdName, test_cmd_payload_t *pCmdPayload)

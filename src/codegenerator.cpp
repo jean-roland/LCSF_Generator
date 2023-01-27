@@ -500,9 +500,8 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
       out << endl;
       out << "// *** Libraries include ***" << endl;
       out << "// Standard lib" << endl;
-      out << "#include <stdbool.h>" << endl;
-      out << "#include <stdint.h>" << endl;
       out << "// Custom lib" << endl;
+      out << "#include <LCSF_Config.h>" << endl;
       out << endl;
       out << "// *** Definitions ***" << endl;
       out << "// --- Public Types ---" << endl;
@@ -661,15 +660,16 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
       if (codeExtract.getExtractionComplete()) {
          out << codeExtract.getUnknownPublicFunctionsHeaders();
       } else {
-          out << "/**" << endl;
-          out << " * \\fn bool " << protocolName << "_MainInit(const void *pInitDesc)" << endl;
-          out << " * \\brief Initialize the module" << endl;
-          out << " *" << endl;
-          out << " * \\param pInitDesc pointer to module initialization descriptor" << endl;
-          out << " * \\return bool: true if operation was a success" << endl;
-          out << " */" << endl;
-          out << "bool " << protocolName << "_MainInit(const void *pDescInit);" << endl;
-          out << endl;
+         out << "/**" << endl;
+         out << " * \\fn bool " << protocolName << "_MainInit(uint8_t *pBuffer, size_t buffSize)" << endl;
+         out << " * \\brief Initialize the module" << endl;
+         out << " *" << endl;
+         out << " * \\param pBuffer pointer to send buffer" << endl;
+         out << " * \\param buffSize buffer size" << endl;
+         out << " * \\return bool: true if operation was a success" << endl;
+         out << " */" << endl;
+         out << "bool " << protocolName << "_MainInit(uint8_t *pBuffer, size_t buffSize);" << endl;
+         out << endl;
       }
       out << "/**" << endl;
       out << " * \\fn bool " << protocolName << "_MainExecute(uint_fast16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload)" << endl;
@@ -712,9 +712,8 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
           out << endl;
           out << "// *** Libraries include ***" << endl;
           out << "// Standard lib" << endl;
-          out << "#include <stdlib.h>" << endl;
           out << "// Custom lib" << endl;
-          out << "#include <LCSF_config.h>" << endl;
+          out << "#include <LCSF_Config.h>" << endl;
           out << "#include \"LCSF_Bridge_" << protocolName << ".h\"" << endl;
           out << "#include \"" << protocolName << "_Main.h\"" << endl;
           out << endl;
@@ -724,13 +723,14 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
       if (codeExtract.getExtractionComplete()) {
          out << codeExtract.getUnknownDefinitions();
       } else {
+         out << "// --- Private Macros ---" << endl;
          out << "// --- Private Types ---" << endl;
          out << "typedef struct _" << protocolName.toLower() << "_info {" << endl;
-         out << "    const void *pInitDesc;" << endl;
-         out << "    " << protocolName.toLower() << "_cmd_payload_t *pSendCmdPayload;" << endl;
+         out << "    uint8_t *pSendBuffer;" << endl;
+         out << "    uint16_t buffSize;" << endl;
+         out << "    " << protocolName.toLower() << "_cmd_payload_t SendCmdPayload;" << endl;
          out << "} " << protocolName.toLower() << "_info_t;" << endl;
          out << endl;
-         out << "// --- Private Constants ---" << endl;
          out << "// --- Private Function Prototypes ---" << endl;
          out << "// Generated functions" << endl;
          out << "static bool " << protocolName << "SendCommand(uint_fast16_t cmdName, bool hasPayload);" << endl;
@@ -773,12 +773,18 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
          out << "    if (cmdName >= " << protocolName.toUpper() << "_CMD_COUNT) {" << endl;
          out << "        return false;" << endl;
          out << "    }" << endl;
+         out << "    int msgSize = 0;" << endl;
          out << "    if (hasPayload) {" << endl;
-         out << "        " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload = " << protocolName << "Info.pSendCmdPayload;" << endl;
-         out << "        return LCSF_Bridge_" << protocolName << "Send(cmdName, pCmdPayload);" << endl;
+         out << "        " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload = &" << protocolName << "Info.SendCmdPayload;" << endl;
+         out << "        msgSize = LCSF_Bridge_" << protocolName << "Encode(cmdName, pCmdPayload, " << protocolName << "Info.pSendBuffer, " << protocolName << "Info.buffSize);" << endl;
          out << "    } else {" << endl;
-         out << "        return LCSF_Bridge_" << protocolName << "Send(cmdName, NULL);" << endl;
+         out << "        msgSize = LCSF_Bridge_" << protocolName << "Encode(cmdName, NULL, " << protocolName << "Info.pSendBuffer, " << protocolName << "Info.buffSize);" << endl;
          out << "    }" << endl;
+         out << "    if (msgSize <= 0) {" << endl;
+         out << "        return false;" << endl;
+         out << "    }" << endl;
+         out << "    // TODO Pass buffer to send function" << endl;
+         out << "    return true;" << endl;
          out << "}" << endl;
          out << endl;
          out << "/**" << endl;
@@ -879,15 +885,20 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
          out << codeExtract.getUnknownPublicFunctions();
       } else {
          out << "/**" << endl;
-         out << " * \\fn bool " << protocolName << "_MainInit(const void *pInitDesc)" << endl;
+         out << " * \\fn bool " << protocolName << "_MainInit(uint8_t *pBuffer, size_t buffSize)" << endl;
          out << " * \\brief Initialize the module" << endl;
          out << " *" << endl;
-         out << " * \\param pInitDesc pointer to module initialization descriptor" << endl;
+         out << " * \\param pBuffer pointer to send buffer" << endl;
+         out << " * \\param buffSize buffer size" << endl;
          out << " * \\return bool: true if operation was a success" << endl;
          out << " */" << endl;
-         out << "bool " << protocolName << "_MainInit(const void *pDescInit) {" << endl;
-         out << "    " << protocolName << "Info.pInitDesc = pDescInit;" << endl;
-         out << "    " << protocolName << "Info.pSendCmdPayload = ("<< protocolName.toLower() << "_cmd_payload_t *)MEM_ALLOC(sizeof("<< protocolName.toLower() << "_cmd_payload_t));" << endl;
+         out << "bool " << protocolName << "_MainInit(uint8_t *pBuffer, size_t buffSize) {" << endl;
+         out << "    if (pBuffer == NULL) {" << endl;
+         out << "        return false;" << endl;
+         out << "    }" << endl;
+         out << "    // Note infos" << endl;
+         out << "    " << protocolName << "Info.pSendBuffer = pBuffer;" << endl;
+         out << "    " << protocolName << "Info.buffSize = buffSize;" << endl;
          out << "    return true;" << endl;
          out << "}" << endl;
          out << endl;
@@ -962,17 +973,13 @@ void CodeGenerator::generateBridgeHeader(QString protocolName, QString protocolI
       out << endl;
       out << "// *** Libraries include ***" << endl;
       out << "// Standard lib" << endl;
-      out << "#include <stdbool.h>" << endl;
-      out << "#include <stdint.h>" << endl;
       out << "// Custom lib" << endl;
+      out << "#include <LCSF_Config.h>" << endl;
       out << "#include <LCSF_Validator.h>" << endl;
       out << "#include \"" << protocolName << "_Main.h\"" << endl;
       out << endl;
       out << "// *** Definitions ***" << endl;
       out << "// --- Public Types ---" << endl;
-      out << endl;
-      out << "// Lcsf protocol identifier" << endl;
-      out << "#define LCSF_" << protocolName.toUpper() << "_PROTOCOL_ID 0x" << protocolId.toInt(nullptr, 10) << endl;
       out << endl;
 
       // Commands Ids enum
@@ -1013,6 +1020,10 @@ void CodeGenerator::generateBridgeHeader(QString protocolName, QString protocolI
       }
       out << "// --- Public Constants ---" << endl;
       out << endl;
+      out << "// Bridge decoder filo size" << endl;
+      out << "#define LCSF_BRIDGE_" << protocolName.toUpper() << "_FILO_SIZE " << Command::getMaxAttNb(cmdList)  << endl;
+      out << "// Lcsf protocol identifier" << endl;
+      out << "#define LCSF_" << protocolName.toUpper() << "_PROTOCOL_ID 0x" << protocolId.toInt(nullptr, 10) << endl;
       out << "// Command number" << endl;
       out << "#define LCSF_" << protocolName.toUpper() << "_CMD_NB " << protocolName.toUpper() << "_CMD_COUNT" << endl;
       if (!attIdxList.isEmpty()) {
@@ -1033,16 +1044,18 @@ void CodeGenerator::generateBridgeHeader(QString protocolName, QString protocolI
          }
       }
       out << endl;
+      out << "// Protocol descriptor" << endl;
+      out << "extern const lcsf_protocol_desc_t LCSF_" << protocolName << "_ProtDesc;" << endl;
+      out << endl;
       out << "// --- Public Function Prototypes ---" << endl;
       out << endl;
       out << "/**" << endl;
-      out << " * \\fn bool LCSF_Bridge_" << protocolName << "Init(size_t filoSize)" << endl;
+      out << " * \\fn bool LCSF_Bridge_" << protocolName << "Init(void)" << endl;
       out << " * \\brief Initialize the module" << endl;
       out << " *" << endl;
-      out << " * \\param filoSize size of the module filo (number of element)" << endl;
       out << " * \\return bool: true if operation was a success" << endl;
       out << " */" << endl;
-      out << "bool LCSF_Bridge_" << protocolName << "Init(size_t filoSize);" << endl;
+      out << "bool LCSF_Bridge_" << protocolName << "Init(void);" << endl;
       out << endl;
       out << "/**" << endl;
       out << " * \\fn bool LCSF_Bridge_" << protocolName << "Receive(lcsf_valid_cmd_t *pValidCmd)" << endl;
@@ -1054,14 +1067,16 @@ void CodeGenerator::generateBridgeHeader(QString protocolName, QString protocolI
       out << "bool LCSF_Bridge_" << protocolName << "Receive(lcsf_valid_cmd_t *pValidCmd);" << endl;
       out << endl;
       out << "/**" << endl;
-      out << " * \\fn bool LCSF_Bridge_" << protocolName << "Send(uint_fast16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload)" << endl;
-      out << " * \\brief Receive command from " << protocolName << "_Main and transmit to LCSF_Validator" << endl;
+      out << " * \\fn int LCSF_Bridge_" << protocolName << "Encode(uint_fast16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload, uint8_t *pBuffer, size_t buffSize)" << endl;
+      out << " * \\brief Receive command from " << protocolName << "_Main and transmit to LCSF_Validator for encoding" << endl;
       out << " *" << endl;
       out << " * \\param cmdName name of the command" << endl;
       out << " * \\param pValidCmd pointer to the valid command" << endl;
-      out << " * \\return bool: true if operation was a success" << endl;
+      out << " * \\param pBuffer pointer to the send buffer" << endl;
+      out << " * \\param buffSize buffer size" << endl;
+      out << " * \\return int: -1 if operation failed, encoded message size if success" << endl;
       out << " */" << endl;
-      out << "bool LCSF_Bridge_" << protocolName << "Send(uint_fast16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << endl;
+      out << "int LCSF_Bridge_" << protocolName << "Encode(uint_fast16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload, uint8_t *pBuffer, size_t buffSize);" << endl;
       out << endl;
       out << "// *** End Definitions ***" << endl;
       out << "#endif // Lcsf_bridge_" << protocolName.toLower() << "_h" << endl;
@@ -1094,8 +1109,8 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       out << "// Standard lib" << endl;
       out << "#include <string.h>" << endl;
       out << "// Custom lib" << endl;
-      out << "#include <LCSF_config.h>" << endl;
       out << "#include <Filo.h>" << endl;
+      out << "#include <LCSF_Config.h>" << endl;
       out << "#include <LCSF_Transcoder.h>" << endl;
       out << "#include <LCSF_Validator.h>" << endl;
       out << "#include \"LCSF_Bridge_" << protocolName << ".h\"" << endl;
@@ -1105,8 +1120,9 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       out << endl;
       out << "// Module information structure" << endl;
       out << "typedef struct _lcsf_bridge_" << protocolName.toLower() << "_info {" << endl;
+      out << "    uint8_t FiloData[LCSF_BRIDGE_" << protocolName.toUpper() << "_FILO_SIZE * sizeof(lcsf_valid_att_t)];" << endl;
       out << "    filo_desc_t Filo;" << endl;
-      out << "    " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload;" << endl;
+      out << "    " << protocolName.toLower() << "_cmd_payload_t CmdPayload;" << endl;
       out << "} lcsf_bridge_" << protocolName.toLower() << "_info_t;" << endl;
       out << endl;
       out << "// --- Private Constants ---" << endl;
@@ -1279,6 +1295,9 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
             out << "    }" << endl;
             out << "    // Intermediary variable" << endl;
             out << "    lcsf_valid_att_t *pAttArray = *pAttArrayAddr;" << endl;
+            if (command->hasSubAtt()) {
+               out << "    lcsf_valid_att_t **pSubAttArray = NULL;" << endl;
+            }
             for (Attribute *attribute : command->getAttArray()) {
                out << "    // Fill data of attribute " << attribute->getName() << endl;
                if (attribute->getIsOptional()) {
@@ -1286,7 +1305,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
                          << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper() << "_FLAG) != 0) {" << endl;
                   if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
                      out << "        // Intermediary variable" << endl;
-                     out << "        lcsf_valid_att_t **pSubAttArray = &(pAttArray[" << protocolName.toUpper() << "_"
+                     out << "        pSubAttArray = &(pAttArray[" << protocolName.toUpper() << "_"
                             << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper() << "].Payload.pSubAttArray);" << endl;
                      out << "        // Allocate sub-attribute array" << endl;
                      out << "        if (!FiloGet(&LcsfBridge" << protocolName << "Info.Filo, LCSF_" << protocolName.toUpper() << "_ATT_"
@@ -1317,7 +1336,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
                } else {
                   if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
                       out << "    // Intermediary variable" << endl;
-                      out << "    lcsf_valid_att_t **pSubAttArray = &(pAttArray[" << protocolName.toUpper() << "_"
+                      out << "    pSubAttArray = &(pAttArray[" << protocolName.toUpper() << "_"
                              << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper() << "].Payload.pSubAttArray);" << endl;
                       out << "    // Allocate sub-attribute array" << endl;
                       out << "    if (!FiloGet(&LcsfBridge" << protocolName << "Info.Filo, LCSF_" << protocolName.toUpper() << "_ATT_"
@@ -1382,32 +1401,29 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       out << "// *** Public Functions ***" << endl;
       out << endl;
 
-      out << "bool LCSF_Bridge_" <<  protocolName << "Init(size_t filoSize) {" << endl;
-      out << "    FiloInit(&LcsfBridge" << protocolName << "Info.Filo, filoSize, sizeof(lcsf_valid_att_t));" << endl;
-      out << "    LcsfBridge" << protocolName << "Info.pCmdPayload = (" << protocolName.toLower() << "_cmd_payload_t *)MEM_ALLOC(sizeof(" << protocolName.toLower() << "_cmd_payload_t));" << endl;
-      out << "    return true;" << endl;
+      out << "bool LCSF_Bridge_" <<  protocolName << "Init(void) {" << endl;
+      out << "    return FiloInit(&LcsfBridge" << protocolName << "Info.Filo, LcsfBridge" << protocolName << "Info.FiloData, LCSF_BRIDGE_" << protocolName.toUpper() << "_FILO_SIZE, sizeof(lcsf_valid_att_t));" << endl;
       out << "}" << endl;
       out << endl;
 
       out << "bool LCSF_Bridge_" << protocolName << "Receive(lcsf_valid_cmd_t *pValidCmd) {" << endl;
       out << "    uint16_t cmdName = LCSF_Bridge_" << protocolName << "_CMDID2CMDNAME(pValidCmd->CmdId);" << endl;
-      out << "    " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload = LcsfBridge" << protocolName << "Info.pCmdPayload;" << endl;
-      out << "    memset(pCmdPayload, 0, sizeof(" << protocolName.toLower() << "_cmd_payload_t));" << endl;
+      out << "    " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload = &LcsfBridge" << protocolName << "Info.CmdPayload;" << endl;
       out << endl;
       out << "    LCSF_Bridge_" << protocolName << "GetCmdData(cmdName, pValidCmd->pAttArray, pCmdPayload);" << endl;
       out << "    return " << protocolName << "_MainExecute(cmdName, pCmdPayload);" << endl;
       out << "}" << endl;
       out << endl;
 
-      out << "bool LCSF_Bridge_" << protocolName << "Send(uint_fast16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload) {" << endl;
+      out << "int LCSF_Bridge_" << protocolName << "Encode(uint_fast16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload, uint8_t *pBuffer, size_t buffSize) {" << endl;
       out << "    lcsf_valid_cmd_t sendCmd;" << endl;
       out << "    sendCmd.CmdId = LCSF_Bridge_" << protocolName << "_CMDNAME2CMDID[cmdName];" << endl;
       out << "    FiloFreeAll(&LcsfBridge" << protocolName << "Info.Filo);" << endl;
       out << endl;
       out << "    if (!LCSF_Bridge_" << protocolName << "FillCmdAtt(cmdName, &(sendCmd.pAttArray), pCmdPayload)) {" << endl;
-      out << "        return false;" << endl;
+      out << "        return -1;" << endl;
       out << "    }" << endl;
-      out << "    return LCSF_ValidatorSend(LCSF_" << protocolName.toUpper() << "_PROTOCOL_ID, &sendCmd);" << endl;
+      out << "    return LCSF_ValidatorEncode(LCSF_" << protocolName.toUpper() << "_PROTOCOL_ID, &sendCmd, pBuffer, buffSize);" << endl;
       out << "}" << endl;
 
       file.close();
@@ -1419,7 +1435,7 @@ void CodeGenerator::generateDescription(QString protocolName, QList<Command *> c
    if (!dir.exists()) {
        dir.mkpath(".");
    }
-   QString fileName = dirPath + "/LCSF_Desc_" + protocolName + ".h";
+   QString fileName = dirPath + "/LCSF_Desc_" + protocolName + ".c";
    QList<CodeGenerator::T_attInfos> attInfosList = this->getAttInfos(cmdList);
    QFile file(fileName);
 
@@ -1429,24 +1445,20 @@ void CodeGenerator::generateDescription(QString protocolName, QList<Command *> c
 
       QFileInfo fileInfo(file);
       out << "/**" << endl;
-      out << " * \\file LCSF_Desc_" << protocolName << ".h" << endl;
+      out << " * \\file LCSF_Desc_" << protocolName << ".c" << endl;
       out << " * \\brief " << protocolName << " LCSF descriptor" << endl;
       out << " * \\author LCSF Generator v" << APP_VERSION << endl;
       out << " *" << endl;
       out << " */" << endl;
       out << endl;
-      out << "#ifndef Lcsf_desc_" << protocolName.toLower() << "_h" << endl;
-      out << "#define Lcsf_desc_" << protocolName.toLower() << "_h" << endl;
-      out << endl;
       out << "// *** Libraries include ***" << endl;
       out << "// Standard lib" << endl;
-      out << "#include <stdbool.h>" << endl;
-      out << "#include <stdint.h>" << endl;
       out << "// Custom lib" << endl;
+      out << "#include <LCSF_Config.h>" << endl;
       out << "#include \"LCSF_Bridge_" << protocolName << ".h\"" << endl;
       out << endl;
       out << "// *** Definitions ***" << endl;
-      out << "// --- Public Constants ---" << endl;
+      out << "// --- Private Constants ---" << endl;
       out << endl;
 
       // Sub-attribute descriptor arrays
@@ -1455,7 +1467,7 @@ void CodeGenerator::generateDescription(QString protocolName, QList<Command *> c
             CodeGenerator::T_attInfos attInfo = attInfosList.at(idx);
             if (attInfo.subAttNb > 0) {
                out << "// Sub-attribute array descriptor of attribute " << attInfo.attName << endl;
-               out << "const lcsf_attribute_desc_t LCSF_" << protocolName << "_" << attInfo.attName << "_AttDescArray[LCSF_"
+               out << "static const lcsf_attribute_desc_t LCSF_" << protocolName << "_" << attInfo.attName << "_AttDescArray[LCSF_"
                       << protocolName.toUpper() + "_ATT_" + attInfo.attName.toUpper() + "_SUBATT_NB] = {" << endl;
                for (Attribute *attribute : attInfo.attPointer->getSubAttArray()) {
                   out << "    {" << this->getAttDescString(protocolName, attInfo.attName, attribute) << "}," << endl;
@@ -1470,7 +1482,7 @@ void CodeGenerator::generateDescription(QString protocolName, QList<Command *> c
       for (Command *command : cmdList) {
          if (command->getAttArray().size() > 0) {
             out << "// Attribute array descriptor of command " << command->getName() << endl;
-            out << "const lcsf_attribute_desc_t LCSF_" << protocolName << "_" << command->getName() << "_AttDescArray[LCSF_"
+            out << "static const lcsf_attribute_desc_t LCSF_" << protocolName << "_" << command->getName() << "_AttDescArray[LCSF_"
                    << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << "_ATT_NB] = {" << endl;
             for (Attribute *attribute : command->getAttArray()) {
                out << "    {" << this->getAttDescString(protocolName, command->getName(), attribute) << "}," << endl;
@@ -1482,7 +1494,7 @@ void CodeGenerator::generateDescription(QString protocolName, QList<Command *> c
 
       // Command descriptor array
       out << "// Command array descriptor" << endl;
-      out << "const lcsf_command_desc_t LCSF_" << protocolName << "_CmdDescArray[LCSF_" << protocolName.toUpper() << "_CMD_NB] = {" << endl;
+      out << "static const lcsf_command_desc_t LCSF_" << protocolName << "_CmdDescArray[LCSF_" << protocolName.toUpper() << "_CMD_NB] = {" << endl;
       for (Command *command : cmdList) {
          if (command->getAttArray().size() > 0) {
             out << "    {LCSF_" << protocolName.toUpper() << "_CMD_ID_" << command->getName().toUpper() << ", LCSF_"
@@ -1495,15 +1507,13 @@ void CodeGenerator::generateDescription(QString protocolName, QList<Command *> c
       }
       out << "};" << endl;
       out << endl;
-
+      out << "// --- Public Constants ---" << endl;
+      out << endl;
       // Protocol descriptor
       out << "// Protocol descriptor" << endl;
       out << "const lcsf_protocol_desc_t LCSF_" << protocolName << "_ProtDesc = { .CmdNb = LCSF_"
              << protocolName.toUpper() << "_CMD_NB, .pCmdDescArray = LCSF_" << protocolName << "_CmdDescArray };" << endl;
-      out << endl;
 
-      out << "// *** End Definitions ***" << endl;
-      out << "#endif // Lcsf_desc_" << protocolName.toLower() << "_h" << endl;
       file.close();
    }
 }

@@ -7,20 +7,20 @@
 
 // *** Libraries include ***
 // Standard lib
-#include <stdlib.h>
 // Custom lib
-#include <LCSF_config.h>
+#include <LCSF_Config.h>
 #include "LCSF_Bridge_Test.h"
 #include "Test_Main.h"
 
 // *** Definitions ***
+// --- Private Macros ---
 // --- Private Types ---
 typedef struct _test_info {
-    const void *pInitDesc;
-    test_cmd_payload_t *pSendCmdPayload;
+    uint8_t *pSendBuffer;
+    uint16_t buffSize;
+    test_cmd_payload_t SendCmdPayload;
 } test_info_t;
 
-// --- Private Constants ---
 // --- Private Function Prototypes ---
 // Generated functions
 static bool TestSendCommand(uint_fast16_t cmdName, bool hasPayload);
@@ -51,12 +51,18 @@ static bool TestSendCommand(uint_fast16_t cmdName, bool hasPayload) {
     if (cmdName >= TEST_CMD_COUNT) {
         return false;
     }
+    int msgSize = 0;
     if (hasPayload) {
-        test_cmd_payload_t *pCmdPayload = TestInfo.pSendCmdPayload;
-        return LCSF_Bridge_TestSend(cmdName, pCmdPayload);
+        test_cmd_payload_t *pCmdPayload = &TestInfo.SendCmdPayload;
+        msgSize = LCSF_Bridge_TestEncode(cmdName, pCmdPayload, TestInfo.pSendBuffer, TestInfo.buffSize);
     } else {
-        return LCSF_Bridge_TestSend(cmdName, NULL);
+        msgSize = LCSF_Bridge_TestEncode(cmdName, NULL, TestInfo.pSendBuffer, TestInfo.buffSize);
     }
+    if (msgSize <= 0) {
+        return false;
+    }
+    // TODO Pass buffer to send function
+    return true;
 }
 
 /**
@@ -271,15 +277,20 @@ static bool TestExecuteCC6(test_cmd_payload_t *pCmdPayload) {
 // *** Public Functions ***
 
 /**
- * \fn bool Test_MainInit(const void *pInitDesc)
+ * \fn bool Test_MainInit(uint8_t *pBuffer, size_t buffSize)
  * \brief Initialize the module
  *
- * \param pInitDesc pointer to module initialization descriptor
+ * \param pBuffer pointer to send buffer
+ * \param buffSize buffer size
  * \return bool: true if operation was a success
  */
-bool Test_MainInit(const void *pDescInit) {
-    TestInfo.pInitDesc = pDescInit;
-    TestInfo.pSendCmdPayload = (test_cmd_payload_t *)MEM_ALLOC(sizeof(test_cmd_payload_t));
+bool Test_MainInit(uint8_t *pBuffer, size_t buffSize) {
+    if (pBuffer == NULL) {
+        return false;
+    }
+    // Note infos
+    TestInfo.pSendBuffer = pBuffer;
+    TestInfo.buffSize = buffSize;
     return true;
 }
 

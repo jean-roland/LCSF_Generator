@@ -10,17 +10,13 @@
 
 // *** Libraries include ***
 // Standard lib
-#include <stdbool.h>
-#include <stdint.h>
 // Custom lib
+#include <LCSF_Config.h>
 #include <LCSF_Validator.h>
 #include "Test_Main.h"
 
 // *** Definitions ***
 // --- Public Types ---
-
-// Lcsf protocol identifier
-#define LCSF_TEST_PROTOCOL_ID 0x55
 
 // Command identifier enum
 enum _lcsf_test_cmd_id {
@@ -155,6 +151,10 @@ enum _lcsf_test_cc6_att_id {
 
 // --- Public Constants ---
 
+// Bridge decoder filo size
+#define LCSF_BRIDGE_TEST_FILO_SIZE 11
+// Lcsf protocol identifier
+#define LCSF_TEST_PROTOCOL_ID 0x55
 // Command number
 #define LCSF_TEST_CMD_NB TEST_CMD_COUNT
 // Command attribute number
@@ -178,16 +178,18 @@ enum _lcsf_test_cc6_att_id {
 #define LCSF_TEST_ATT_CA11_SUBATT_NB 2
 #define LCSF_TEST_ATT_CA12_SUBATT_NB 1
 
+// Protocol descriptor
+extern const lcsf_protocol_desc_t LCSF_Test_ProtDesc;
+
 // --- Public Function Prototypes ---
 
 /**
- * \fn bool LCSF_Bridge_TestInit(size_t filoSize)
+ * \fn bool LCSF_Bridge_TestInit(void)
  * \brief Initialize the module
  *
- * \param filoSize size of the module filo (number of element)
  * \return bool: true if operation was a success
  */
-bool LCSF_Bridge_TestInit(size_t filoSize);
+bool LCSF_Bridge_TestInit(void);
 
 /**
  * \fn bool LCSF_Bridge_TestReceive(lcsf_valid_cmd_t *pValidCmd)
@@ -199,14 +201,16 @@ bool LCSF_Bridge_TestInit(size_t filoSize);
 bool LCSF_Bridge_TestReceive(lcsf_valid_cmd_t *pValidCmd);
 
 /**
- * \fn bool LCSF_Bridge_TestSend(uint_fast16_t cmdName, test_cmd_payload_t *pCmdPayload)
- * \brief Receive command from Test_Main and transmit to LCSF_Validator
+ * \fn int LCSF_Bridge_TestEncode(uint_fast16_t cmdName, test_cmd_payload_t *pCmdPayload, uint8_t *pBuffer, size_t buffSize)
+ * \brief Receive command from Test_Main and transmit to LCSF_Validator for encoding
  *
  * \param cmdName name of the command
  * \param pValidCmd pointer to the valid command
- * \return bool: true if operation was a success
+ * \param pBuffer pointer to the send buffer
+ * \param buffSize buffer size
+ * \return int: -1 if operation failed, encoded message size if success
  */
-bool LCSF_Bridge_TestSend(uint_fast16_t cmdName, test_cmd_payload_t *pCmdPayload);
+int LCSF_Bridge_TestEncode(uint_fast16_t cmdName, test_cmd_payload_t *pCmdPayload, uint8_t *pBuffer, size_t buffSize);
 
 // *** End Definitions ***
 #endif // Lcsf_bridge_test_h
