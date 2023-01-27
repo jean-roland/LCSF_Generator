@@ -25,8 +25,7 @@ project(LCSF_Generator VERSION 1.2 LANGUAGES CXX)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 # Compile options
-add_compile_options("-DAPP_VERSION=\"${PROJECT_VERSION}\"")
-add_compile_options("$<$<CONFIG:DEBUG>:-D_APP_DEBUG>")
+add_compile_options("-DAPP_VERSION=\"${PROJECT_VERSION}\"" "$<$<CONFIG:DEBUG>:-D_APP_DEBUG>")
 
 # Build system debug option (optional)
 # set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -37,12 +36,11 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # Qt CMake variables
-#set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-# Qt directory (switch to your own)
+# Find Qt5 (manual)
 # set(Qt5Core_DIR "/home/jean-roland/Qt/5.13.1/gcc_64/lib/cmake/Qt5Core/")
 # set(Qt5Widgets_DIR "/home/jean-roland/Qt/5.13.1/gcc_64/lib/cmake/Qt5Widgets/")
 # set(Qt5_DIR "/home/jean-roland/Qt/5.13.1/gcc_64/lib/cmake/Qt5/")
