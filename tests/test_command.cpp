@@ -131,6 +131,9 @@ TEST(test_command, cmd_att) {
     // Check getAttByName
     ASSERT_EQ(test_cmd.getAttByName(test_att2->getName()), test_att2);
 
+    // Check getTotalAttNb
+    ASSERT_EQ(test_cmd.getTotalAttNb(), 5);
+
     // Check removeAttByName
     att_array = {test_att0, test_att1, test_att3};
     test_cmd.removeAttByName(test_att2->getName());
@@ -163,6 +166,27 @@ TEST(test_command, cmd_static) {
     // Check sortListById
     QList<Command *> sorted_array = {&test_cmd0, &test_cmd1, &test_cmd2, &test_cmd3, &test_cmd4};
     ASSERT_EQ(Command::sortListById(cmd_array), sorted_array);
+
+    // Add command with attributes and sub attributes
+    Attribute *test_att0 = new Attribute("sub_att0", 10, false, NS_AttDataType::SUB_ATTRIBUTES, "This is a sub-attribute");
+    Attribute *test_att1 = new Attribute("sub_att1", 11, false, NS_AttDataType::UINT8, "This is a sub-attribute");
+    Attribute *test_att2 = new Attribute("sub_att2", 12, false, NS_AttDataType::UINT16, "This is a sub-attribute");
+    Attribute *test_att3 = new Attribute("sub_att3", 13, false, NS_AttDataType::UINT32, "This is a sub-attribute");
+    Attribute *test_att4 = new Attribute("sub_att4", 14, false, NS_AttDataType::STRING, "This is a sub-attribute");
+    Command test_cmd5("cmd5", 15, true, NS_DirectionType::BIDIRECTIONAL, "Test description");
+    Command test_cmd6("cmd6", 16, true, NS_DirectionType::BIDIRECTIONAL, "Test description");
+
+    test_att0->addSubAtt(test_att4);
+    test_cmd5.addAttribute(test_att0);
+    test_cmd5.addAttribute(test_att1);
+    test_cmd6.addAttribute(test_att2);
+    test_cmd6.addAttribute(test_att3);
+
+    cmd_array.append(&test_cmd5);
+    cmd_array.append(&test_cmd6);
+
+    // Check getMaxAttNb
+    ASSERT_EQ(Command::getMaxAttNb(cmd_array), 3);
 }
 
 TEST(test_attribute, cmd_comparison) {

@@ -98,6 +98,9 @@ TEST(test_attribute, subatt) {
     subAttArray = {sub_att0, sub_att1, sub_att2, sub_att3};
     ASSERT_EQ(test_att.getSubAttArray(), subAttArray);
 
+    // Check getTotalAttNb
+    ASSERT_EQ(test_att.getTotalAttNb_rec(), 4);
+
     // Check getSubAttNamesList
     QStringList subAttNames = {sub_att0->getName(), sub_att1->getName(),
      sub_att2->getName(), sub_att3->getName()};
