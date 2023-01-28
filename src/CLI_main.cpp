@@ -129,17 +129,17 @@ int main(int argc, char *argv[]) {
 
     // Process args
     QTextStream out(stdout);
-    out << "*** LCSF_Generator_CLI v" << APP_VERSION << " ***" << endl;
+    out << "*** LCSF_Generator_CLI v" << APP_VERSION << " ***" << Qt::endl;
 
     if (!parser.isSet("l")) {
-        out << "Error, missing protocol description file." << endl;
+        out << "Error, missing protocol description file." << Qt::endl;
         exit(EXIT_FAILURE);
     }
     // Get description file
     QFile descFile(descFilePath);
 
     if (!descFile.open(QIODevice::ReadOnly)) {
-        out << "Couldn't open file: " << descFilePath << ", reason: " << descFile.errorString() << endl;
+        out << "Couldn't open file: " << descFilePath << ", reason: " << descFile.errorString() << Qt::endl;
         exit(EXIT_FAILURE);
     }
     // Process description file
@@ -152,43 +152,43 @@ int main(int argc, char *argv[]) {
         QFile importAFile(importAFilePath);
 
         if (!importAFile.open(QIODevice::ReadOnly)) {
-            out << "Error, couldn't open file: " << importAFilePath << ", reason: " << importAFile.errorString() << endl;
+            out << "Error, couldn't open file: " << importAFilePath << ", reason: " << importAFile.errorString() << Qt::endl;
             exit(EXIT_FAILURE);
         }
         QTextStream importAStream(&importAFile);
         if (!codeextractA.extractFromSourceFile(protocolName, &importAStream, cmdArray)) {
-            out << "Error while extracting import A info." << endl;
+            out << "Error while extracting import A info." << Qt::endl;
             exit(EXIT_FAILURE);
         }
         QFileInfo importAInfo(importAFile);
         outAPath = importAInfo.absoluteDir().absolutePath();
-        out << "Import A extraction successful." << endl;
+        out << "Import A extraction successful." << Qt::endl;
     }
     if (parser.isSet("b")) {
         // Get import A data
         QFile importBFile(importBFilePath);
 
         if (!importBFile.open(QIODevice::ReadOnly)) {
-            out << "Couldn't open file: " << importBFilePath << ", reason: " << importBFile.errorString() << endl;
+            out << "Couldn't open file: " << importBFilePath << ", reason: " << importBFile.errorString() << Qt::endl;
             exit(EXIT_FAILURE);
         }
         QTextStream importBStream(&importBFile);
         if (!codeextractB.extractFromSourceFile(protocolName, &importBStream, cmdArray)) {
-            out << "Error while extracting import B info." << endl;
+            out << "Error while extracting import B info." << Qt::endl;
             exit(EXIT_FAILURE);
         }
         QFileInfo importBInfo(importBFile);
         outBPath = importBInfo.absoluteDir().absolutePath();
-        out << "Import B extraction successful." << endl;
+        out << "Import B extraction successful." << Qt::endl;
     }
     // Check data
     if (cmdArray.size() <= 0) {
-        out << "Error, protocol has no command!" << endl;
+        out << "Error, protocol has no command!" << Qt::endl;
         exit(EXIT_FAILURE);
     }
     QString dupName = checkAttNameDuplicate(cmdArray);
     if (dupName.size() > 0) {
-        out << "Error, duplicate complex attribute name: '"+ dupName +"'." << endl;
+        out << "Error, duplicate complex attribute name: '"+ dupName +"'." << Qt::endl;
         exit(EXIT_FAILURE);
     }
     // Generate "A" C files
@@ -210,10 +210,10 @@ int main(int argc, char *argv[]) {
         codegen.generateMkdownTable(protocolName, cmdArray, docPath);
     }
     // End output
-    out << "Generation complete." << endl;
-    out << "Code A generated in: " << outAPath << ", code B generated in: " << outBPath << endl;
+    out << "Generation complete." << Qt::endl;
+    out << "Code A generated in: " << outAPath << ", code B generated in: " << outBPath << Qt::endl;
     if (parser.isSet("d")) {
-        out << "Documentation generated in: " << docPath << endl;
+        out << "Documentation generated in: " << docPath << Qt::endl;
     }
     exit(EXIT_FAILURE);
     return a.exec();

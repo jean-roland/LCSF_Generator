@@ -682,7 +682,7 @@ bool MainWindow::saveCommandTable(void) {
     for (int idx = 0; idx < ui->twDescTableView->rowCount(); idx++) {
         // Empty line
         if ((ui->twDescTableView->item(idx, 0) == nullptr) && (ui->twDescTableView->item(idx, 1) == nullptr)) {
-            qDebug() << "Empty line detected" << endl;
+            qDebug() << "Empty line detected" << Qt::endl;
             return false;
         }
         // Missing parameters
@@ -764,7 +764,7 @@ bool MainWindow::saveCmdAttTable(QString cmdName) {
         for (int idx = 0; idx < ui->twDescTableView->rowCount(); idx++) {
             // Empty line
             if ((ui->twDescTableView->item(idx, 0) == nullptr) && (ui->twDescTableView->item(idx, 1) == nullptr)) {
-                qDebug() << "Empty line detected" << endl;
+                qDebug() << "Empty line detected" << Qt::endl;
                 return false;
             }
             // Missing parameters
@@ -921,7 +921,7 @@ bool MainWindow::saveAttTable(QTreeWidgetItem *item) {
         for (int idx = 0; idx < ui->twDescTableView->rowCount(); idx++) {
             // Empty line
             if ((ui->twDescTableView->item(idx, 0) == nullptr) && (ui->twDescTableView->item(idx, 1) == nullptr)) {
-                qDebug() << "Empty line detected" << endl;
+                qDebug() << "Empty line detected" << Qt::endl;
                 return false;
             }
             // Missing parameters

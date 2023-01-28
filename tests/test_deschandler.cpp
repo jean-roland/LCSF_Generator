@@ -40,9 +40,9 @@ static bool compare_cmd_list(QList<Command *> model_list, QList<Command *> out_l
 
     if (!val) {
         if (err_val < 0) {
-             std::cout << "Command lists sizes are different" << endl;
+             std::cout << "Command lists sizes are different" << Qt::endl;
         } else {
-            std::cout << "Commands are different at index: " << std::to_string(err_val) << "\n" << endl;
+            std::cout << "Commands are different at index: " << std::to_string(err_val) << "\n" << Qt::endl;
         }
     }
     return val;

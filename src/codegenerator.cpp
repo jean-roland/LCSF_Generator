@@ -254,8 +254,8 @@ void CodeGenerator::fillSubAttData_Rec(QString protocolName, QStringList parentN
 
     for (Attribute *attribute : attList) {
        if (attribute->getIsOptional()) {
-          *pOut << indent << "// Initialize optional attribute flags bitfield" << endl;
-          *pOut << indent << "pCmdPayload->" << this->getPayloadPath(parentNames) << "optAttFlagsBitfield = 0;" << endl;
+          *pOut << indent << "// Initialize optional attribute flags bitfield" << Qt::endl;
+          *pOut << indent << "pCmdPayload->" << this->getPayloadPath(parentNames) << "optAttFlagsBitfield = 0;" << Qt::endl;
           break;
        }
     }
@@ -263,39 +263,39 @@ void CodeGenerator::fillSubAttData_Rec(QString protocolName, QStringList parentN
        // Clear sub-attribute list between attributes
        nextParentNames = parentNames;
        attDataPath = this->getAttDataRxPath(protocolName, parentNames, attribute->getName());
-       *pOut << indent << "// Retrieve data of sub-attribute " << attribute->getName() << endl;
+       *pOut << indent << "// Retrieve data of sub-attribute " << attribute->getName() << Qt::endl;
        if (attribute->getIsOptional()) {
-          *pOut << indent << "if (" << attDataPath << " != NULL) {" << endl;
+          *pOut << indent << "if (" << attDataPath << " != NULL) {" << Qt::endl;
           indent = this->getIndent(indentNb + 1);
-          *pOut << indent << "// Note presence of optional attribute " << attribute->getName() << endl;
+          *pOut << indent << "// Note presence of optional attribute " << attribute->getName() << Qt::endl;
           *pOut << indent << "pCmdPayload->" << this->getPayloadPath(parentNames) << "optAttFlagsBitfield |= "
-                   << protocolName.toUpper() << "_" << parentNames.last().toUpper() << "_ATT_" << attribute->getName().toUpper() << "_FLAG;" << endl;
+                   << protocolName.toUpper() << "_" << parentNames.last().toUpper() << "_ATT_" << attribute->getName().toUpper() << "_FLAG;" << Qt::endl;
           if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
              nextParentNames.append(attribute->getName());
              this->fillSubAttData_Rec(protocolName, nextParentNames, attribute->getSubAttArray(), pOut, indentNb + 1);
           } else if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) || (attribute->getDataType() == NS_AttDataType::STRING)) {
-             *pOut << indent << "// Retrieve data of sub-attribute " << attribute->getName()  << endl;
+             *pOut << indent << "// Retrieve data of sub-attribute " << attribute->getName()  << Qt::endl;
              *pOut << indent << "pCmdPayload->" << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower()
-                      << " = " << attDataPath << ";" << endl;
+                      << " = " << attDataPath << ";" << Qt::endl;
           } else {
-             *pOut << indent << "// Retrieve data of sub-attribute " << attribute->getName() << endl;
+             *pOut << indent << "// Retrieve data of sub-attribute " << attribute->getName() << Qt::endl;
              QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
              *pOut << indent << "memcpy(&(pCmdPayload->" << this->getPayloadPath(parentNames) << attribute->getName().toLower()
-                      << "), " << attDataPath << ", sizeof(" << typeString.chopped(1) << "));" << endl;
+                      << "), " << attDataPath << ", sizeof(" << typeString.chopped(1) << "));" << Qt::endl;
           }
           indent = this->getIndent(indentNb);
-          *pOut << indent << "}" << endl;
+          *pOut << indent << "}" << Qt::endl;
        } else {
           if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
              nextParentNames.append(attribute->getName());
              this->fillSubAttData_Rec(protocolName, nextParentNames, attribute->getSubAttArray(), pOut, indentNb + 1);
           } else if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) || (attribute->getDataType() == NS_AttDataType::STRING)) {
              *pOut << indent << "pCmdPayload->" << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower()
-                      << " = " << attDataPath << ";" << endl;
+                      << " = " << attDataPath << ";" << Qt::endl;
           } else {
              QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
              *pOut << indent << "memcpy(&(pCmdPayload->" << this->getPayloadPath(parentNames) << attribute->getName().toLower()
-                      << "), " << attDataPath << ", sizeof(" << typeString.chopped(1) << "));" << endl;
+                      << "), " << attDataPath << ", sizeof(" << typeString.chopped(1) << "));" << Qt::endl;
           }
        }
     }
@@ -313,61 +313,61 @@ void CodeGenerator::fillSubAttPayload_Rec(QString protocolName, QStringList pare
         // Clear sub-attribute list between attributes
         nextParentNames = parentNames;
         attDataPath = this->getAttDataTxPath(protocolName, parentNames, attribute->getName());
-        *pOut << indent << "// Fill data of sub-attribute " << attribute->getName() << endl;
+        *pOut << indent << "// Fill data of sub-attribute " << attribute->getName() << Qt::endl;
 
         if (attribute->getIsOptional()) {
             *pOut << indent << "if ((pCmdPayload->" << this->getPayloadPath(parentNames) << "optAttFlagsBitfield & " << protocolName.toUpper() << "_"
-            << parentNames.last().toUpper() << "_ATT_" << attribute->getName().toUpper() << "_FLAG) != 0) {" << endl;
+            << parentNames.last().toUpper() << "_ATT_" << attribute->getName().toUpper() << "_FLAG) != 0) {" << Qt::endl;
             indent = this->getIndent(indentNb + 1);
 
             if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
-                *pOut << indent << "// Intermediary variable" << endl;
-                *pOut << indent << "pSubAttArray = &(" << attDataPath << "Payload.pSubAttArray);" << endl;
-                *pOut << indent << "// Allocate sub-attribute array" << endl;
+                *pOut << indent << "// Intermediary variable" << Qt::endl;
+                *pOut << indent << "pSubAttArray = &(" << attDataPath << "Payload.pSubAttArray);" << Qt::endl;
+                *pOut << indent << "// Allocate sub-attribute array" << Qt::endl;
                 *pOut << indent << "if (!FiloGet(&LcsfBridge" << protocolName << "Info.Filo, LCSF_" << protocolName.toUpper() << "_ATT_"
-                << attribute->getName().toUpper() << "_SUBATT_NB, (void *)pSubAttArray)) {" << endl;
-                *pOut << indent << "    return false;" << endl;
-                *pOut << indent << "}" << endl;
+                << attribute->getName().toUpper() << "_SUBATT_NB, (void *)pSubAttArray)) {" << Qt::endl;
+                *pOut << indent << "    return false;" << Qt::endl;
+                *pOut << indent << "}" << Qt::endl;
                 nextParentNames.append(attribute->getName());
                 this->fillSubAttPayload_Rec(protocolName, nextParentNames, attribute->getSubAttArray(), pOut, indentNb + 1);
             } else if (attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) {
                 *pOut << indent << attDataPath << "PayloadSize = pCmdPayload->"
-                << this->getPayloadPath(parentNames) << attribute->getName().toLower() << "Size;" << endl;
+                << this->getPayloadPath(parentNames) << attribute->getName().toLower() << "Size;" << Qt::endl;
                 *pOut << indent << attDataPath << "Payload.pData = pCmdPayload->"
-                << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower() << ";" << endl;
+                << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower() << ";" << Qt::endl;
             } else if (attribute->getDataType() == NS_AttDataType::STRING) {
                 *pOut << indent << attDataPath << "Payload.pData = pCmdPayload->"
-                << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower() << ";" << endl;
+                << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower() << ";" << Qt::endl;
             } else {
                 *pOut << indent << attDataPath << "Payload.pData = &(pCmdPayload->"
-                << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ");" << endl;
+                << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ");" << Qt::endl;
             }
             indent = this->getIndent(indentNb);
-            *pOut << indent << "} else {" << endl;
-            *pOut << indent << "    " << attDataPath << "Payload.pData = NULL;" << endl;
-            *pOut << indent << "}" << endl;
+            *pOut << indent << "} else {" << Qt::endl;
+            *pOut << indent << "    " << attDataPath << "Payload.pData = NULL;" << Qt::endl;
+            *pOut << indent << "}" << Qt::endl;
         } else {
             if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
-                *pOut << indent << "// Intermediary variable" << endl;
-                *pOut << indent << "pSubAttArray = &(" << attDataPath << "Payload.pSubAttArray);" << endl;
-                *pOut << indent << "// Allocate sub-attribute array" << endl;
+                *pOut << indent << "// Intermediary variable" << Qt::endl;
+                *pOut << indent << "pSubAttArray = &(" << attDataPath << "Payload.pSubAttArray);" << Qt::endl;
+                *pOut << indent << "// Allocate sub-attribute array" << Qt::endl;
                 *pOut << indent << "if (!FiloGet(&LcsfBridge" << protocolName << "Info.Filo, LCSF_" << protocolName.toUpper() << "_ATT_"
-                << attribute->getName().toUpper() << "_SUBATT_NB, (void *)pSubAttArray)) {" << endl;
-                *pOut << indent << "    return false;" << endl;
-                *pOut << indent << "}" << endl;
+                << attribute->getName().toUpper() << "_SUBATT_NB, (void *)pSubAttArray)) {" << Qt::endl;
+                *pOut << indent << "    return false;" << Qt::endl;
+                *pOut << indent << "}" << Qt::endl;
                 nextParentNames.append(attribute->getName());
                 this->fillSubAttPayload_Rec(protocolName, nextParentNames, attribute->getSubAttArray(), pOut, indentNb + 1);
             } else if (attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) {
                 *pOut << indent << attDataPath << "PayloadSize = pCmdPayload->"
-                << this->getPayloadPath(parentNames) << attribute->getName().toLower() << "Size;" << endl;
+                << this->getPayloadPath(parentNames) << attribute->getName().toLower() << "Size;" << Qt::endl;
                 *pOut << indent << attDataPath << "Payload.pData = pCmdPayload->"
-                << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower() << ";" << endl;
+                << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower() << ";" << Qt::endl;
             } else if (attribute->getDataType() == NS_AttDataType::STRING) {
                 *pOut << indent << attDataPath << "Payload.pData = pCmdPayload->"
-                << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower() << ";" << endl;
+                << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower() << ";" << Qt::endl;
             } else {
                 *pOut << indent << attDataPath << "Payload.pData = &(pCmdPayload->"
-                << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ");" << endl;
+                << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ");" << Qt::endl;
             }
         }
     }
@@ -377,14 +377,14 @@ void CodeGenerator::declareAtt_REC(QString parentName, QList<Attribute *> attLis
 
     for (Attribute *attribute : attList) {
         if (attribute->getIsOptional()) {
-            *pOut << indent << "bool m_" << parentName.toLower() << "_" << attribute->getName().toLower() << "_isHere = false;" << endl;
+            *pOut << indent << "bool m_" << parentName.toLower() << "_" << attribute->getName().toLower() << "_isHere = false;" << Qt::endl;
         }
         if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
             this->declareAtt_REC(attribute->getName(), attribute->getSubAttArray(), pOut);
         } else {
             QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
             QString initString = this->getInitStringFromDataType(attribute->getDataType());
-            *pOut << indent << typeString << "m_" << parentName.toLower() << "_" << attribute->getName().toLower() << initString << ";" << endl;
+            *pOut << indent << typeString << "m_" << parentName.toLower() << "_" << attribute->getName().toLower() << initString << ";" << Qt::endl;
         }
     }
 }
@@ -401,42 +401,42 @@ void CodeGenerator::grabAttValues_REC(QString protocolName, QStringList parentNa
 
        if (attribute->getIsOptional()) {
           *pOut << indent << "if ((pCmdPayload->" << this->getPayloadPath(parentNames) << "optAttFlagsBitfield & " << protocolName.toUpper() << "_"
-                   << parentNames.last().toUpper() << "_ATT_" << attribute->getName().toUpper() << "_FLAG) != 0) {" << endl;
+                   << parentNames.last().toUpper() << "_ATT_" << attribute->getName().toUpper() << "_FLAG) != 0) {" << Qt::endl;
           indent = this->getIndent(indentNb + 1);
 
           if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
              nextParentNames.append(attribute->getName());
-             *pOut << indent << "m_" << parentNames.last().toLower() << "_" << attribute->getName().toLower() << "_isHere = true;" << endl;
+             *pOut << indent << "m_" << parentNames.last().toLower() << "_" << attribute->getName().toLower() << "_isHere = true;" << Qt::endl;
              this->grabAttValues_REC(protocolName, nextParentNames, attribute->getSubAttArray(), pOut, indentNb + 1);
           } else {
              if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) || (attribute->getDataType() == NS_AttDataType::STRING)) {
                  *pOut << indent << "m_" << parentNames.last().toLower() << "_" << attribute->getName().toLower() << " = pCmdPayload->"
-                          << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower() << ";" << endl;
+                          << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower() << ";" << Qt::endl;
              } else {
                  *pOut << indent << "m_" << parentNames.last().toLower() << "_" << attribute->getName().toLower() << " = pCmdPayload->"
-                          << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";" << endl;
+                          << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";" << Qt::endl;
              }
-             *pOut << indent << "m_" << parentNames.last().toLower() << "_" << attribute->getName().toLower() << "_isHere = true;" << endl;
+             *pOut << indent << "m_" << parentNames.last().toLower() << "_" << attribute->getName().toLower() << "_isHere = true;" << Qt::endl;
           }
           indent = this->getIndent(indentNb);
-          *pOut << indent << "}" << endl;
+          *pOut << indent << "}" << Qt::endl;
        } else {
           if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
              nextParentNames.append(attribute->getName());
              this->grabAttValues_REC(protocolName, nextParentNames, attribute->getSubAttArray(), pOut, indentNb);
           } else if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) || (attribute->getDataType() == NS_AttDataType::STRING)) {
              *pOut << indent << "m_" << parentNames.last().toLower() << "_" << attribute->getName().toLower() << " = pCmdPayload->"
-                      << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower() << ";" << endl;
+                      << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower() << ";" << Qt::endl;
           } else {
              *pOut << indent << "m_" << parentNames.last().toLower() << "_" << attribute->getName().toLower() << " = pCmdPayload->"
-                      << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";" << endl;
+                      << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";" << Qt::endl;
           }
        }
     }
 }
 
 QString CodeGenerator::toCamelCase(const QString& s) {
-   QStringList parts = s.split('_', QString::SkipEmptyParts);
+   QStringList parts = s.split('_', Qt::SkipEmptyParts);
    for (int i=1; i<parts.size(); ++i) {
       parts[i].replace(0, 1, parts[i][0].toUpper());
    }
@@ -444,7 +444,7 @@ QString CodeGenerator::toCamelCase(const QString& s) {
 }
 
 QString CodeGenerator::toFirstLetterUpperCase(const QString& s) {
-   QStringList parts = s.split('_', QString::SkipEmptyParts);
+   QStringList parts = s.split('_', Qt::SkipEmptyParts);
    for (int i=0; i<parts.size(); ++i) {
       parts[i].replace(0, 1, parts[i][0].toUpper());
    }
@@ -488,48 +488,48 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
    if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
       QTextStream out(&file);
       QFileInfo fileInfo(file);
-      out << "/**" << endl;
-      out << " * \\file " << protocolName << "_Main.h" << endl;
-      out << " * \\brief " << protocolName << " protocol module" << endl;
-      out << " * \\author LCSF Generator v" << APP_VERSION << endl;
-      out << " *" << endl;
-      out << " */" << endl;
-      out << endl;
-      out << "#ifndef " << protocolName.toLower() << "_main_h" << endl;
-      out << "#define " << protocolName.toLower() << "_main_h" << endl;
-      out << endl;
-      out << "// *** Libraries include ***" << endl;
-      out << "// Standard lib" << endl;
-      out << "// Custom lib" << endl;
-      out << "#include <LCSF_Config.h>" << endl;
-      out << endl;
-      out << "// *** Definitions ***" << endl;
-      out << "// --- Public Types ---" << endl;
-      out << endl;
+      out << "/**" << Qt::endl;
+      out << " * \\file " << protocolName << "_Main.h" << Qt::endl;
+      out << " * \\brief " << protocolName << " protocol module" << Qt::endl;
+      out << " * \\author LCSF Generator v" << APP_VERSION << Qt::endl;
+      out << " *" << Qt::endl;
+      out << " */" << Qt::endl;
+      out << Qt::endl;
+      out << "#ifndef " << protocolName.toLower() << "_main_h" << Qt::endl;
+      out << "#define " << protocolName.toLower() << "_main_h" << Qt::endl;
+      out << Qt::endl;
+      out << "// *** Libraries include ***" << Qt::endl;
+      out << "// Standard lib" << Qt::endl;
+      out << "// Custom lib" << Qt::endl;
+      out << "#include <LCSF_Config.h>" << Qt::endl;
+      out << Qt::endl;
+      out << "// *** Definitions ***" << Qt::endl;
+      out << "// --- Public Types ---" << Qt::endl;
+      out << Qt::endl;
 
       // Commands enum
-      out << "// Command name enum" << endl;
-      out << "enum _" << protocolName.toLower() << "_cmd_names {" << endl;
+      out << "// Command name enum" << Qt::endl;
+      out << "enum _" << protocolName.toLower() << "_cmd_names {" << Qt::endl;
       for (Command *command : cmdList) {
-         out << "    " << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << "," << endl;
+         out << "    " << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << "," << Qt::endl;
       }
-      out << "    " << protocolName.toUpper() << "_CMD_COUNT," << endl;
-      out << "};" << endl;
-      out << endl;
+      out << "    " << protocolName.toUpper() << "_CMD_COUNT," << Qt::endl;
+      out << "};" << Qt::endl;
+      out << Qt::endl;
 
       // Attributes enums
       QList<CodeGenerator::T_attInfos> sortedAttInfosList = this->insertSortAttInfosListByParentName(attInfosList);
       if (sortedAttInfosList.size() > 0) {
-         out << "// Attributes enums" << endl;
+         out << "// Attributes enums" << Qt::endl;
          for (int idx = 0; idx < sortedAttInfosList.size(); idx++) {
             CodeGenerator::T_attInfos currentAttInfo = sortedAttInfosList.at(idx);
-            out << "enum _" << protocolName.toLower() << "_" << currentAttInfo.parentName.toLower() << "_att_names {" << endl;
+            out << "enum _" << protocolName.toLower() << "_" << currentAttInfo.parentName.toLower() << "_att_names {" << Qt::endl;
             QString previousParentName = currentAttInfo.parentName;
-            out << "    " << protocolName.toUpper() << "_" << currentAttInfo.parentName.toUpper() << "_ATT_" << currentAttInfo.attName.toUpper() << "," << endl;
+            out << "    " << protocolName.toUpper() << "_" << currentAttInfo.parentName.toUpper() << "_ATT_" << currentAttInfo.attName.toUpper() << "," << Qt::endl;
             if (idx < sortedAttInfosList.size() - 1) {
                currentAttInfo = sortedAttInfosList.at(idx+1);
                while (currentAttInfo.parentName.compare(previousParentName) == 0) {
-                  out << "    " << protocolName.toUpper() << "_" << currentAttInfo.parentName.toUpper() << "_ATT_" << currentAttInfo.attName.toUpper() << "," << endl;
+                  out << "    " << protocolName.toUpper() << "_" << currentAttInfo.parentName.toUpper() << "_ATT_" << currentAttInfo.attName.toUpper() << "," << Qt::endl;
                   previousParentName = currentAttInfo.parentName;
                   idx++;
                   if (idx < sortedAttInfosList.size() - 1) {
@@ -539,14 +539,14 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
                   }
                }
             }
-            out << "};" << endl;
-            out << endl;
+            out << "};" << Qt::endl;
+            out << Qt::endl;
          }
       }
 
       // Attributes payload structs
       if (this->protocolHasSubAtt) {
-         out << "// Attribute with sub-attributes structures" << endl;
+         out << "// Attribute with sub-attributes structures" << Qt::endl;
          CodeGenerator::T_attInfos currentAttInfo;
          // Parse the list on reverse to declare sub-attributes before their parent and solve dependencies
          for (int idx = attInfosList.size() - 1; idx >= 0; idx--) {
@@ -560,14 +560,14 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
                          hasOptAtt = true;
                      }
                      out << "#define " << protocolName.toUpper() << "_" << currentAttInfo.attName.toUpper()
-                            << "_ATT_" << attribute->getName().toUpper() << "_FLAG (1 << " << attCounter << ")" << endl;
+                            << "_ATT_" << attribute->getName().toUpper() << "_FLAG (1 << " << attCounter << ")" << Qt::endl;
                      attCounter++;
                   }
                }
-               out << "typedef struct _" << protocolName.toLower() << "_" << currentAttInfo.parentName.toLower() << "_att_" << currentAttInfo.attName.toLower() << "_att_payload {" << endl;
+               out << "typedef struct _" << protocolName.toLower() << "_" << currentAttInfo.parentName.toLower() << "_att_" << currentAttInfo.attName.toLower() << "_att_payload {" << Qt::endl;
                if (hasOptAtt) {
                   QString typeString = getFlagTypeStringFromAttNb(attCounter, "optAttFlagsBitfield");
-                  out << "    " << typeString << ";" << endl;
+                  out << "    " << typeString << ";" << Qt::endl;
                }
                int subIdx = idx + 1;
                int subAttCpt = 0;
@@ -578,30 +578,30 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
                      subAttCpt++;
                      if (currentSubAttInfo.dataType == NS_AttDataType::SUB_ATTRIBUTES) {
                         out << "    " << protocolName.toLower() << "_" << currentSubAttInfo.parentName.toLower() << "_att_" << currentSubAttInfo.attName.toLower() << "_att_payload_t "
-                               << currentSubAttInfo.attName.toLower() << "_payload;" << endl;
+                               << currentSubAttInfo.attName.toLower() << "_payload;" << Qt::endl;
                      } else if (currentSubAttInfo.dataType == NS_AttDataType::BYTE_ARRAY) {
                         QString typeString = this->getTypeStringFromDataType(currentSubAttInfo.dataType);
-                        out << "    " << "uint32_t " << currentSubAttInfo.attName.toLower() << "Size;" << endl;
-                        out << "    " << typeString << "p_" << currentSubAttInfo.attName.toLower() << ";" << endl;
+                        out << "    " << "uint32_t " << currentSubAttInfo.attName.toLower() << "Size;" << Qt::endl;
+                        out << "    " << typeString << "p_" << currentSubAttInfo.attName.toLower() << ";" << Qt::endl;
                      } else if (currentSubAttInfo.dataType == NS_AttDataType::STRING) {
                         QString typeString = this->getTypeStringFromDataType(currentSubAttInfo.dataType);
-                        out << "    " << typeString << "p_" << currentSubAttInfo.attName.toLower() << ";" << endl;
+                        out << "    " << typeString << "p_" << currentSubAttInfo.attName.toLower() << ";" << Qt::endl;
                      } else {
                         QString typeString = this->getTypeStringFromDataType(currentSubAttInfo.dataType);
-                        out << "    " << typeString << currentSubAttInfo.attName.toLower() << ";" << endl;
+                        out << "    " << typeString << currentSubAttInfo.attName.toLower() << ";" << Qt::endl;
                      }
                   }
                   // Next attribute
                   subIdx++;
                }
-               out << "} " << protocolName.toLower() << "_" << currentAttInfo.parentName.toLower() << "_att_" << currentAttInfo.attName.toLower() << "_att_payload_t;" << endl;
-               out << endl;
+               out << "} " << protocolName.toLower() << "_" << currentAttInfo.parentName.toLower() << "_att_" << currentAttInfo.attName.toLower() << "_att_payload_t;" << Qt::endl;
+               out << Qt::endl;
             }
          }
       }
 
       // Commands payload struct
-      out << "// Commands data structures" << endl;
+      out << "// Commands data structures" << Qt::endl;
       for (Command *command : cmdList) {
          hasOptAtt = false;
          if (command->getAttArray().size() > 0) {
@@ -612,77 +612,77 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
                       hasOptAtt = true;
                   }
                   out << "#define " << protocolName.toUpper() << "_" << command->getName().toUpper()
-                         << "_ATT_" << attribute->getName().toUpper() << "_FLAG (1 << " << attCounter << ")" << endl;
+                         << "_ATT_" << attribute->getName().toUpper() << "_FLAG (1 << " << attCounter << ")" << Qt::endl;
                   attCounter++;
                }
             }
-            out << "typedef struct _" << protocolName.toLower() << "_" << command->getName().toLower() << "_att_payload {" << endl;
+            out << "typedef struct _" << protocolName.toLower() << "_" << command->getName().toLower() << "_att_payload {" << Qt::endl;
             if (hasOptAtt) {
                QString typeString = getFlagTypeStringFromAttNb(attCounter, "optAttFlagsBitfield");
-               out << "    " << typeString << ";" << endl;
+               out << "    " << typeString << ";" << Qt::endl;
             }
             for (Attribute *attribute : command->getAttArray()) {
                if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
                   out << "    " << protocolName.toLower() << "_" << command->getName().toLower() << "_att_" << attribute->getName().toLower() << "_att_payload_t "
-                         << attribute->getName().toLower() << "_payload;" << endl;
+                         << attribute->getName().toLower() << "_payload;" << Qt::endl;
                } else if (attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) {
                   QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
-                  out << "    " << "uint32_t " << attribute->getName().toLower() << "Size;" << endl;
-                  out << "    " << typeString << "p_" << attribute->getName().toLower() << ";" << endl;
+                  out << "    " << "uint32_t " << attribute->getName().toLower() << "Size;" << Qt::endl;
+                  out << "    " << typeString << "p_" << attribute->getName().toLower() << ";" << Qt::endl;
                } else if (attribute->getDataType() == NS_AttDataType::STRING) {
                   QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
-                  out << "    " << typeString << "p_" << attribute->getName().toLower() << ";" << endl;
+                  out << "    " << typeString << "p_" << attribute->getName().toLower() << ";" << Qt::endl;
                } else {
                   QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
-                  out << "    " << typeString << attribute->getName().toLower() << ";" << endl;
+                  out << "    " << typeString << attribute->getName().toLower() << ";" << Qt::endl;
                }
             }
-            out << "} " << protocolName.toLower() << "_" << command->getName().toLower() << "_att_payload_t;" << endl;
-            out << endl;
+            out << "} " << protocolName.toLower() << "_" << command->getName().toLower() << "_att_payload_t;" << Qt::endl;
+            out << Qt::endl;
          }
       }
 
       // Command payload union
-      out << "// Command payload union" << endl;
-      out << "typedef union _" << protocolName.toLower() << "_cmd_payload {" << endl;
+      out << "// Command payload union" << Qt::endl;
+      out << "typedef union _" << protocolName.toLower() << "_cmd_payload {" << Qt::endl;
       for (Command *command : cmdList) {
          if (command->getAttArray().size() > 0) {
             out << "    " << protocolName.toLower() << "_" << command->getName().toLower() << "_att_payload_t "
-                   << command->getName().toLower() << "_payload;" << endl;
+                   << command->getName().toLower() << "_payload;" << Qt::endl;
          }
       }
-      out << "} " << protocolName.toLower() << "_cmd_payload_t;" << endl;
-      out << endl;
+      out << "} " << protocolName.toLower() << "_cmd_payload_t;" << Qt::endl;
+      out << Qt::endl;
 
       // Function headers
-      out << "// --- Public Function Prototypes ---" << endl;
-      out << endl;
+      out << "// --- Public Function Prototypes ---" << Qt::endl;
+      out << Qt::endl;
       if (codeExtract.getExtractionComplete()) {
          out << codeExtract.getUnknownPublicFunctionsHeaders();
       } else {
-         out << "/**" << endl;
-         out << " * \\fn bool " << protocolName << "_MainInit(uint8_t *pBuffer, size_t buffSize)" << endl;
-         out << " * \\brief Initialize the module" << endl;
-         out << " *" << endl;
-         out << " * \\param pBuffer pointer to send buffer" << endl;
-         out << " * \\param buffSize buffer size" << endl;
-         out << " * \\return bool: true if operation was a success" << endl;
-         out << " */" << endl;
-         out << "bool " << protocolName << "_MainInit(uint8_t *pBuffer, size_t buffSize);" << endl;
-         out << endl;
+         out << "/**" << Qt::endl;
+         out << " * \\fn bool " << protocolName << "_MainInit(uint8_t *pBuffer, size_t buffSize)" << Qt::endl;
+         out << " * \\brief Initialize the module" << Qt::endl;
+         out << " *" << Qt::endl;
+         out << " * \\param pBuffer pointer to send buffer" << Qt::endl;
+         out << " * \\param buffSize buffer size" << Qt::endl;
+         out << " * \\return bool: true if operation was a success" << Qt::endl;
+         out << " */" << Qt::endl;
+         out << "bool " << protocolName << "_MainInit(uint8_t *pBuffer, size_t buffSize);" << Qt::endl;
+         out << Qt::endl;
       }
-      out << "/**" << endl;
-      out << " * \\fn bool " << protocolName << "_MainExecute(uint_fast16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload)" << endl;
-      out << " * \\brief Execute a command" << endl;
-      out << " *" << endl;
-      out << " * \\param cmdName name of the command" << endl;
-      out << " * \\param pCmdPayload pointer to command payload" << endl;
-      out << " * \\return bool: true if operation was a success" << endl;
-      out << " */" << endl;
-      out << "bool " << protocolName << "_MainExecute(uint_fast16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << endl;
-      out << endl;
-      out << "// *** End Definitions ***" << endl;
-      out << "#endif // " << protocolName.toLower() << "_Main_h" << endl;
+      out << "/**" << Qt::endl;
+      out << " * \\fn bool " << protocolName << "_MainExecute(uint_fast16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload)" << Qt::endl;
+      out << " * \\brief Execute a command" << Qt::endl;
+      out << " *" << Qt::endl;
+      out << " * \\param cmdName name of the command" << Qt::endl;
+      out << " * \\param pCmdPayload pointer to command payload" << Qt::endl;
+      out << " * \\return bool: true if operation was a success" << Qt::endl;
+      out << " */" << Qt::endl;
+      out << "bool " << protocolName << "_MainExecute(uint_fast16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << Qt::endl;
+      out << Qt::endl;
+      out << "// *** End Definitions ***" << Qt::endl;
+      out << "#endif // " << protocolName.toLower() << "_Main_h" << Qt::endl;
       file.close();
    }
 }
@@ -703,37 +703,37 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
          QString test = codeExtract.getUnknownIncludes();
          out << test;
       } else {
-          out << "/**" << endl;
-          out << " * \\file " << protocolName << "_Main.c" << endl;
-          out << " * \\brief " << protocolName << " protocol module (" << ((isA) ? "A":"B") << ")" << endl;
-          out << " * \\author LCSF Generator v" << APP_VERSION << endl;
-          out << " *" << endl;
-          out << " */" << endl;
-          out << endl;
-          out << "// *** Libraries include ***" << endl;
-          out << "// Standard lib" << endl;
-          out << "// Custom lib" << endl;
-          out << "#include <LCSF_Config.h>" << endl;
-          out << "#include \"LCSF_Bridge_" << protocolName << ".h\"" << endl;
-          out << "#include \"" << protocolName << "_Main.h\"" << endl;
-          out << endl;
-          out << "// *** Definitions ***" << endl;
+          out << "/**" << Qt::endl;
+          out << " * \\file " << protocolName << "_Main.c" << Qt::endl;
+          out << " * \\brief " << protocolName << " protocol module (" << ((isA) ? "A":"B") << ")" << Qt::endl;
+          out << " * \\author LCSF Generator v" << APP_VERSION << Qt::endl;
+          out << " *" << Qt::endl;
+          out << " */" << Qt::endl;
+          out << Qt::endl;
+          out << "// *** Libraries include ***" << Qt::endl;
+          out << "// Standard lib" << Qt::endl;
+          out << "// Custom lib" << Qt::endl;
+          out << "#include <LCSF_Config.h>" << Qt::endl;
+          out << "#include \"LCSF_Bridge_" << protocolName << ".h\"" << Qt::endl;
+          out << "#include \"" << protocolName << "_Main.h\"" << Qt::endl;
+          out << Qt::endl;
+          out << "// *** Definitions ***" << Qt::endl;
       }
 
       if (codeExtract.getExtractionComplete()) {
          out << codeExtract.getUnknownDefinitions();
       } else {
-         out << "// --- Private Macros ---" << endl;
-         out << "// --- Private Types ---" << endl;
-         out << "typedef struct _" << protocolName.toLower() << "_info {" << endl;
-         out << "    uint8_t *pSendBuffer;" << endl;
-         out << "    uint16_t buffSize;" << endl;
-         out << "    " << protocolName.toLower() << "_cmd_payload_t SendCmdPayload;" << endl;
-         out << "} " << protocolName.toLower() << "_info_t;" << endl;
-         out << endl;
-         out << "// --- Private Function Prototypes ---" << endl;
-         out << "// Generated functions" << endl;
-         out << "static bool " << protocolName << "SendCommand(uint_fast16_t cmdName, bool hasPayload);" << endl;
+         out << "// --- Private Macros ---" << Qt::endl;
+         out << "// --- Private Types ---" << Qt::endl;
+         out << "typedef struct _" << protocolName.toLower() << "_info {" << Qt::endl;
+         out << "    uint8_t *pSendBuffer;" << Qt::endl;
+         out << "    uint16_t buffSize;" << Qt::endl;
+         out << "    " << protocolName.toLower() << "_cmd_payload_t SendCmdPayload;" << Qt::endl;
+         out << "} " << protocolName.toLower() << "_info_t;" << Qt::endl;
+         out << Qt::endl;
+         out << "// --- Private Function Prototypes ---" << Qt::endl;
+         out << "// Generated functions" << Qt::endl;
+         out << "static bool " << protocolName << "SendCommand(uint_fast16_t cmdName, bool hasPayload);" << Qt::endl;
 
          for (int idx = 0; idx < cmdList.size(); idx++) {
             Command *command = cmdList.at(idx);
@@ -741,67 +741,67 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
             if (command->isReceivable(isA)) {
                out << "static bool " << protocolName << "Execute" << command->getName() << "(";
                if (command->getAttArray().size() > 0) {
-                  out << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << endl;
+                  out << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << Qt::endl;
                } else {
-                  out << "void);" << endl;
+                  out << "void);" << Qt::endl;
                }
             }
          }
-         out << endl;
-         out << "// --- Private Variables ---" << endl;
-         out << "static " << protocolName.toLower() << "_info_t " << protocolName << "Info;" << endl;
-         out << endl;
-         out << "// *** End Definitions ***" << endl;
-         out << endl;
-         out << "// *** Private Functions ***" << endl;
+         out << Qt::endl;
+         out << "// --- Private Variables ---" << Qt::endl;
+         out << "static " << protocolName.toLower() << "_info_t " << protocolName << "Info;" << Qt::endl;
+         out << Qt::endl;
+         out << "// *** End Definitions ***" << Qt::endl;
+         out << Qt::endl;
+         out << "// *** Private Functions ***" << Qt::endl;
       }
-      out << endl;
+      out << Qt::endl;
 
       if (codeExtract.getExtractionComplete()) {
          out << codeExtract.getUnknownPrivateFunctions();
       } else {
-         out << "/**" << endl;
-         out << " * \\fn static bool " << protocolName << "SendCommand(uint_fast16_t cmdName, bool hasPayload)" << endl;
-         out << " * \\brief Send a command" << endl;
-         out << " *=" << endl;
-         out << " * \\param cmdName name of the command to send" << endl;
-         out << " * \\param hasPayload indicates if command has a payload or not" << endl;
-         out << " * \\return bool: true if operation was a success" << endl;
-         out << " */" << endl;
-         out << "static bool " << protocolName << "SendCommand(uint_fast16_t cmdName, bool hasPayload) {" << endl;
-         out << endl;
-         out << "    if (cmdName >= " << protocolName.toUpper() << "_CMD_COUNT) {" << endl;
-         out << "        return false;" << endl;
-         out << "    }" << endl;
-         out << "    int msgSize = 0;" << endl;
-         out << "    if (hasPayload) {" << endl;
-         out << "        " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload = &" << protocolName << "Info.SendCmdPayload;" << endl;
-         out << "        msgSize = LCSF_Bridge_" << protocolName << "Encode(cmdName, pCmdPayload, " << protocolName << "Info.pSendBuffer, " << protocolName << "Info.buffSize);" << endl;
-         out << "    } else {" << endl;
-         out << "        msgSize = LCSF_Bridge_" << protocolName << "Encode(cmdName, NULL, " << protocolName << "Info.pSendBuffer, " << protocolName << "Info.buffSize);" << endl;
-         out << "    }" << endl;
-         out << "    if (msgSize <= 0) {" << endl;
-         out << "        return false;" << endl;
-         out << "    }" << endl;
-         out << "    // TODO Pass buffer to send function" << endl;
-         out << "    return true;" << endl;
-         out << "}" << endl;
-         out << endl;
-         out << "/**" << endl;
-         out << " * \\fn static bool " << protocolName << "ExecuteX(void)" << endl;
-         out << " * \\brief Execute command X (no payload)" << endl;
-         out << " *" << endl;
-         out << " * \\return bool: true if operation was a success" << endl;
-         out << " */" << endl;
-         out << endl;
-         out << "/**" << endl;
-         out << " * \\fn static bool " << protocolName << "ExecuteX(" << protocolName.toLower() << "_cmd_payload_t *pCmdPayload)" << endl;
-         out << " * \\brief Execute command X (with payload)" << endl;
-         out << " *" << endl;
-         out << " * \\param pCmdPayload pointer to the command payload" << endl;
-         out << " * \\return bool: true if operation was a success" << endl;
-         out << " */" << endl;
-         out << endl;
+         out << "/**" << Qt::endl;
+         out << " * \\fn static bool " << protocolName << "SendCommand(uint_fast16_t cmdName, bool hasPayload)" << Qt::endl;
+         out << " * \\brief Send a command" << Qt::endl;
+         out << " *=" << Qt::endl;
+         out << " * \\param cmdName name of the command to send" << Qt::endl;
+         out << " * \\param hasPayload indicates if command has a payload or not" << Qt::endl;
+         out << " * \\return bool: true if operation was a success" << Qt::endl;
+         out << " */" << Qt::endl;
+         out << "static bool " << protocolName << "SendCommand(uint_fast16_t cmdName, bool hasPayload) {" << Qt::endl;
+         out << Qt::endl;
+         out << "    if (cmdName >= " << protocolName.toUpper() << "_CMD_COUNT) {" << Qt::endl;
+         out << "        return false;" << Qt::endl;
+         out << "    }" << Qt::endl;
+         out << "    int msgSize = 0;" << Qt::endl;
+         out << "    if (hasPayload) {" << Qt::endl;
+         out << "        " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload = &" << protocolName << "Info.SendCmdPayload;" << Qt::endl;
+         out << "        msgSize = LCSF_Bridge_" << protocolName << "Encode(cmdName, pCmdPayload, " << protocolName << "Info.pSendBuffer, " << protocolName << "Info.buffSize);" << Qt::endl;
+         out << "    } else {" << Qt::endl;
+         out << "        msgSize = LCSF_Bridge_" << protocolName << "Encode(cmdName, NULL, " << protocolName << "Info.pSendBuffer, " << protocolName << "Info.buffSize);" << Qt::endl;
+         out << "    }" << Qt::endl;
+         out << "    if (msgSize <= 0) {" << Qt::endl;
+         out << "        return false;" << Qt::endl;
+         out << "    }" << Qt::endl;
+         out << "    // TODO Pass buffer to send function" << Qt::endl;
+         out << "    return true;" << Qt::endl;
+         out << "}" << Qt::endl;
+         out << Qt::endl;
+         out << "/**" << Qt::endl;
+         out << " * \\fn static bool " << protocolName << "ExecuteX(void)" << Qt::endl;
+         out << " * \\brief Execute command X (no payload)" << Qt::endl;
+         out << " *" << Qt::endl;
+         out << " * \\return bool: true if operation was a success" << Qt::endl;
+         out << " */" << Qt::endl;
+         out << Qt::endl;
+         out << "/**" << Qt::endl;
+         out << " * \\fn static bool " << protocolName << "ExecuteX(" << protocolName.toLower() << "_cmd_payload_t *pCmdPayload)" << Qt::endl;
+         out << " * \\brief Execute command X (with payload)" << Qt::endl;
+         out << " *" << Qt::endl;
+         out << " * \\param pCmdPayload pointer to the command payload" << Qt::endl;
+         out << " * \\return bool: true if operation was a success" << Qt::endl;
+         out << " */" << Qt::endl;
+         out << Qt::endl;
       }
 
       for (int idx = 0; idx < cmdList.size(); idx++) {
@@ -822,34 +822,34 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
             } else {
                out << "static bool " << protocolName << "Execute" << command->getName() << "(";
                if (command->getAttArray().size() > 0) {
-                  out << protocolName.toLower() << "_cmd_payload_t *pCmdPayload) {" << endl;
-                  out << "    if (pCmdPayload == NULL) {" << endl;
-                  out << "       return false;" << endl;
-                  out << "    }" << endl;
-                  out << "    // Declare attributes" << endl;
+                  out << protocolName.toLower() << "_cmd_payload_t *pCmdPayload) {" << Qt::endl;
+                  out << "    if (pCmdPayload == NULL) {" << Qt::endl;
+                  out << "       return false;" << Qt::endl;
+                  out << "    }" << Qt::endl;
+                  out << "    // Declare attributes" << Qt::endl;
                   declareAtt_REC(command->getName(), command->getAttArray(), &out);
-                  out << "    // Retrieve attributes data" << endl;
+                  out << "    // Retrieve attributes data" << Qt::endl;
                   for (Attribute *attribute : command->getAttArray()) {
                      if (attribute->getIsOptional()) {
                         out << "    if ((pCmdPayload->" << command->getName().toLower() << "_payload.optAttFlagsBitfield & " << protocolName.toUpper() << "_"
-                               << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper() << "_FLAG) != 0) {" << endl;
+                               << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper() << "_FLAG) != 0) {" << Qt::endl;
 
                         if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
                            QStringList parentNames = { command->getName(), attribute->getName() };
-                           out << "        m_" << command->getName().toLower() << "_" << attribute->getName().toLower() << "_isHere = true;" << endl;
+                           out << "        m_" << command->getName().toLower() << "_" << attribute->getName().toLower() << "_isHere = true;" << Qt::endl;
                            this->grabAttValues_REC(protocolName, parentNames, attribute->getSubAttArray(), &out, 2);
                         } else {
                             if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) || (attribute->getDataType() == NS_AttDataType::STRING)) {
                                out << "        " << "m_" << command->getName().toLower() << "_" << attribute->getName().toLower() << " = pCmdPayload->"
-                                      << command->getName().toLower() << "_payload.p_" << attribute->getName().toLower() << ";" << endl;
+                                      << command->getName().toLower() << "_payload.p_" << attribute->getName().toLower() << ";" << Qt::endl;
                             } else {
                                QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
                                out << "        " << "m_" << command->getName().toLower() << "_" << attribute->getName().toLower() << " = pCmdPayload->"
-                                      << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ";" << endl;
+                                      << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ";" << Qt::endl;
                             }
-                            out << "        m_" << command->getName().toLower() << "_" << attribute->getName().toLower() << "_isHere = true;" << endl;
+                            out << "        m_" << command->getName().toLower() << "_" << attribute->getName().toLower() << "_isHere = true;" << Qt::endl;
                         }
-                        out << "    }" << endl;
+                        out << "    }" << Qt::endl;
                      } else {
                         if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
                            QStringList parentNames = { command->getName(), attribute->getName() };
@@ -857,90 +857,90 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
                         } else if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) || (attribute->getDataType() == NS_AttDataType::STRING)) {
                            QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
                            out << "    " << "m_" << command->getName().toLower() << "_" << attribute->getName().toLower() << " = pCmdPayload->"
-                                  << command->getName().toLower() << "_payload.p_" << attribute->getName().toLower() << ";" << endl;
+                                  << command->getName().toLower() << "_payload.p_" << attribute->getName().toLower() << ";" << Qt::endl;
                         } else {
                            QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
                            out << "    " << "m_" << command->getName().toLower() << "_" << attribute->getName().toLower() << " = pCmdPayload->"
-                                  << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ";" << endl;
+                                  << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ";" << Qt::endl;
                         }
                      }
                   }
-                  out << "    // Process data" << endl;
-                  out << "    #pragma GCC warning \"#warning TODO: function to implement\"" << endl;
+                  out << "    // Process data" << Qt::endl;
+                  out << "    #pragma GCC warning \"#warning TODO: function to implement\"" << Qt::endl;
                } else {
-                  out << "void) {" << endl;
-                  out << "    #pragma GCC warning \"#warning TODO: function to implement\"" << endl;
+                  out << "void) {" << Qt::endl;
+                  out << "    #pragma GCC warning \"#warning TODO: function to implement\"" << Qt::endl;
                }
-               out << "    return true;" << endl;
-               out << "}" << endl;
-               out << endl;
+               out << "    return true;" << Qt::endl;
+               out << "}" << Qt::endl;
+               out << Qt::endl;
             }
          }
       }
 
-      out << "// *** Public Functions ***" << endl;
-      out << endl;
+      out << "// *** Public Functions ***" << Qt::endl;
+      out << Qt::endl;
 
       if (codeExtract.getExtractionComplete()) {
          out << codeExtract.getUnknownPublicFunctions();
       } else {
-         out << "/**" << endl;
-         out << " * \\fn bool " << protocolName << "_MainInit(uint8_t *pBuffer, size_t buffSize)" << endl;
-         out << " * \\brief Initialize the module" << endl;
-         out << " *" << endl;
-         out << " * \\param pBuffer pointer to send buffer" << endl;
-         out << " * \\param buffSize buffer size" << endl;
-         out << " * \\return bool: true if operation was a success" << endl;
-         out << " */" << endl;
-         out << "bool " << protocolName << "_MainInit(uint8_t *pBuffer, size_t buffSize) {" << endl;
-         out << "    if (pBuffer == NULL) {" << endl;
-         out << "        return false;" << endl;
-         out << "    }" << endl;
-         out << "    // Note infos" << endl;
-         out << "    " << protocolName << "Info.pSendBuffer = pBuffer;" << endl;
-         out << "    " << protocolName << "Info.buffSize = buffSize;" << endl;
-         out << "    return true;" << endl;
-         out << "}" << endl;
-         out << endl;
-         out << "// Place custom public functions here" << endl;
-         out << endl;
+         out << "/**" << Qt::endl;
+         out << " * \\fn bool " << protocolName << "_MainInit(uint8_t *pBuffer, size_t buffSize)" << Qt::endl;
+         out << " * \\brief Initialize the module" << Qt::endl;
+         out << " *" << Qt::endl;
+         out << " * \\param pBuffer pointer to send buffer" << Qt::endl;
+         out << " * \\param buffSize buffer size" << Qt::endl;
+         out << " * \\return bool: true if operation was a success" << Qt::endl;
+         out << " */" << Qt::endl;
+         out << "bool " << protocolName << "_MainInit(uint8_t *pBuffer, size_t buffSize) {" << Qt::endl;
+         out << "    if (pBuffer == NULL) {" << Qt::endl;
+         out << "        return false;" << Qt::endl;
+         out << "    }" << Qt::endl;
+         out << "    // Note infos" << Qt::endl;
+         out << "    " << protocolName << "Info.pSendBuffer = pBuffer;" << Qt::endl;
+         out << "    " << protocolName << "Info.buffSize = buffSize;" << Qt::endl;
+         out << "    return true;" << Qt::endl;
+         out << "}" << Qt::endl;
+         out << Qt::endl;
+         out << "// Place custom public functions here" << Qt::endl;
+         out << Qt::endl;
       }
-      out << "/**" << endl;
-      out << " * \\fn bool " << protocolName << "_MainExecute(uint_fast16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload)" << endl;
-      out << " * \\brief Execute a command" << endl;
-      out << " *" << endl;
-      out << " * \\param cmdName name of the command" << endl;
-      out << " * \\param pCmdPayload pointer to command payload" << endl;
-      out << " * \\return bool: true if operation was a success" << endl;
-      out << " */" << endl;
-      out << "bool " << protocolName << "_MainExecute(uint_fast16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload) {" << endl;
-      out << "    switch (cmdName) {" << endl;
+      out << "/**" << Qt::endl;
+      out << " * \\fn bool " << protocolName << "_MainExecute(uint_fast16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload)" << Qt::endl;
+      out << " * \\brief Execute a command" << Qt::endl;
+      out << " *" << Qt::endl;
+      out << " * \\param cmdName name of the command" << Qt::endl;
+      out << " * \\param pCmdPayload pointer to command payload" << Qt::endl;
+      out << " * \\return bool: true if operation was a success" << Qt::endl;
+      out << " */" << Qt::endl;
+      out << "bool " << protocolName << "_MainExecute(uint_fast16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload) {" << Qt::endl;
+      out << "    switch (cmdName) {" << Qt::endl;
       for (Command *command : cmdList) {
          if (command->isReceivable(isA)) {
-            out << "        case " << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << ":" << endl;
+            out << "        case " << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << ":" << Qt::endl;
             out << "            return " << protocolName << "Execute" << command->getName();
             if (command->getAttArray().size() > 0) {
-                out<< "(pCmdPayload);" << endl;
+                out<< "(pCmdPayload);" << Qt::endl;
             } else {
-                out<< "();" << endl;
+                out<< "();" << Qt::endl;
             }
-            out << "        break;" << endl;
-            out << endl;
+            out << "        break;" << Qt::endl;
+            out << Qt::endl;
          }
       }
-      out << "        default:" << endl;
+      out << "        default:" << Qt::endl;
 
       QString defaultCommandHandler = codeExtract.getDefaultCommandHandler();
 
       if ((codeExtract.getExtractionComplete()) && (defaultCommandHandler.compare("") != 0)) {
         out << defaultCommandHandler;
       } else {
-        out << "            // This case can be customized (e.g to send an error command)" << endl;
-        out << "            return false;" << endl;
+        out << "            // This case can be customized (e.g to send an error command)" << Qt::endl;
+        out << "            return false;" << Qt::endl;
       }
-      out << "        break;" << endl;
-      out << "    }" << endl;
-      out << "}" << endl;
+      out << "        break;" << Qt::endl;
+      out << "    }" << Qt::endl;
+      out << "}" << Qt::endl;
 
       file.close();
    }
@@ -961,50 +961,50 @@ void CodeGenerator::generateBridgeHeader(QString protocolName, QString protocolI
       out.setCodec("ISO 8859-1");
 
       QFileInfo fileInfo(file);
-      out << "/**" << endl;
-      out << " * \\file LCSF_Bridge_" << protocolName << ".h" << endl;
-      out << " * \\brief " << protocolName << " LCSF bridge module" << endl;
-      out << " * \\author LCSF Generator v" << APP_VERSION << endl;
-      out << " *" << endl;
-      out << " */" << endl;
-      out << endl;
-      out << "#ifndef Lcsf_bridge_" << protocolName.toLower() << "_h" << endl;
-      out << "#define Lcsf_bridge_" << protocolName.toLower() << "_h" << endl;
-      out << endl;
-      out << "// *** Libraries include ***" << endl;
-      out << "// Standard lib" << endl;
-      out << "// Custom lib" << endl;
-      out << "#include <LCSF_Config.h>" << endl;
-      out << "#include <LCSF_Validator.h>" << endl;
-      out << "#include \"" << protocolName << "_Main.h\"" << endl;
-      out << endl;
-      out << "// *** Definitions ***" << endl;
-      out << "// --- Public Types ---" << endl;
-      out << endl;
+      out << "/**" << Qt::endl;
+      out << " * \\file LCSF_Bridge_" << protocolName << ".h" << Qt::endl;
+      out << " * \\brief " << protocolName << " LCSF bridge module" << Qt::endl;
+      out << " * \\author LCSF Generator v" << APP_VERSION << Qt::endl;
+      out << " *" << Qt::endl;
+      out << " */" << Qt::endl;
+      out << Qt::endl;
+      out << "#ifndef Lcsf_bridge_" << protocolName.toLower() << "_h" << Qt::endl;
+      out << "#define Lcsf_bridge_" << protocolName.toLower() << "_h" << Qt::endl;
+      out << Qt::endl;
+      out << "// *** Libraries include ***" << Qt::endl;
+      out << "// Standard lib" << Qt::endl;
+      out << "// Custom lib" << Qt::endl;
+      out << "#include <LCSF_Config.h>" << Qt::endl;
+      out << "#include <LCSF_Validator.h>" << Qt::endl;
+      out << "#include \"" << protocolName << "_Main.h\"" << Qt::endl;
+      out << Qt::endl;
+      out << "// *** Definitions ***" << Qt::endl;
+      out << "// --- Public Types ---" << Qt::endl;
+      out << Qt::endl;
 
       // Commands Ids enum
-      out << "// Command identifier enum" << endl;
-      out << "enum _lcsf_" << protocolName.toLower() << "_cmd_id {" << endl;
+      out << "// Command identifier enum" << Qt::endl;
+      out << "enum _lcsf_" << protocolName.toLower() << "_cmd_id {" << Qt::endl;
       for (Command *command : cmdList) {
-         out << "    LCSF_" << protocolName.toUpper() << "_CMD_ID_" << command->getName().toUpper() << " = 0x" << QString::number(command->getId(), 16) << "," << endl;
+         out << "    LCSF_" << protocolName.toUpper() << "_CMD_ID_" << command->getName().toUpper() << " = 0x" << QString::number(command->getId(), 16) << "," << Qt::endl;
       }
-      out << "};" << endl;
-      out << endl;
+      out << "};" << Qt::endl;
+      out << Qt::endl;
 
       // Attributes Ids enums
       if (!attIdxList.isEmpty()) {
-         out << "// Attribute identifier enums" << endl;
+         out << "// Attribute identifier enums" << Qt::endl;
          for (int idx = 0; idx < sortedAttInfosList.size(); idx++) {
             CodeGenerator::T_attInfos currentAttInfo = sortedAttInfosList.at(idx);
-            out << "enum _lcsf_" << protocolName.toLower() << "_" << currentAttInfo.parentName.toLower() << "_att_id {" << endl;
+            out << "enum _lcsf_" << protocolName.toLower() << "_" << currentAttInfo.parentName.toLower() << "_att_id {" << Qt::endl;
             QString previousParentName = currentAttInfo.parentName;
             out << "    LCSF_" << protocolName.toUpper() << "_" << currentAttInfo.parentName.toUpper() << "_ATT_ID_" << currentAttInfo.attName.toUpper() << " = 0x"
-                << QString::number(currentAttInfo.attId, 16) << "," << endl;
+                << QString::number(currentAttInfo.attId, 16) << "," << Qt::endl;
             if (idx < sortedAttInfosList.size() - 1) {
                currentAttInfo = sortedAttInfosList.at(idx+1);
                while (currentAttInfo.parentName.compare(previousParentName) == 0) {
                   out << "    LCSF_" << protocolName.toUpper() << "_" << currentAttInfo.parentName.toUpper() << "_ATT_ID_" << currentAttInfo.attName.toUpper() << " = 0x"
-                      << QString::number(currentAttInfo.attId, 16) << "," << endl;
+                      << QString::number(currentAttInfo.attId, 16) << "," << Qt::endl;
                   previousParentName = currentAttInfo.parentName;
                   idx++;
                   if (idx < sortedAttInfosList.size() - 1) {
@@ -1014,72 +1014,72 @@ void CodeGenerator::generateBridgeHeader(QString protocolName, QString protocolI
                   }
                }
             }
-            out << "};" << endl;
-            out << endl;
+            out << "};" << Qt::endl;
+            out << Qt::endl;
          }
       }
-      out << "// --- Public Constants ---" << endl;
-      out << endl;
-      out << "// Bridge decoder filo size" << endl;
-      out << "#define LCSF_BRIDGE_" << protocolName.toUpper() << "_FILO_SIZE " << Command::getMaxAttNb(cmdList)  << endl;
-      out << "// Lcsf protocol identifier" << endl;
-      out << "#define LCSF_" << protocolName.toUpper() << "_PROTOCOL_ID 0x" << protocolId.toInt(nullptr, 10) << endl;
-      out << "// Command number" << endl;
-      out << "#define LCSF_" << protocolName.toUpper() << "_CMD_NB " << protocolName.toUpper() << "_CMD_COUNT" << endl;
+      out << "// --- Public Constants ---" << Qt::endl;
+      out << Qt::endl;
+      out << "// Bridge decoder filo size" << Qt::endl;
+      out << "#define LCSF_BRIDGE_" << protocolName.toUpper() << "_FILO_SIZE " << Command::getMaxAttNb(cmdList)  << Qt::endl;
+      out << "// Lcsf protocol identifier" << Qt::endl;
+      out << "#define LCSF_" << protocolName.toUpper() << "_PROTOCOL_ID 0x" << protocolId.toInt(nullptr, 10) << Qt::endl;
+      out << "// Command number" << Qt::endl;
+      out << "#define LCSF_" << protocolName.toUpper() << "_CMD_NB " << protocolName.toUpper() << "_CMD_COUNT" << Qt::endl;
       if (!attIdxList.isEmpty()) {
-         out << "// Command attribute number" << endl;
+         out << "// Command attribute number" << Qt::endl;
          for (Command *command : cmdList) {
             if (command->getAttArray().size() > 0) {
-               out << "#define LCSF_" << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << "_ATT_NB " << command->getAttArray().size() << endl;
+               out << "#define LCSF_" << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << "_ATT_NB " << command->getAttArray().size() << Qt::endl;
             }
          }
          if (this->protocolHasSubAtt) {
-            out << "// Attribute sub-attributes number" << endl;
+            out << "// Attribute sub-attributes number" << Qt::endl;
             for (CodeGenerator::T_attInfos currentAttInfo : attIdxList) {
                if (currentAttInfo.subAttNb > 0) {
                   out << "#define LCSF_" << protocolName.toUpper() << "_ATT_" << currentAttInfo.attName.toUpper() << "_SUBATT_NB "
-                         << currentAttInfo.subAttNb << endl;
+                         << currentAttInfo.subAttNb << Qt::endl;
                }
             }
          }
       }
-      out << endl;
-      out << "// Protocol descriptor" << endl;
-      out << "extern const lcsf_protocol_desc_t LCSF_" << protocolName << "_ProtDesc;" << endl;
-      out << endl;
-      out << "// --- Public Function Prototypes ---" << endl;
-      out << endl;
-      out << "/**" << endl;
-      out << " * \\fn bool LCSF_Bridge_" << protocolName << "Init(void)" << endl;
-      out << " * \\brief Initialize the module" << endl;
-      out << " *" << endl;
-      out << " * \\return bool: true if operation was a success" << endl;
-      out << " */" << endl;
-      out << "bool LCSF_Bridge_" << protocolName << "Init(void);" << endl;
-      out << endl;
-      out << "/**" << endl;
-      out << " * \\fn bool LCSF_Bridge_" << protocolName << "Receive(lcsf_valid_cmd_t *pValidCmd)" << endl;
-      out << " * \\brief Receive valid command from LCSF_Validator and transmit to " << protocolName << "_Main" << endl;
-      out << " *" << endl;
-      out << " * \\param pValidCmd pointer to the valid command" << endl;
-      out << " * \\return bool: true if operation was a success" << endl;
-      out << " */" << endl;
-      out << "bool LCSF_Bridge_" << protocolName << "Receive(lcsf_valid_cmd_t *pValidCmd);" << endl;
-      out << endl;
-      out << "/**" << endl;
-      out << " * \\fn int LCSF_Bridge_" << protocolName << "Encode(uint_fast16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload, uint8_t *pBuffer, size_t buffSize)" << endl;
-      out << " * \\brief Receive command from " << protocolName << "_Main and transmit to LCSF_Validator for encoding" << endl;
-      out << " *" << endl;
-      out << " * \\param cmdName name of the command" << endl;
-      out << " * \\param pValidCmd pointer to the valid command" << endl;
-      out << " * \\param pBuffer pointer to the send buffer" << endl;
-      out << " * \\param buffSize buffer size" << endl;
-      out << " * \\return int: -1 if operation failed, encoded message size if success" << endl;
-      out << " */" << endl;
-      out << "int LCSF_Bridge_" << protocolName << "Encode(uint_fast16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload, uint8_t *pBuffer, size_t buffSize);" << endl;
-      out << endl;
-      out << "// *** End Definitions ***" << endl;
-      out << "#endif // Lcsf_bridge_" << protocolName.toLower() << "_h" << endl;
+      out << Qt::endl;
+      out << "// Protocol descriptor" << Qt::endl;
+      out << "extern const lcsf_protocol_desc_t LCSF_" << protocolName << "_ProtDesc;" << Qt::endl;
+      out << Qt::endl;
+      out << "// --- Public Function Prototypes ---" << Qt::endl;
+      out << Qt::endl;
+      out << "/**" << Qt::endl;
+      out << " * \\fn bool LCSF_Bridge_" << protocolName << "Init(void)" << Qt::endl;
+      out << " * \\brief Initialize the module" << Qt::endl;
+      out << " *" << Qt::endl;
+      out << " * \\return bool: true if operation was a success" << Qt::endl;
+      out << " */" << Qt::endl;
+      out << "bool LCSF_Bridge_" << protocolName << "Init(void);" << Qt::endl;
+      out << Qt::endl;
+      out << "/**" << Qt::endl;
+      out << " * \\fn bool LCSF_Bridge_" << protocolName << "Receive(lcsf_valid_cmd_t *pValidCmd)" << Qt::endl;
+      out << " * \\brief Receive valid command from LCSF_Validator and transmit to " << protocolName << "_Main" << Qt::endl;
+      out << " *" << Qt::endl;
+      out << " * \\param pValidCmd pointer to the valid command" << Qt::endl;
+      out << " * \\return bool: true if operation was a success" << Qt::endl;
+      out << " */" << Qt::endl;
+      out << "bool LCSF_Bridge_" << protocolName << "Receive(lcsf_valid_cmd_t *pValidCmd);" << Qt::endl;
+      out << Qt::endl;
+      out << "/**" << Qt::endl;
+      out << " * \\fn int LCSF_Bridge_" << protocolName << "Encode(uint_fast16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload, uint8_t *pBuffer, size_t buffSize)" << Qt::endl;
+      out << " * \\brief Receive command from " << protocolName << "_Main and transmit to LCSF_Validator for encoding" << Qt::endl;
+      out << " *" << Qt::endl;
+      out << " * \\param cmdName name of the command" << Qt::endl;
+      out << " * \\param pValidCmd pointer to the valid command" << Qt::endl;
+      out << " * \\param pBuffer pointer to the send buffer" << Qt::endl;
+      out << " * \\param buffSize buffer size" << Qt::endl;
+      out << " * \\return int: -1 if operation failed, encoded message size if success" << Qt::endl;
+      out << " */" << Qt::endl;
+      out << "int LCSF_Bridge_" << protocolName << "Encode(uint_fast16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload, uint8_t *pBuffer, size_t buffSize);" << Qt::endl;
+      out << Qt::endl;
+      out << "// *** End Definitions ***" << Qt::endl;
+      out << "#endif // Lcsf_bridge_" << protocolName.toLower() << "_h" << Qt::endl;
 
       file.close();
    }
@@ -1098,128 +1098,128 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       out.setCodec("ISO 8859-1");
 
       QFileInfo fileInfo(file);
-      out << "/**" << endl;
-      out << " * \\file LCSF_Bridge_" << protocolName << ".c" << endl;
-      out << " * \\brief " << protocolName << " LCSF bridge module (" << ((isA) ? "A":"B") << ")" << endl;
-      out << " * \\author LCSF Generator v" << APP_VERSION << endl;
-      out << " *" << endl;
-      out << " */" << endl;
-      out << endl;
-      out << "// *** Libraries include ***" << endl;
-      out << "// Standard lib" << endl;
-      out << "#include <string.h>" << endl;
-      out << "// Custom lib" << endl;
-      out << "#include <Filo.h>" << endl;
-      out << "#include <LCSF_Config.h>" << endl;
-      out << "#include <LCSF_Transcoder.h>" << endl;
-      out << "#include <LCSF_Validator.h>" << endl;
-      out << "#include \"LCSF_Bridge_" << protocolName << ".h\"" << endl;
-      out << endl;
-      out << "// *** Definitions ***" << endl;
-      out << "// --- Private Types ---" << endl;
-      out << endl;
-      out << "// Module information structure" << endl;
-      out << "typedef struct _lcsf_bridge_" << protocolName.toLower() << "_info {" << endl;
-      out << "    uint8_t FiloData[LCSF_BRIDGE_" << protocolName.toUpper() << "_FILO_SIZE * sizeof(lcsf_valid_att_t)];" << endl;
-      out << "    filo_desc_t Filo;" << endl;
-      out << "    " << protocolName.toLower() << "_cmd_payload_t CmdPayload;" << endl;
-      out << "} lcsf_bridge_" << protocolName.toLower() << "_info_t;" << endl;
-      out << endl;
-      out << "// --- Private Constants ---" << endl;
-      out << "// Array to convert command name value to their lcsf command id" << endl;
-      out << "static const uint16_t LCSF_Bridge_" << protocolName << "_CMDNAME2CMDID[LCSF_" << protocolName.toUpper() << "_CMD_NB] = {" << endl;
+      out << "/**" << Qt::endl;
+      out << " * \\file LCSF_Bridge_" << protocolName << ".c" << Qt::endl;
+      out << " * \\brief " << protocolName << " LCSF bridge module (" << ((isA) ? "A":"B") << ")" << Qt::endl;
+      out << " * \\author LCSF Generator v" << APP_VERSION << Qt::endl;
+      out << " *" << Qt::endl;
+      out << " */" << Qt::endl;
+      out << Qt::endl;
+      out << "// *** Libraries include ***" << Qt::endl;
+      out << "// Standard lib" << Qt::endl;
+      out << "#include <string.h>" << Qt::endl;
+      out << "// Custom lib" << Qt::endl;
+      out << "#include <Filo.h>" << Qt::endl;
+      out << "#include <LCSF_Config.h>" << Qt::endl;
+      out << "#include <LCSF_Transcoder.h>" << Qt::endl;
+      out << "#include <LCSF_Validator.h>" << Qt::endl;
+      out << "#include \"LCSF_Bridge_" << protocolName << ".h\"" << Qt::endl;
+      out << Qt::endl;
+      out << "// *** Definitions ***" << Qt::endl;
+      out << "// --- Private Types ---" << Qt::endl;
+      out << Qt::endl;
+      out << "// Module information structure" << Qt::endl;
+      out << "typedef struct _lcsf_bridge_" << protocolName.toLower() << "_info {" << Qt::endl;
+      out << "    uint8_t FiloData[LCSF_BRIDGE_" << protocolName.toUpper() << "_FILO_SIZE * sizeof(lcsf_valid_att_t)];" << Qt::endl;
+      out << "    filo_desc_t Filo;" << Qt::endl;
+      out << "    " << protocolName.toLower() << "_cmd_payload_t CmdPayload;" << Qt::endl;
+      out << "} lcsf_bridge_" << protocolName.toLower() << "_info_t;" << Qt::endl;
+      out << Qt::endl;
+      out << "// --- Private Constants ---" << Qt::endl;
+      out << "// Array to convert command name value to their lcsf command id" << Qt::endl;
+      out << "static const uint16_t LCSF_Bridge_" << protocolName << "_CMDNAME2CMDID[LCSF_" << protocolName.toUpper() << "_CMD_NB] = {" << Qt::endl;
       for (Command *command : cmdList) {
-         out << "    LCSF_" << protocolName.toUpper() << "_CMD_ID_" << command->getName().toUpper() << "," << endl;
+         out << "    LCSF_" << protocolName.toUpper() << "_CMD_ID_" << command->getName().toUpper() << "," << Qt::endl;
       }
-      out << "};" << endl;
-      out << endl;
-      out << "// --- Private Function Prototypes ---" << endl;
-      out << "static uint16_t LCSF_Bridge_" << protocolName << "_CMDID2CMDNAME(uint_fast16_t cmdId);" << endl;
+      out << "};" << Qt::endl;
+      out << Qt::endl;
+      out << "// --- Private Function Prototypes ---" << Qt::endl;
+      out << "static uint16_t LCSF_Bridge_" << protocolName << "_CMDID2CMDNAME(uint_fast16_t cmdId);" << Qt::endl;
       for (Command *command : cmdList) {
          if ((command->getAttArray().size() > 0) && (command->isReceivable(isA))) {
             out << "static void LCSF_Bridge_" << protocolName << command->getName() << "GetData(lcsf_valid_att_t *pAttArray, "
-                   << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << endl;
+                   << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << Qt::endl;
          }
       }
-      out << "static void LCSF_Bridge_" << protocolName << "GetCmdData(uint_fast16_t cmdName, lcsf_valid_att_t *pAttArray, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << endl;
+      out << "static void LCSF_Bridge_" << protocolName << "GetCmdData(uint_fast16_t cmdName, lcsf_valid_att_t *pAttArray, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << Qt::endl;
       for (Command *command : cmdList) {
          if ((command->getAttArray().size() > 0) && (command->isReceivable(!isA))) {
             out << "static bool LCSF_Bridge_" << protocolName << command->getName() << "FillAtt(lcsf_valid_att_t **pAttArrayAddr, "
-                   << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << endl;
+                   << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << Qt::endl;
          }
       }
-      out << "static bool LCSF_Bridge_" << protocolName << "FillCmdAtt(uint_fast16_t cmdName, lcsf_valid_att_t **pAttArrayAddr, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << endl;
-      out << endl;
-      out << "// --- Private Variables ---" << endl;
-      out << "static lcsf_bridge_" << protocolName.toLower() << "_info_t LcsfBridge" << protocolName << "Info;" << endl;
-      out << endl;
-      out << "// *** End Definitions ***" << endl;
-      out << endl;
-      out << "// *** Private Functions ***" << endl;
-      out << endl;
-      out << "/**" << endl;
-      out << " * \\fn static uint16_t LCSF_Bridge_" << protocolName << "_CMDID2CMDNAME(uint_fast16_t cmdId)" << endl;
-      out << " * \\brief Translate an lcsf command id to its name value" << endl;
-      out << " *" << endl;
-      out << " * \\param cmdId lcsf command identifier to translate" << endl;
-      out << " * \\return uint16_t: name value of the command" << endl;
-      out << " */" << endl;
-      out << "static uint16_t LCSF_Bridge_" << protocolName << "_CMDID2CMDNAME(uint_fast16_t cmdId) {" << endl;
-      out << "    switch (cmdId) {" << endl;
-      out << "        default:" << endl;
+      out << "static bool LCSF_Bridge_" << protocolName << "FillCmdAtt(uint_fast16_t cmdName, lcsf_valid_att_t **pAttArrayAddr, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload);" << Qt::endl;
+      out << Qt::endl;
+      out << "// --- Private Variables ---" << Qt::endl;
+      out << "static lcsf_bridge_" << protocolName.toLower() << "_info_t LcsfBridge" << protocolName << "Info;" << Qt::endl;
+      out << Qt::endl;
+      out << "// *** End Definitions ***" << Qt::endl;
+      out << Qt::endl;
+      out << "// *** Private Functions ***" << Qt::endl;
+      out << Qt::endl;
+      out << "/**" << Qt::endl;
+      out << " * \\fn static uint16_t LCSF_Bridge_" << protocolName << "_CMDID2CMDNAME(uint_fast16_t cmdId)" << Qt::endl;
+      out << " * \\brief Translate an lcsf command id to its name value" << Qt::endl;
+      out << " *" << Qt::endl;
+      out << " * \\param cmdId lcsf command identifier to translate" << Qt::endl;
+      out << " * \\return uint16_t: name value of the command" << Qt::endl;
+      out << " */" << Qt::endl;
+      out << "static uint16_t LCSF_Bridge_" << protocolName << "_CMDID2CMDNAME(uint_fast16_t cmdId) {" << Qt::endl;
+      out << "    switch (cmdId) {" << Qt::endl;
+      out << "        default:" << Qt::endl;
       for (Command *command : cmdList) {
-         out << "        case LCSF_" << protocolName.toUpper() << "_CMD_ID_" << command->getName().toUpper() << ":" << endl;
-         out << "            return " << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << ";" << endl;
+         out << "        case LCSF_" << protocolName.toUpper() << "_CMD_ID_" << command->getName().toUpper() << ":" << Qt::endl;
+         out << "            return " << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << ";" << Qt::endl;
       }
-      out << "    }" << endl;
-      out << "}" << endl;
-      out << endl;
+      out << "    }" << Qt::endl;
+      out << "}" << Qt::endl;
+      out << Qt::endl;
 
       // Command get data functions
-      out << "/**" << endl;
-      out << " * \\fn static void LCSF_Bridge_" << protocolName << "XGetData(lcsf_valid_att_t *pAttArray, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload)" << endl;
-      out << " * \\brief Retrieve data of command X from its valid attribute array and store it in a payload" << endl;
-      out << " *" << endl;
-      out << " * \\param pAttArray pointer to the command attribute array" << endl;
-      out << " * \\param pCmdPayload pointer to the payload to contain the command data" << endl;
-      out << " * \\return void" << endl;
-      out << " */" << endl;
+      out << "/**" << Qt::endl;
+      out << " * \\fn static void LCSF_Bridge_" << protocolName << "XGetData(lcsf_valid_att_t *pAttArray, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload)" << Qt::endl;
+      out << " * \\brief Retrieve data of command X from its valid attribute array and store it in a payload" << Qt::endl;
+      out << " *" << Qt::endl;
+      out << " * \\param pAttArray pointer to the command attribute array" << Qt::endl;
+      out << " * \\param pCmdPayload pointer to the payload to contain the command data" << Qt::endl;
+      out << " * \\return void" << Qt::endl;
+      out << " */" << Qt::endl;
       for (Command *command : cmdList) {
          if ((command->getAttArray().size() > 0) && (command->isReceivable(isA))) {
             out << "static void LCSF_Bridge_" << protocolName << command->getName() << "GetData(lcsf_valid_att_t *pAttArray, "
-                   << protocolName.toLower() << "_cmd_payload_t *pCmdPayload) {" << endl;
-            out << "    if (pCmdPayload == NULL) {" << endl;
-            out << "        return;" << endl;
-            out << "    }" << endl;
+                   << protocolName.toLower() << "_cmd_payload_t *pCmdPayload) {" << Qt::endl;
+            out << "    if (pCmdPayload == NULL) {" << Qt::endl;
+            out << "        return;" << Qt::endl;
+            out << "    }" << Qt::endl;
             for (Attribute *attribute : command->getAttArray()) {
                if (attribute->getIsOptional()) {
-                  out << "    // Initialize optional attribute flags bitfield" << endl;
-                  out << "    pCmdPayload->" << command->getName().toLower() << "_payload.optAttFlagsBitfield = 0;" << endl;
+                  out << "    // Initialize optional attribute flags bitfield" << Qt::endl;
+                  out << "    pCmdPayload->" << command->getName().toLower() << "_payload.optAttFlagsBitfield = 0;" << Qt::endl;
                   break;
                }
             }
             for (Attribute *attribute : command->getAttArray()) {
-               out << "    // Retrieve data of attribute " << attribute->getName() << endl;
+               out << "    // Retrieve data of attribute " << attribute->getName() << Qt::endl;
                if (attribute->getIsOptional()) {
                   out << "    if (pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_"
-                         << attribute->getName().toUpper() << "].Payload.pData != NULL) {" << endl;
-                  out << "        // Note presence of optional attribute" << endl;
+                         << attribute->getName().toUpper() << "].Payload.pData != NULL) {" << Qt::endl;
+                  out << "        // Note presence of optional attribute" << Qt::endl;
                   out << "        pCmdPayload->" << command->getName().toLower() << "_payload.optAttFlagsBitfield |= "
-                         << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper() << "_FLAG;" << endl;
+                         << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper() << "_FLAG;" << Qt::endl;
                   if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
                      QStringList parentNames = { command->getName(), attribute->getName() };
                      this->fillSubAttData_Rec(protocolName, parentNames, attribute->getSubAttArray(), &out, 2);
                   } else if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) || (attribute->getDataType() == NS_AttDataType::STRING)) {
                      out << "        pCmdPayload->" << command->getName().toLower() << "_payload.p_" << attribute->getName().toLower() << " = pAttArray["
                             << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
-                            << "].Payload.pData;" << endl;
+                            << "].Payload.pData;" << Qt::endl;
                   } else {
                      QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
                      out << "        memcpy(&(pCmdPayload->" << command->getName().toLower() << "_payload." << attribute->getName().toLower() << "), pAttArray["
                             << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
-                            << "].Payload.pData, sizeof(" << typeString.chopped(1) << "));" << endl;
+                            << "].Payload.pData, sizeof(" << typeString.chopped(1) << "));" << Qt::endl;
                   }
-                  out << "    }" << endl;
+                  out << "    }" << Qt::endl;
                } else {
                   if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
                      QStringList parentNames = { command->getName(), attribute->getName() };
@@ -1227,204 +1227,204 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
                   } else if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) || (attribute->getDataType() == NS_AttDataType::STRING)) {
                      out << "    pCmdPayload->" << command->getName().toLower() << "_payload.p_" << attribute->getName().toLower() << " = pAttArray["
                             << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
-                            << "].Payload.pData;" << endl;
+                            << "].Payload.pData;" << Qt::endl;
                   } else {
                      QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
                      out << "    memcpy(&(pCmdPayload->" << command->getName().toLower() << "_payload." << attribute->getName().toLower() << "), pAttArray["
                             << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
-                            << "].Payload.pData, sizeof(" << typeString.chopped(1) << "));" << endl;
+                            << "].Payload.pData, sizeof(" << typeString.chopped(1) << "));" << Qt::endl;
                   }
                }
             }
-            out << "}" << endl;
-            out << endl;
+            out << "}" << Qt::endl;
+            out << Qt::endl;
          }
       }
 
       // Master get data function
-      out << "/**" << endl;
-      out << " * \\fn static void LCSF_Bridge_" << protocolName << "GetCmdData(uint_fast16_t cmdName, lcsf_valid_att_t *pAttArray, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload)" << endl;
-      out << " * \\brief Retrieve command data from its attribute array and store it in a payload" << endl;
-      out << " *" << endl;
-      out << " * \\param cmdName name of the command" << endl;
-      out << " * \\param pAttArray pointer to the command attribute array" << endl;
-      out << " * \\param pPayload pointer to the payload to contain the command data" << endl;
-      out << " * \\return void" << endl;
-      out << " */" << endl;
+      out << "/**" << Qt::endl;
+      out << " * \\fn static void LCSF_Bridge_" << protocolName << "GetCmdData(uint_fast16_t cmdName, lcsf_valid_att_t *pAttArray, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload)" << Qt::endl;
+      out << " * \\brief Retrieve command data from its attribute array and store it in a payload" << Qt::endl;
+      out << " *" << Qt::endl;
+      out << " * \\param cmdName name of the command" << Qt::endl;
+      out << " * \\param pAttArray pointer to the command attribute array" << Qt::endl;
+      out << " * \\param pPayload pointer to the payload to contain the command data" << Qt::endl;
+      out << " * \\return void" << Qt::endl;
+      out << " */" << Qt::endl;
       out << "static void LCSF_Bridge_" << protocolName << "GetCmdData(uint_fast16_t cmdName, lcsf_valid_att_t *pAttArray, "
-             << protocolName.toLower() << "_cmd_payload_t *pCmdPayload) {" << endl;
-      out << "    if (pAttArray == NULL) {" << endl;
-      out << "	    return;" << endl;
-      out << "    }" << endl;
-      out << "    switch (cmdName) {" << endl;
+             << protocolName.toLower() << "_cmd_payload_t *pCmdPayload) {" << Qt::endl;
+      out << "    if (pAttArray == NULL) {" << Qt::endl;
+      out << "	    return;" << Qt::endl;
+      out << "    }" << Qt::endl;
+      out << "    switch (cmdName) {" << Qt::endl;
       for (Command *command : cmdList) {
          if ((command->getAttArray().size() > 0) && (command->isReceivable(isA))) {
-            out << "        case " << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << ":" << endl;
-            out << "            LCSF_Bridge_" << protocolName << command->getName() << "GetData(pAttArray, pCmdPayload);" << endl;
-            out << "        break;" << endl;
-            out << endl;
+            out << "        case " << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << ":" << Qt::endl;
+            out << "            LCSF_Bridge_" << protocolName << command->getName() << "GetData(pAttArray, pCmdPayload);" << Qt::endl;
+            out << "        break;" << Qt::endl;
+            out << Qt::endl;
          }
       }
-      out << "        default: // Commands that don't have payload" << endl;
-      out << "            return;" << endl;
-      out << "        break;" << endl;
-      out << "    }" << endl;
-      out << "}" << endl;
-      out << endl;
+      out << "        default: // Commands that don't have payload" << Qt::endl;
+      out << "            return;" << Qt::endl;
+      out << "        break;" << Qt::endl;
+      out << "    }" << Qt::endl;
+      out << "}" << Qt::endl;
+      out << Qt::endl;
 
       // Command fill attribute functions
-      out << "/**" << endl;
-      out << " * \\fn static bool LCSF_Bridge_" << protocolName << "XFillAtt(lcsf_valid_att_t **pAttArrayAddr, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload)" << endl;
-      out << " * \\brief Allocate and fill attribute array of command X from its payload" << endl;
-      out << " *" << endl;
-      out << " * \\param pAttArrayAddr pointer to contain the attribute array" << endl;
-      out << " * \\param pCmdPayload pointer to the command payload" << endl;
-      out << " * \\return bool: true if operation was a success" << endl;
-      out << " */" << endl;
+      out << "/**" << Qt::endl;
+      out << " * \\fn static bool LCSF_Bridge_" << protocolName << "XFillAtt(lcsf_valid_att_t **pAttArrayAddr, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload)" << Qt::endl;
+      out << " * \\brief Allocate and fill attribute array of command X from its payload" << Qt::endl;
+      out << " *" << Qt::endl;
+      out << " * \\param pAttArrayAddr pointer to contain the attribute array" << Qt::endl;
+      out << " * \\param pCmdPayload pointer to the command payload" << Qt::endl;
+      out << " * \\return bool: true if operation was a success" << Qt::endl;
+      out << " */" << Qt::endl;
       for (Command *command : cmdList) {
          if ((command->getAttArray().size() > 0) && (command->isTransmittable(isA))) {
             out << "static bool LCSF_Bridge_" << protocolName << command->getName() << "FillAtt(lcsf_valid_att_t **pAttArrayAddr, "
-                   << protocolName.toLower() << "_cmd_payload_t *pCmdPayload) {" << endl;
-            out << "    if (pCmdPayload == NULL) {" << endl;
-            out << "        return false;" << endl;
-            out << "    }" << endl;
-            out << "    // Allocate attribute array" << endl;
+                   << protocolName.toLower() << "_cmd_payload_t *pCmdPayload) {" << Qt::endl;
+            out << "    if (pCmdPayload == NULL) {" << Qt::endl;
+            out << "        return false;" << Qt::endl;
+            out << "    }" << Qt::endl;
+            out << "    // Allocate attribute array" << Qt::endl;
             out << "    if (!FiloGet(&LcsfBridge" << protocolName << "Info.Filo, LCSF_" << protocolName.toUpper() << "_CMD_"
-                   << command->getName().toUpper() << "_ATT_NB, (void *)pAttArrayAddr)) {" << endl;
-            out << "        return false;" << endl;
-            out << "    }" << endl;
-            out << "    // Intermediary variable" << endl;
-            out << "    lcsf_valid_att_t *pAttArray = *pAttArrayAddr;" << endl;
+                   << command->getName().toUpper() << "_ATT_NB, (void *)pAttArrayAddr)) {" << Qt::endl;
+            out << "        return false;" << Qt::endl;
+            out << "    }" << Qt::endl;
+            out << "    // Intermediary variable" << Qt::endl;
+            out << "    lcsf_valid_att_t *pAttArray = *pAttArrayAddr;" << Qt::endl;
             if (command->hasSubAtt()) {
-               out << "    lcsf_valid_att_t **pSubAttArray = NULL;" << endl;
+               out << "    lcsf_valid_att_t **pSubAttArray = NULL;" << Qt::endl;
             }
             for (Attribute *attribute : command->getAttArray()) {
-               out << "    // Fill data of attribute " << attribute->getName() << endl;
+               out << "    // Fill data of attribute " << attribute->getName() << Qt::endl;
                if (attribute->getIsOptional()) {
                   out << "    if ((pCmdPayload->" << command->getName().toLower() << "_payload.optAttFlagsBitfield & " << protocolName.toUpper() << "_"
-                         << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper() << "_FLAG) != 0) {" << endl;
+                         << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper() << "_FLAG) != 0) {" << Qt::endl;
                   if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
-                     out << "        // Intermediary variable" << endl;
+                     out << "        // Intermediary variable" << Qt::endl;
                      out << "        pSubAttArray = &(pAttArray[" << protocolName.toUpper() << "_"
-                            << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper() << "].Payload.pSubAttArray);" << endl;
-                     out << "        // Allocate sub-attribute array" << endl;
+                            << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper() << "].Payload.pSubAttArray);" << Qt::endl;
+                     out << "        // Allocate sub-attribute array" << Qt::endl;
                      out << "        if (!FiloGet(&LcsfBridge" << protocolName << "Info.Filo, LCSF_" << protocolName.toUpper() << "_ATT_"
-                            << attribute->getName().toUpper() << "_SUBATT_NB, (void *)pSubAttArray)) {" << endl;
-                     out << "            return false;" << endl;
-                     out << "        }" << endl;
+                            << attribute->getName().toUpper() << "_SUBATT_NB, (void *)pSubAttArray)) {" << Qt::endl;
+                     out << "            return false;" << Qt::endl;
+                     out << "        }" << Qt::endl;
                      QStringList parentNames = { command->getName(), attribute->getName() };
                      this->fillSubAttPayload_Rec(protocolName, parentNames, attribute->getSubAttArray(), &out, 2);
                   } else if (attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) {
                      out << "        pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_"
                             << attribute->getName().toUpper() << "].PayloadSize = pCmdPayload->"
-                            << command->getName().toLower() << "_payload." << attribute->getName().toLower() << "Size;" << endl;
+                            << command->getName().toLower() << "_payload." << attribute->getName().toLower() << "Size;" << Qt::endl;
                      out << "        pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_"
                             << attribute->getName().toUpper() << "].Payload.pData = pCmdPayload->"
-                            << command->getName().toLower() << "_payload.p_" << attribute->getName().toLower() << ";" << endl;
+                            << command->getName().toLower() << "_payload.p_" << attribute->getName().toLower() << ";" << Qt::endl;
                   } else if (attribute->getDataType() == NS_AttDataType::STRING) {
                      out << "        pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_"
                             << attribute->getName().toUpper() << "].Payload.pData = pCmdPayload->"
-                            << command->getName().toLower() << "_payload.p_" << attribute->getName().toLower() << ";" << endl;
+                            << command->getName().toLower() << "_payload.p_" << attribute->getName().toLower() << ";" << Qt::endl;
                   } else {
                      out << "        pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
-                            << "].Payload.pData = &(pCmdPayload->" << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ");" << endl;
+                            << "].Payload.pData = &(pCmdPayload->" << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ");" << Qt::endl;
                   }
-                  out << "    } else {" << endl;
+                  out << "    } else {" << Qt::endl;
                   out << "        pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
-                      << "].Payload.pData = NULL;" << endl;
-                  out << "    }" << endl;
+                      << "].Payload.pData = NULL;" << Qt::endl;
+                  out << "    }" << Qt::endl;
                } else {
                   if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
-                      out << "    // Intermediary variable" << endl;
+                      out << "    // Intermediary variable" << Qt::endl;
                       out << "    pSubAttArray = &(pAttArray[" << protocolName.toUpper() << "_"
-                             << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper() << "].Payload.pSubAttArray);" << endl;
-                      out << "    // Allocate sub-attribute array" << endl;
+                             << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper() << "].Payload.pSubAttArray);" << Qt::endl;
+                      out << "    // Allocate sub-attribute array" << Qt::endl;
                       out << "    if (!FiloGet(&LcsfBridge" << protocolName << "Info.Filo, LCSF_" << protocolName.toUpper() << "_ATT_"
-                             << attribute->getName().toUpper() << "_SUBATT_NB, (void *)pSubAttArray)) {" << endl;
-                      out << "        return false;" << endl;
-                      out << "    }" << endl;
+                             << attribute->getName().toUpper() << "_SUBATT_NB, (void *)pSubAttArray)) {" << Qt::endl;
+                      out << "        return false;" << Qt::endl;
+                      out << "    }" << Qt::endl;
                       QStringList parentNames = { command->getName(), attribute->getName() };
                       this->fillSubAttPayload_Rec(protocolName, parentNames, attribute->getSubAttArray(), &out, 1);
                   } else if (attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) {
                      out << "    pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_"
                             << attribute->getName().toUpper() << "].PayloadSize = pCmdPayload->"
-                            << command->getName().toLower() << "_payload." << attribute->getName().toLower() << "Size;" << endl;
+                            << command->getName().toLower() << "_payload." << attribute->getName().toLower() << "Size;" << Qt::endl;
                      out << "    pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_"
                             << attribute->getName().toUpper() << "].Payload.pData = pCmdPayload->"
-                            << command->getName().toLower() << "_payload.p_" << attribute->getName().toLower() << ";" << endl;
+                            << command->getName().toLower() << "_payload.p_" << attribute->getName().toLower() << ";" << Qt::endl;
                   } else if (attribute->getDataType() == NS_AttDataType::STRING) {
                      out << "    pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_"
                             << attribute->getName().toUpper() << "].Payload.pData = pCmdPayload->"
-                            << command->getName().toLower() << "_payload.p_" << attribute->getName().toLower() << ";" << endl;
+                            << command->getName().toLower() << "_payload.p_" << attribute->getName().toLower() << ";" << Qt::endl;
                   } else {
                      out << "    pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
-                            << "].Payload.pData = &(pCmdPayload->" << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ");" << endl;
+                            << "].Payload.pData = &(pCmdPayload->" << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ");" << Qt::endl;
                   }
                }
             }
-            out << "    return true;" << endl;
-            out << "}" << endl;
-            out << endl;
+            out << "    return true;" << Qt::endl;
+            out << "}" << Qt::endl;
+            out << Qt::endl;
          }
       }
 
       // Master fill attribute function
-      out << "/**" << endl;
-      out << " * \\fn static bool LCSF_Bridge_" << protocolName << "FillCmdAtt(uint_fast16_t cmdName, lcsf_valid_att_t **pAttArrayAddr, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload)" << endl;
-      out << " * \\brief Fill the attribute array of a command from its payload" << endl;
-      out << " *" << endl;
-      out << " * \\param cmdName name of the command" << endl;
-      out << " * \\param pAttArrayAddr pointer to contain the attribute array" << endl;
-      out << " * \\param pCmdPayload pointer to the command payload" << endl;
-      out << " * \\return bool: true if operation was a success" << endl;
-      out << " */" << endl;
-      out << "static bool LCSF_Bridge_" << protocolName << "FillCmdAtt(uint_fast16_t cmdName, lcsf_valid_att_t **pAttArrayAddr, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload) {" << endl;
-      out << "    switch (cmdName) {" << endl;
+      out << "/**" << Qt::endl;
+      out << " * \\fn static bool LCSF_Bridge_" << protocolName << "FillCmdAtt(uint_fast16_t cmdName, lcsf_valid_att_t **pAttArrayAddr, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload)" << Qt::endl;
+      out << " * \\brief Fill the attribute array of a command from its payload" << Qt::endl;
+      out << " *" << Qt::endl;
+      out << " * \\param cmdName name of the command" << Qt::endl;
+      out << " * \\param pAttArrayAddr pointer to contain the attribute array" << Qt::endl;
+      out << " * \\param pCmdPayload pointer to the command payload" << Qt::endl;
+      out << " * \\return bool: true if operation was a success" << Qt::endl;
+      out << " */" << Qt::endl;
+      out << "static bool LCSF_Bridge_" << protocolName << "FillCmdAtt(uint_fast16_t cmdName, lcsf_valid_att_t **pAttArrayAddr, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload) {" << Qt::endl;
+      out << "    switch (cmdName) {" << Qt::endl;
       for (Command *command : cmdList) {
          if ((command->getAttArray().size() > 0) && (command->isTransmittable(isA))) {
-            out << "        case " << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << ":" << endl;
-            out << "            return LCSF_Bridge_" << protocolName << command->getName() << "FillAtt(pAttArrayAddr, pCmdPayload);" << endl;
-            out << "        break;" << endl;
-            out << endl;
+            out << "        case " << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << ":" << Qt::endl;
+            out << "            return LCSF_Bridge_" << protocolName << command->getName() << "FillAtt(pAttArrayAddr, pCmdPayload);" << Qt::endl;
+            out << "        break;" << Qt::endl;
+            out << Qt::endl;
          }
       }
-      out << "        default: // Commands that don't have attributes" << endl;
-      out << "            *pAttArrayAddr = NULL;" << endl;
-      out << "            return true;" << endl;
-      out << "        break;" << endl;
-      out << "    }" << endl;
-      out << "}" << endl;
-      out << endl;
+      out << "        default: // Commands that don't have attributes" << Qt::endl;
+      out << "            *pAttArrayAddr = NULL;" << Qt::endl;
+      out << "            return true;" << Qt::endl;
+      out << "        break;" << Qt::endl;
+      out << "    }" << Qt::endl;
+      out << "}" << Qt::endl;
+      out << Qt::endl;
 
       // Public functions
 
-      out << "// *** Public Functions ***" << endl;
-      out << endl;
+      out << "// *** Public Functions ***" << Qt::endl;
+      out << Qt::endl;
 
-      out << "bool LCSF_Bridge_" <<  protocolName << "Init(void) {" << endl;
-      out << "    return FiloInit(&LcsfBridge" << protocolName << "Info.Filo, LcsfBridge" << protocolName << "Info.FiloData, LCSF_BRIDGE_" << protocolName.toUpper() << "_FILO_SIZE, sizeof(lcsf_valid_att_t));" << endl;
-      out << "}" << endl;
-      out << endl;
+      out << "bool LCSF_Bridge_" <<  protocolName << "Init(void) {" << Qt::endl;
+      out << "    return FiloInit(&LcsfBridge" << protocolName << "Info.Filo, LcsfBridge" << protocolName << "Info.FiloData, LCSF_BRIDGE_" << protocolName.toUpper() << "_FILO_SIZE, sizeof(lcsf_valid_att_t));" << Qt::endl;
+      out << "}" << Qt::endl;
+      out << Qt::endl;
 
-      out << "bool LCSF_Bridge_" << protocolName << "Receive(lcsf_valid_cmd_t *pValidCmd) {" << endl;
-      out << "    uint16_t cmdName = LCSF_Bridge_" << protocolName << "_CMDID2CMDNAME(pValidCmd->CmdId);" << endl;
-      out << "    " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload = &LcsfBridge" << protocolName << "Info.CmdPayload;" << endl;
-      out << endl;
-      out << "    LCSF_Bridge_" << protocolName << "GetCmdData(cmdName, pValidCmd->pAttArray, pCmdPayload);" << endl;
-      out << "    return " << protocolName << "_MainExecute(cmdName, pCmdPayload);" << endl;
-      out << "}" << endl;
-      out << endl;
+      out << "bool LCSF_Bridge_" << protocolName << "Receive(lcsf_valid_cmd_t *pValidCmd) {" << Qt::endl;
+      out << "    uint16_t cmdName = LCSF_Bridge_" << protocolName << "_CMDID2CMDNAME(pValidCmd->CmdId);" << Qt::endl;
+      out << "    " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload = &LcsfBridge" << protocolName << "Info.CmdPayload;" << Qt::endl;
+      out << Qt::endl;
+      out << "    LCSF_Bridge_" << protocolName << "GetCmdData(cmdName, pValidCmd->pAttArray, pCmdPayload);" << Qt::endl;
+      out << "    return " << protocolName << "_MainExecute(cmdName, pCmdPayload);" << Qt::endl;
+      out << "}" << Qt::endl;
+      out << Qt::endl;
 
-      out << "int LCSF_Bridge_" << protocolName << "Encode(uint_fast16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload, uint8_t *pBuffer, size_t buffSize) {" << endl;
-      out << "    lcsf_valid_cmd_t sendCmd;" << endl;
-      out << "    sendCmd.CmdId = LCSF_Bridge_" << protocolName << "_CMDNAME2CMDID[cmdName];" << endl;
-      out << "    FiloFreeAll(&LcsfBridge" << protocolName << "Info.Filo);" << endl;
-      out << endl;
-      out << "    if (!LCSF_Bridge_" << protocolName << "FillCmdAtt(cmdName, &(sendCmd.pAttArray), pCmdPayload)) {" << endl;
-      out << "        return -1;" << endl;
-      out << "    }" << endl;
-      out << "    return LCSF_ValidatorEncode(LCSF_" << protocolName.toUpper() << "_PROTOCOL_ID, &sendCmd, pBuffer, buffSize);" << endl;
-      out << "}" << endl;
+      out << "int LCSF_Bridge_" << protocolName << "Encode(uint_fast16_t cmdName, " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload, uint8_t *pBuffer, size_t buffSize) {" << Qt::endl;
+      out << "    lcsf_valid_cmd_t sendCmd;" << Qt::endl;
+      out << "    sendCmd.CmdId = LCSF_Bridge_" << protocolName << "_CMDNAME2CMDID[cmdName];" << Qt::endl;
+      out << "    FiloFreeAll(&LcsfBridge" << protocolName << "Info.Filo);" << Qt::endl;
+      out << Qt::endl;
+      out << "    if (!LCSF_Bridge_" << protocolName << "FillCmdAtt(cmdName, &(sendCmd.pAttArray), pCmdPayload)) {" << Qt::endl;
+      out << "        return -1;" << Qt::endl;
+      out << "    }" << Qt::endl;
+      out << "    return LCSF_ValidatorEncode(LCSF_" << protocolName.toUpper() << "_PROTOCOL_ID, &sendCmd, pBuffer, buffSize);" << Qt::endl;
+      out << "}" << Qt::endl;
 
       file.close();
    }
@@ -1444,36 +1444,36 @@ void CodeGenerator::generateDescription(QString protocolName, QList<Command *> c
       out.setCodec("ISO 8859-1");
 
       QFileInfo fileInfo(file);
-      out << "/**" << endl;
-      out << " * \\file LCSF_Desc_" << protocolName << ".c" << endl;
-      out << " * \\brief " << protocolName << " LCSF descriptor" << endl;
-      out << " * \\author LCSF Generator v" << APP_VERSION << endl;
-      out << " *" << endl;
-      out << " */" << endl;
-      out << endl;
-      out << "// *** Libraries include ***" << endl;
-      out << "// Standard lib" << endl;
-      out << "// Custom lib" << endl;
-      out << "#include <LCSF_Config.h>" << endl;
-      out << "#include \"LCSF_Bridge_" << protocolName << ".h\"" << endl;
-      out << endl;
-      out << "// *** Definitions ***" << endl;
-      out << "// --- Private Constants ---" << endl;
-      out << endl;
+      out << "/**" << Qt::endl;
+      out << " * \\file LCSF_Desc_" << protocolName << ".c" << Qt::endl;
+      out << " * \\brief " << protocolName << " LCSF descriptor" << Qt::endl;
+      out << " * \\author LCSF Generator v" << APP_VERSION << Qt::endl;
+      out << " *" << Qt::endl;
+      out << " */" << Qt::endl;
+      out << Qt::endl;
+      out << "// *** Libraries include ***" << Qt::endl;
+      out << "// Standard lib" << Qt::endl;
+      out << "// Custom lib" << Qt::endl;
+      out << "#include <LCSF_Config.h>" << Qt::endl;
+      out << "#include \"LCSF_Bridge_" << protocolName << ".h\"" << Qt::endl;
+      out << Qt::endl;
+      out << "// *** Definitions ***" << Qt::endl;
+      out << "// --- Private Constants ---" << Qt::endl;
+      out << Qt::endl;
 
       // Sub-attribute descriptor arrays
       if (this->protocolHasSubAtt) {
          for (int idx = attInfosList.size() - 1; idx >= 0; idx--) {
             CodeGenerator::T_attInfos attInfo = attInfosList.at(idx);
             if (attInfo.subAttNb > 0) {
-               out << "// Sub-attribute array descriptor of attribute " << attInfo.attName << endl;
+               out << "// Sub-attribute array descriptor of attribute " << attInfo.attName << Qt::endl;
                out << "static const lcsf_attribute_desc_t LCSF_" << protocolName << "_" << attInfo.attName << "_AttDescArray[LCSF_"
-                      << protocolName.toUpper() + "_ATT_" + attInfo.attName.toUpper() + "_SUBATT_NB] = {" << endl;
+                      << protocolName.toUpper() + "_ATT_" + attInfo.attName.toUpper() + "_SUBATT_NB] = {" << Qt::endl;
                for (Attribute *attribute : attInfo.attPointer->getSubAttArray()) {
-                  out << "    {" << this->getAttDescString(protocolName, attInfo.attName, attribute) << "}," << endl;
+                  out << "    {" << this->getAttDescString(protocolName, attInfo.attName, attribute) << "}," << Qt::endl;
                }
-               out << "};" << endl;
-               out << endl;
+               out << "};" << Qt::endl;
+               out << Qt::endl;
             }
          }
       }
@@ -1481,38 +1481,38 @@ void CodeGenerator::generateDescription(QString protocolName, QList<Command *> c
       // Attribute descriptor arrays
       for (Command *command : cmdList) {
          if (command->getAttArray().size() > 0) {
-            out << "// Attribute array descriptor of command " << command->getName() << endl;
+            out << "// Attribute array descriptor of command " << command->getName() << Qt::endl;
             out << "static const lcsf_attribute_desc_t LCSF_" << protocolName << "_" << command->getName() << "_AttDescArray[LCSF_"
-                   << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << "_ATT_NB] = {" << endl;
+                   << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << "_ATT_NB] = {" << Qt::endl;
             for (Attribute *attribute : command->getAttArray()) {
-               out << "    {" << this->getAttDescString(protocolName, command->getName(), attribute) << "}," << endl;
+               out << "    {" << this->getAttDescString(protocolName, command->getName(), attribute) << "}," << Qt::endl;
             }
-            out << "};" << endl;
-            out << endl;
+            out << "};" << Qt::endl;
+            out << Qt::endl;
          }
       }
 
       // Command descriptor array
-      out << "// Command array descriptor" << endl;
-      out << "static const lcsf_command_desc_t LCSF_" << protocolName << "_CmdDescArray[LCSF_" << protocolName.toUpper() << "_CMD_NB] = {" << endl;
+      out << "// Command array descriptor" << Qt::endl;
+      out << "static const lcsf_command_desc_t LCSF_" << protocolName << "_CmdDescArray[LCSF_" << protocolName.toUpper() << "_CMD_NB] = {" << Qt::endl;
       for (Command *command : cmdList) {
          if (command->getAttArray().size() > 0) {
             out << "    {LCSF_" << protocolName.toUpper() << "_CMD_ID_" << command->getName().toUpper() << ", LCSF_"
                    << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << "_ATT_NB" << ", LCSF_"
-                   << protocolName << "_" << command->getName() << "_AttDescArray" << "}," << endl;
+                   << protocolName << "_" << command->getName() << "_AttDescArray" << "}," << Qt::endl;
          } else {
             out << "    {LCSF_" << protocolName.toUpper() << "_CMD_ID_" << command->getName().toUpper()
-                   << ", 0, NULL}," << endl;
+                   << ", 0, NULL}," << Qt::endl;
          }
       }
-      out << "};" << endl;
-      out << endl;
-      out << "// --- Public Constants ---" << endl;
-      out << endl;
+      out << "};" << Qt::endl;
+      out << Qt::endl;
+      out << "// --- Public Constants ---" << Qt::endl;
+      out << Qt::endl;
       // Protocol descriptor
-      out << "// Protocol descriptor" << endl;
+      out << "// Protocol descriptor" << Qt::endl;
       out << "const lcsf_protocol_desc_t LCSF_" << protocolName << "_ProtDesc = {.CmdNb = LCSF_"
-             << protocolName.toUpper() << "_CMD_NB, .pCmdDescArray = LCSF_" << protocolName << "_CmdDescArray};" << endl;
+             << protocolName.toUpper() << "_CMD_NB, .pCmdDescArray = LCSF_" << protocolName << "_CmdDescArray};" << Qt::endl;
 
       file.close();
    }
@@ -1531,14 +1531,14 @@ void CodeGenerator::generateWikiTable(QString protocolName, QList<Command *> cmd
       QTextStream out(&saveFile);
 
       // Main table
-      out << "=== " << protocolName << " protocol tables ===" << endl;
-      out << endl;
-      out << "==== Commands table ====" << endl;
-      out << endl;
-      out << "{| class=\"wikitable sortable\"" << endl;
-      out << "|-" << endl;
-      out << "! Name !! Id !! Direction !! Description !! Attribute(s) Name !! Attribute(s) Id !! Optional? !! Data type !! Attribute Desc" << endl;
-      out << "|-" << endl;
+      out << "=== " << protocolName << " protocol tables ===" << Qt::endl;
+      out << Qt::endl;
+      out << "==== Commands table ====" << Qt::endl;
+      out << Qt::endl;
+      out << "{| class=\"wikitable sortable\"" << Qt::endl;
+      out << "|-" << Qt::endl;
+      out << "! Name !! Id !! Direction !! Description !! Attribute(s) Name !! Attribute(s) Id !! Optional? !! Data type !! Attribute Desc" << Qt::endl;
+      out << "|-" << Qt::endl;
 
       for (Command *command : cmdList) {
          if ((command->getHasAtt()) && (command->getAttArray().size() > 0)) {
@@ -1551,22 +1551,22 @@ void CodeGenerator::generateWikiTable(QString protocolName, QList<Command *> cmd
                if (isFirtAttribute) {
                   isFirtAttribute = false;
                   out << attribute->getName() << " || '''" <<  QString::number(attribute->getId(), 16).rightJustified(2, '0').prepend("0x") << "''' || "
-                      << ((attribute->getIsOptional()) ? "Yes" : "No") << " || '''" << NS_AttDataType::SL_DocAttDataType[attribute->getDataType()] << "''' || " << attribute->getDesc() << endl;
-                  out << "|-" << endl;
+                      << ((attribute->getIsOptional()) ? "Yes" : "No") << " || '''" << NS_AttDataType::SL_DocAttDataType[attribute->getDataType()] << "''' || " << attribute->getDesc() << Qt::endl;
+                  out << "|-" << Qt::endl;
                } else {
                   out << "| " << attribute->getName() << " || '''" <<  QString::number(attribute->getId(), 16).rightJustified(2, '0').prepend("0x") << "''' || "
-                      << ((attribute->getIsOptional()) ? "Yes" : "No") << " || '''" << NS_AttDataType::SL_DocAttDataType[attribute->getDataType()] << "''' || " << attribute->getDesc() << endl;
-                  out << "|-" << endl;
+                      << ((attribute->getIsOptional()) ? "Yes" : "No") << " || '''" << NS_AttDataType::SL_DocAttDataType[attribute->getDataType()] << "''' || " << attribute->getDesc() << Qt::endl;
+                  out << "|-" << Qt::endl;
                }
             }
          } else {
             out << "| " << command->getName() << " || '''" << QString::number(command->getId(), 16).rightJustified(2, '0').prepend("0x") << "''' || "
-                      <<  NS_DirectionType::SL_DirectionType[command->getDirection()] << " || " << command->getDesc() << " || || || || || " << endl;
-            out << "|-" << endl;
+                      <<  NS_DirectionType::SL_DirectionType[command->getDirection()] << " || " << command->getDesc() << " || || || || || " << Qt::endl;
+            out << "|-" << Qt::endl;
          }
       }
-      out << "|}" << endl;
-      out << endl;
+      out << "|}" << Qt::endl;
+      out << Qt::endl;
 
       // Secondary tables
       QList<CodeGenerator::T_attInfos> attInfosList = this->getAttInfos(cmdList);
@@ -1577,23 +1577,23 @@ void CodeGenerator::generateWikiTable(QString protocolName, QList<Command *> cmd
          CodeGenerator::T_attInfos currentAttInfo = trimmedAttInfosList.at(idx);
          QString previousParentName = currentAttInfo.parentName;
 
-         out << "==== " << previousParentName << " sub-attributes table ====" << endl;
-         out << endl;
-         out << "{| class=\"wikitable sortable\"" << endl;
-         out << "|-" << endl;
-         out << "! Name !! Id !! Optional? !! Data type !! Description" << endl;
-         out << "|-" << endl;
+         out << "==== " << previousParentName << " sub-attributes table ====" << Qt::endl;
+         out << Qt::endl;
+         out << "{| class=\"wikitable sortable\"" << Qt::endl;
+         out << "|-" << Qt::endl;
+         out << "! Name !! Id !! Optional? !! Data type !! Description" << Qt::endl;
+         out << "|-" << Qt::endl;
          out << "| " << currentAttInfo.attName << " || '''" <<  QString::number(currentAttInfo.attId, 16).rightJustified(2, '0').prepend("0x") << "''' || "
-             << ((currentAttInfo.isOptional) ? "Yes" : "No") << " || '''" << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << "''' || " << currentAttInfo.attDesc << endl;
-         out << "|-" << endl;
+             << ((currentAttInfo.isOptional) ? "Yes" : "No") << " || '''" << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << "''' || " << currentAttInfo.attDesc << Qt::endl;
+         out << "|-" << Qt::endl;
 
          if (idx < trimmedAttInfosList.size() - 1) {
             currentAttInfo = trimmedAttInfosList.at(idx+1);
 
             while (currentAttInfo.parentName.compare(previousParentName) == 0) {
                out << "| " << currentAttInfo.attName << " || '''" <<  QString::number(currentAttInfo.attId, 16).rightJustified(2, '0').prepend("0x") << "''' || "
-                   << ((currentAttInfo.isOptional) ? "Yes" : "No") << " || '''" << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << "''' || " << currentAttInfo.attDesc << endl;
-               out << "|-" << endl;
+                   << ((currentAttInfo.isOptional) ? "Yes" : "No") << " || '''" << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << "''' || " << currentAttInfo.attDesc << Qt::endl;
+               out << "|-" << Qt::endl;
                previousParentName = currentAttInfo.parentName;
                idx++;
 
@@ -1604,8 +1604,8 @@ void CodeGenerator::generateWikiTable(QString protocolName, QList<Command *> cmd
                }
             }
          }
-         out << "|}" << endl;
-         out << endl;
+         out << "|}" << Qt::endl;
+         out << Qt::endl;
       }
       saveFile.close();
    }
@@ -1624,11 +1624,11 @@ void CodeGenerator::generateDokuWikiTable(QString protocolName, QList<Command *>
       QTextStream out(&saveFile);
 
       // Main table
-      out << "=== " << protocolName << " protocol tables ===" << endl;
-      out << endl;
-      out << "== Commands table ==" << endl;
-      out << endl;
-      out << "^ Name ^ Id ^ Direction ^ Description ^ Attribute(s) Name ^ Attribute(s) Id ^ Optional? ^ Data type ^ Attribute Desc ^" << endl;
+      out << "=== " << protocolName << " protocol tables ===" << Qt::endl;
+      out << Qt::endl;
+      out << "== Commands table ==" << Qt::endl;
+      out << Qt::endl;
+      out << "^ Name ^ Id ^ Direction ^ Description ^ Attribute(s) Name ^ Attribute(s) Id ^ Optional? ^ Data type ^ Attribute Desc ^" << Qt::endl;
 
       for (Command *command : cmdList) {
          if ((command->getHasAtt()) && (command->getAttArray().size() > 0)) {
@@ -1641,18 +1641,18 @@ void CodeGenerator::generateDokuWikiTable(QString protocolName, QList<Command *>
                if (isFirtAttribute) {
                   isFirtAttribute = false;
                   out << attribute->getName() << " | " <<  QString::number(attribute->getId(), 16).rightJustified(2, '0').prepend("0x") << " | "
-                      << ((attribute->getIsOptional()) ? "Yes" : "No") << " | " << NS_AttDataType::SL_DocAttDataType[attribute->getDataType()] << " | " << attribute->getDesc() << " |" << endl;
+                      << ((attribute->getIsOptional()) ? "Yes" : "No") << " | " << NS_AttDataType::SL_DocAttDataType[attribute->getDataType()] << " | " << attribute->getDesc() << " |" << Qt::endl;
                } else {
                   out << "| ::: | ::: | ::: | ::: " << "| " << attribute->getName() << " | " <<  QString::number(attribute->getId(), 16).rightJustified(2, '0').prepend("0x") << " | "
-                      << ((attribute->getIsOptional()) ? "Yes" : "No") << " | " << NS_AttDataType::SL_DocAttDataType[attribute->getDataType()] << " | " << attribute->getDesc() << " |" << endl;
+                      << ((attribute->getIsOptional()) ? "Yes" : "No") << " | " << NS_AttDataType::SL_DocAttDataType[attribute->getDataType()] << " | " << attribute->getDesc() << " |" << Qt::endl;
                }
             }
          } else {
             out << "| " << command->getName() << " | " << QString::number(command->getId(), 16).rightJustified(2, '0').prepend("0x") << " | "
-                      <<  NS_DirectionType::SL_DirectionType[command->getDirection()] << " | " << command->getDesc() << " | | | | | " << endl;
+                      <<  NS_DirectionType::SL_DirectionType[command->getDirection()] << " | " << command->getDesc() << " | | | | | " << Qt::endl;
          }
       }
-      out << endl;
+      out << Qt::endl;
 
       // Secondary tables
       QList<CodeGenerator::T_attInfos> attInfosList = this->getAttInfos(cmdList);
@@ -1663,18 +1663,18 @@ void CodeGenerator::generateDokuWikiTable(QString protocolName, QList<Command *>
          CodeGenerator::T_attInfos currentAttInfo = trimmedAttInfosList.at(idx);
          QString previousParentName = currentAttInfo.parentName;
 
-         out << "== " << previousParentName << " sub-attributes table ==" << endl;
-         out << endl;
-         out << "^ Name ^ Id ^ Optional? ^ Data type ^ Description ^" << endl;
+         out << "== " << previousParentName << " sub-attributes table ==" << Qt::endl;
+         out << Qt::endl;
+         out << "^ Name ^ Id ^ Optional? ^ Data type ^ Description ^" << Qt::endl;
          out << "| " << currentAttInfo.attName << " | " <<  QString::number(currentAttInfo.attId, 16).rightJustified(2, '0').prepend("0x") << " | "
-             << ((currentAttInfo.isOptional) ? "Yes" : "No") << " | " << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << " | " << currentAttInfo.attDesc << " |" << endl;
+             << ((currentAttInfo.isOptional) ? "Yes" : "No") << " | " << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << " | " << currentAttInfo.attDesc << " |" << Qt::endl;
 
          if (idx < trimmedAttInfosList.size() - 1) {
             currentAttInfo = trimmedAttInfosList.at(idx+1);
 
             while (currentAttInfo.parentName.compare(previousParentName) == 0) {
                out << "| " << currentAttInfo.attName << " | " <<  QString::number(currentAttInfo.attId, 16).rightJustified(2, '0').prepend("0x") << " | "
-                   << ((currentAttInfo.isOptional) ? "Yes" : "No") << " | " << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << " | " << currentAttInfo.attDesc << " |" << endl;
+                   << ((currentAttInfo.isOptional) ? "Yes" : "No") << " | " << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << " | " << currentAttInfo.attDesc << " |" << Qt::endl;
                previousParentName = currentAttInfo.parentName;
                idx++;
 
@@ -1685,7 +1685,7 @@ void CodeGenerator::generateDokuWikiTable(QString protocolName, QList<Command *>
                }
             }
          }
-         out << endl;
+         out << Qt::endl;
       }
       saveFile.close();
    }
@@ -1704,33 +1704,33 @@ void CodeGenerator::generateMkdownTable(QString protocolName, QList<Command *> c
         QTextStream out(&saveFile);
 
         // Main table
-        out << "# " << protocolName << " protocol tables" << endl;
-        out << endl;
-        out << "## Commands table" << endl;
-        out << endl;
-        out << "| Name | Id | Direction | Description | Attributes? |" << endl;
-        out << "|:----:|:--:|:---------:|:-----------:|:------------:|" << endl;
+        out << "# " << protocolName << " protocol tables" << Qt::endl;
+        out << Qt::endl;
+        out << "## Commands table" << Qt::endl;
+        out << Qt::endl;
+        out << "| Name | Id | Direction | Description | Attributes? |" << Qt::endl;
+        out << "|:----:|:--:|:---------:|:-----------:|:------------:|" << Qt::endl;
         for (Command *command : cmdList) {
             out << "| " << command->getName() << " | `" << QString::number(command->getId(), 16).rightJustified(2, '0').prepend("0x")
                 << "` | `" <<  NS_DirectionType::SL_DirectionType[command->getDirection()] << "` | " << command->getDesc() << " | "
-                << ((command->getHasAtt() && (command->getAttArray().size() > 0)) ? "Yes" : "No") << " |" << endl;
+                << ((command->getHasAtt() && (command->getAttArray().size() > 0)) ? "Yes" : "No") << " |" << Qt::endl;
         }
-        out << endl;
+        out << Qt::endl;
         // Command tables
         for (Command *command : cmdList) {
             if (!command->getHasAtt() || (command->getAttArray().size() == 0)) {
                 continue;
             }
-            out << "## " << command->getName() << " attributes table" << endl;
-            out << endl;
-            out << "| Name | Id | Optional? | Data type | Attribute Description |" << endl;
-            out << "|:----:|:--:|:----------:|:---------:|:---------------------:|" << endl;
+            out << "## " << command->getName() << " attributes table" << Qt::endl;
+            out << Qt::endl;
+            out << "| Name | Id | Optional? | Data type | Attribute Description |" << Qt::endl;
+            out << "|:----:|:--:|:----------:|:---------:|:---------------------:|" << Qt::endl;
             for (Attribute *attribute : command->getAttArray()) {
                 out << "| " << attribute->getName() << " | `" <<  QString::number(attribute->getId(), 16).rightJustified(2, '0').prepend("0x")
                     << "` | " << ((attribute->getIsOptional()) ? "Yes" : "No") << " | `" << NS_AttDataType::SL_DocAttDataType[attribute->getDataType()]
-                    << "` | " << attribute->getDesc() << " |" << endl;
+                    << "` | " << attribute->getDesc() << " |" << Qt::endl;
             }
-            out << endl;
+            out << Qt::endl;
         }
         // Attribute tables
         QList<CodeGenerator::T_attInfos> attInfosList = this->getAttInfos(cmdList);
@@ -1741,19 +1741,19 @@ void CodeGenerator::generateMkdownTable(QString protocolName, QList<Command *> c
             CodeGenerator::T_attInfos currentAttInfo = trimmedAttInfosList.at(idx);
             QString previousParentName = currentAttInfo.parentName;
 
-            out << "## " << previousParentName << " sub-attributes table" << endl;
-            out << endl;
-            out << "| Name | Id | Optional? | Data type | Description |" << endl;
-            out << "|:----:|:--:|:----------:|:---------:|:-----------:|" << endl;
+            out << "## " << previousParentName << " sub-attributes table" << Qt::endl;
+            out << Qt::endl;
+            out << "| Name | Id | Optional? | Data type | Description |" << Qt::endl;
+            out << "|:----:|:--:|:----------:|:---------:|:-----------:|" << Qt::endl;
             out << "| " << currentAttInfo.attName << " | `" <<  QString::number(currentAttInfo.attId, 16).rightJustified(2, '0').prepend("0x") << "` | "
-            << ((currentAttInfo.isOptional) ? "Yes" : "No") << " | `" << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << "` | " << currentAttInfo.attDesc << endl;
+            << ((currentAttInfo.isOptional) ? "Yes" : "No") << " | `" << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << "` | " << currentAttInfo.attDesc << Qt::endl;
 
             if (idx < trimmedAttInfosList.size() - 1) {
                 currentAttInfo = trimmedAttInfosList.at(idx+1);
 
                 while (currentAttInfo.parentName.compare(previousParentName) == 0) {
                     out << "| " << currentAttInfo.attName << " | `" <<  QString::number(currentAttInfo.attId, 16).rightJustified(2, '0').prepend("0x") << "` | "
-                    << ((currentAttInfo.isOptional) ? "Yes" : "No") << " | `" << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << "` | " << currentAttInfo.attDesc << endl;
+                    << ((currentAttInfo.isOptional) ? "Yes" : "No") << " | `" << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << "` | " << currentAttInfo.attDesc << Qt::endl;
                     previousParentName = currentAttInfo.parentName;
                     idx++;
 
@@ -1764,7 +1764,7 @@ void CodeGenerator::generateMkdownTable(QString protocolName, QList<Command *> c
                     }
                 }
             }
-            out << endl;
+            out << Qt::endl;
         }
         saveFile.close();
     }
