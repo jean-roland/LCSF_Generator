@@ -37,15 +37,16 @@ if (GTEST_FOUND)
         test_generator.cpp test_deschandler.cpp test_data.cpp)
     target_link_libraries(${TESTS_BIN_NAME} ${CORE_LIB_NAME})
     target_include_directories(${TESTS_BIN_NAME} PUBLIC "../include/")
+
+    # Custom target to run tests
+    add_custom_target(run_tests
+      COMMAND ./${TESTS_BIN_NAME}
+      COMMENT "Run tests"
+      WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+    )
+    # Target depends on test binary
+    add_dependencies(run_tests ${TESTS_BIN_NAME})
+
 else()
     message(WARNING "Google test not found, tests will not be built")
 endif()
-
-# Custom target to run tests
-add_custom_target(run_tests
-  COMMAND ./${TESTS_BIN_NAME}
-  COMMENT "Run tests"
-  WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-)
-# Target depends on test binary
-add_dependencies(run_tests ${TESTS_BIN_NAME})
