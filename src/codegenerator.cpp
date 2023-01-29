@@ -713,9 +713,9 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
           out << "// *** Libraries include ***" << Qt::endl;
           out << "// Standard lib" << Qt::endl;
           out << "// Custom lib" << Qt::endl;
-          out << "#include <LCSF_Config.h>" << Qt::endl;
           out << "#include \"LCSF_Bridge_" << protocolName << ".h\"" << Qt::endl;
           out << "#include \"" << protocolName << "_Main.h\"" << Qt::endl;
+          out << "#include <LCSF_Config.h>" << Qt::endl;
           out << Qt::endl;
           out << "// *** Definitions ***" << Qt::endl;
       }
@@ -769,7 +769,6 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
          out << " * \\return bool: true if operation was a success" << Qt::endl;
          out << " */" << Qt::endl;
          out << "static bool " << protocolName << "SendCommand(uint_fast16_t cmdName, bool hasPayload) {" << Qt::endl;
-         out << Qt::endl;
          out << "    if (cmdName >= " << protocolName.toUpper() << "_CMD_COUNT) {" << Qt::endl;
          out << "        return false;" << Qt::endl;
          out << "    }" << Qt::endl;
@@ -824,7 +823,7 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
                if (command->getAttArray().size() > 0) {
                   out << protocolName.toLower() << "_cmd_payload_t *pCmdPayload) {" << Qt::endl;
                   out << "    if (pCmdPayload == NULL) {" << Qt::endl;
-                  out << "       return false;" << Qt::endl;
+                  out << "        return false;" << Qt::endl;
                   out << "    }" << Qt::endl;
                   out << "    // Declare attributes" << Qt::endl;
                   declareAtt_REC(command->getName(), command->getAttArray(), &out);
@@ -924,7 +923,6 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
             } else {
                 out<< "();" << Qt::endl;
             }
-            out << "        break;" << Qt::endl;
             out << Qt::endl;
          }
       }
@@ -938,7 +936,6 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
         out << "            // This case can be customized (e.g to send an error command)" << Qt::endl;
         out << "            return false;" << Qt::endl;
       }
-      out << "        break;" << Qt::endl;
       out << "    }" << Qt::endl;
       out << "}" << Qt::endl;
 
@@ -974,9 +971,9 @@ void CodeGenerator::generateBridgeHeader(QString protocolName, QString protocolI
       out << "// *** Libraries include ***" << Qt::endl;
       out << "// Standard lib" << Qt::endl;
       out << "// Custom lib" << Qt::endl;
+      out << "#include \"" << protocolName << "_Main.h\"" << Qt::endl;
       out << "#include <LCSF_Config.h>" << Qt::endl;
       out << "#include <LCSF_Validator.h>" << Qt::endl;
-      out << "#include \"" << protocolName << "_Main.h\"" << Qt::endl;
       out << Qt::endl;
       out << "// *** Definitions ***" << Qt::endl;
       out << "// --- Public Types ---" << Qt::endl;
@@ -1109,11 +1106,11 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       out << "// Standard lib" << Qt::endl;
       out << "#include <string.h>" << Qt::endl;
       out << "// Custom lib" << Qt::endl;
+      out << "#include \"LCSF_Bridge_" << protocolName << ".h\"" << Qt::endl;
       out << "#include <Filo.h>" << Qt::endl;
       out << "#include <LCSF_Config.h>" << Qt::endl;
       out << "#include <LCSF_Transcoder.h>" << Qt::endl;
       out << "#include <LCSF_Validator.h>" << Qt::endl;
-      out << "#include \"LCSF_Bridge_" << protocolName << ".h\"" << Qt::endl;
       out << Qt::endl;
       out << "// *** Definitions ***" << Qt::endl;
       out << "// --- Private Types ---" << Qt::endl;
@@ -1261,13 +1258,12 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
          if ((command->getAttArray().size() > 0) && (command->isReceivable(isA))) {
             out << "        case " << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << ":" << Qt::endl;
             out << "            LCSF_Bridge_" << protocolName << command->getName() << "GetData(pAttArray, pCmdPayload);" << Qt::endl;
-            out << "        break;" << Qt::endl;
+            out << "            break;" << Qt::endl;
             out << Qt::endl;
          }
       }
       out << "        default: // Commands that don't have payload" << Qt::endl;
       out << "            return;" << Qt::endl;
-      out << "        break;" << Qt::endl;
       out << "    }" << Qt::endl;
       out << "}" << Qt::endl;
       out << Qt::endl;
@@ -1384,14 +1380,12 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
          if ((command->getAttArray().size() > 0) && (command->isTransmittable(isA))) {
             out << "        case " << protocolName.toUpper() << "_CMD_" << command->getName().toUpper() << ":" << Qt::endl;
             out << "            return LCSF_Bridge_" << protocolName << command->getName() << "FillAtt(pAttArrayAddr, pCmdPayload);" << Qt::endl;
-            out << "        break;" << Qt::endl;
             out << Qt::endl;
          }
       }
       out << "        default: // Commands that don't have attributes" << Qt::endl;
       out << "            *pAttArrayAddr = NULL;" << Qt::endl;
       out << "            return true;" << Qt::endl;
-      out << "        break;" << Qt::endl;
       out << "    }" << Qt::endl;
       out << "}" << Qt::endl;
       out << Qt::endl;
@@ -1454,8 +1448,8 @@ void CodeGenerator::generateDescription(QString protocolName, QList<Command *> c
       out << "// *** Libraries include ***" << Qt::endl;
       out << "// Standard lib" << Qt::endl;
       out << "// Custom lib" << Qt::endl;
-      out << "#include <LCSF_Config.h>" << Qt::endl;
       out << "#include \"LCSF_Bridge_" << protocolName << ".h\"" << Qt::endl;
+      out << "#include <LCSF_Config.h>" << Qt::endl;
       out << Qt::endl;
       out << "// *** Definitions ***" << Qt::endl;
       out << "// --- Private Constants ---" << Qt::endl;

@@ -190,9 +190,9 @@ const QString a_unk_inc = R"(/**
 // Standard lib
 #include <string.h>
 // Custom lib
-#include <LCSF_Config.h>
 #include "LCSF_Bridge_Test.h"
 #include "Test_Main.h"
+#include <LCSF_Config.h>
 
 // *** Definitions ***
 )";
@@ -234,7 +234,7 @@ const QString a_unk_pri_fct = R"(/**
  * \param pArray pointer to array
  * \param incr indicates if function increments or decrements if no pattern
  */
- static void Test_FillArray(uint8_t *pArray, bool incr) {
+static void Test_FillArray(uint8_t *pArray, bool incr) {
     if (TestInfo.hasPattern) {
         for (uint8_t idx = 0; idx < TEST_ARRAY_SIZE; idx++) {
             pArray[idx] = TestInfo.pattern[idx];
@@ -248,18 +248,17 @@ const QString a_unk_pri_fct = R"(/**
             }
         }
     }
- }
+}
 
 /**
  * \fn static bool TestSendCommand(uint_fast16_t cmdName, bool hasPayload)
  * \brief Send a command
- *=
+ *
  * \param cmdName name of the command to send
  * \param hasPayload indicates if command has a payload or not=
  * \return bool: true if operation was a success=
  */
 static bool TestSendCommand(uint_fast16_t cmdName, bool hasPayload) {
-
     if (cmdName >= TEST_CMD_COUNT) {
         return false;
     }
@@ -379,7 +378,7 @@ const QString a_fct_sc3 = R"(static bool TestExecuteSC3(void) {
 
 const QString a_fct_cc2 = R"(static bool TestExecuteCC2(test_cmd_payload_t *pCmdPayload) {
     if (pCmdPayload == NULL) {
-       return false;
+        return false;
     }
     // Declare attributes
     uint8_t m_cc2_sa1 = 0;
@@ -469,7 +468,7 @@ const QString a_fct_cc2 = R"(static bool TestExecuteCC2(test_cmd_payload_t *pCmd
 
 const QString a_fct_cc3 = R"(static bool TestExecuteCC3(test_cmd_payload_t *pCmdPayload) {
     if (pCmdPayload == NULL) {
-       return false;
+        return false;
     }
     // Declare attributes
     uint8_t m_cc3_sa1 = 0;
@@ -559,7 +558,7 @@ const QString a_fct_cc3 = R"(static bool TestExecuteCC3(test_cmd_payload_t *pCmd
 
 const QString a_fct_cc5 = R"(static bool TestExecuteCC5(test_cmd_payload_t *pCmdPayload) {
     if (pCmdPayload == NULL) {
-       return false;
+        return false;
     }
     // Declare attributes
     uint16_t m_cc5_sa2 = 0;
@@ -630,7 +629,7 @@ const QString a_fct_cc5 = R"(static bool TestExecuteCC5(test_cmd_payload_t *pCmd
 
 const QString a_fct_cc6 = R"(static bool TestExecuteCC6(test_cmd_payload_t *pCmdPayload) {
     if (pCmdPayload == NULL) {
-       return false;
+        return false;
     }
     // Declare attributes
     uint8_t *m_cc6_sa4 = NULL;
@@ -716,9 +715,9 @@ const QString b_unk_inc = R"(/**
 // Standard lib
 #include <string.h>
 // Custom lib
-#include <LCSF_Config.h>
 #include "LCSF_Bridge_Test.h"
 #include "Test_Main.h"
+#include <LCSF_Config.h>
 
 // *** Definitions ***
 )";
@@ -760,7 +759,7 @@ const QString b_unk_pri_fct = R"(/**
  * \param pArray pointer to array
  * \param incr indicates if function increments or decrements if no pattern
  */
- static void Test_FillArray(uint8_t *pArray, bool incr) {
+static void Test_FillArray(uint8_t *pArray, bool incr) {
     if (TestInfo.hasPattern) {
         for (uint8_t idx = 0; idx < TEST_ARRAY_SIZE; idx++) {
             pArray[idx] = TestInfo.pattern[idx];
@@ -774,18 +773,17 @@ const QString b_unk_pri_fct = R"(/**
             }
         }
     }
- }
+}
 
 /**
  * \fn static bool TestSendCommand(uint_fast16_t cmdName, bool hasPayload)
  * \brief Send a command
- *=
+ *
  * \param cmdName name of the command to send
  * \param hasPayload indicates if command has a payload or not
  * \return bool: true if operation was a success
  */
 static bool TestSendCommand(uint_fast16_t cmdName, bool hasPayload) {
-
     if (cmdName >= TEST_CMD_COUNT) {
         return false;
     }
@@ -905,7 +903,7 @@ const QString b_fct_sc3 = R"(static bool TestExecuteSC3(void) {
 
 const QString b_fct_cc1 = R"(static bool TestExecuteCC1(test_cmd_payload_t *pCmdPayload) {
     if (pCmdPayload == NULL) {
-       return false;
+        return false;
     }
     // Declare attributes
     uint8_t m_cc1_sa1 = 0;
@@ -995,7 +993,7 @@ const QString b_fct_cc1 = R"(static bool TestExecuteCC1(test_cmd_payload_t *pCmd
 
 const QString b_fct_cc3 = R"(static bool TestExecuteCC3(test_cmd_payload_t *pCmdPayload) {
     if (pCmdPayload == NULL) {
-       return false;
+        return false;
     }
     // Declare attributes
     uint8_t m_cc3_sa1 = 0;
@@ -1085,7 +1083,7 @@ const QString b_fct_cc3 = R"(static bool TestExecuteCC3(test_cmd_payload_t *pCmd
 
 const QString b_fct_cc4 = R"(static bool TestExecuteCC4(test_cmd_payload_t *pCmdPayload) {
     if (pCmdPayload == NULL) {
-       return false;
+        return false;
     }
     // Declare attributes
     uint8_t m_cc4_sa1 = 0;
@@ -1156,7 +1154,7 @@ const QString b_fct_cc4 = R"(static bool TestExecuteCC4(test_cmd_payload_t *pCmd
 
 const QString b_fct_cc6 = R"(static bool TestExecuteCC6(test_cmd_payload_t *pCmdPayload) {
     if (pCmdPayload == NULL) {
-       return false;
+        return false;
     }
     // Declare attributes
     uint8_t *m_cc6_sa4 = NULL;

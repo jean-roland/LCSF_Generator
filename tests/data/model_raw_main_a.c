@@ -8,9 +8,9 @@
 // *** Libraries include ***
 // Standard lib
 // Custom lib
-#include <LCSF_Config.h>
 #include "LCSF_Bridge_Test.h"
 #include "Test_Main.h"
+#include <LCSF_Config.h>
 
 // *** Definitions ***
 // --- Private Macros ---
@@ -47,7 +47,6 @@ static test_info_t TestInfo;
  * \return bool: true if operation was a success
  */
 static bool TestSendCommand(uint_fast16_t cmdName, bool hasPayload) {
-
     if (cmdName >= TEST_CMD_COUNT) {
         return false;
     }
@@ -92,7 +91,7 @@ static bool TestExecuteSC3(void) {
 
 static bool TestExecuteCC2(test_cmd_payload_t *pCmdPayload) {
     if (pCmdPayload == NULL) {
-       return false;
+        return false;
     }
     // Declare attributes
     uint8_t m_cc2_sa1 = 0;
@@ -143,7 +142,7 @@ static bool TestExecuteCC2(test_cmd_payload_t *pCmdPayload) {
 
 static bool TestExecuteCC3(test_cmd_payload_t *pCmdPayload) {
     if (pCmdPayload == NULL) {
-       return false;
+        return false;
     }
     // Declare attributes
     uint8_t m_cc3_sa1 = 0;
@@ -194,7 +193,7 @@ static bool TestExecuteCC3(test_cmd_payload_t *pCmdPayload) {
 
 static bool TestExecuteCC5(test_cmd_payload_t *pCmdPayload) {
     if (pCmdPayload == NULL) {
-       return false;
+        return false;
     }
     // Declare attributes
     uint16_t m_cc5_sa2 = 0;
@@ -235,7 +234,7 @@ static bool TestExecuteCC5(test_cmd_payload_t *pCmdPayload) {
 
 static bool TestExecuteCC6(test_cmd_payload_t *pCmdPayload) {
     if (pCmdPayload == NULL) {
-       return false;
+        return false;
     }
     // Declare attributes
     uint8_t *m_cc6_sa4 = NULL;
@@ -308,31 +307,24 @@ bool Test_MainExecute(uint_fast16_t cmdName, test_cmd_payload_t *pCmdPayload) {
     switch (cmdName) {
         case TEST_CMD_SC2:
             return TestExecuteSC2();
-        break;
 
         case TEST_CMD_SC3:
             return TestExecuteSC3();
-        break;
 
         case TEST_CMD_CC2:
             return TestExecuteCC2(pCmdPayload);
-        break;
 
         case TEST_CMD_CC3:
             return TestExecuteCC3(pCmdPayload);
-        break;
 
         case TEST_CMD_CC5:
             return TestExecuteCC5(pCmdPayload);
-        break;
 
         case TEST_CMD_CC6:
             return TestExecuteCC6(pCmdPayload);
-        break;
 
         default:
             // This case can be customized (e.g to send an error command)
             return false;
-        break;
     }
 }

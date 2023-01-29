@@ -149,7 +149,7 @@ void CodeExtractor::extractDefaultCommandHandler(QTextStream *pInStream) {
             while (!pInStream->atEnd()) {
                 currentLine = pInStream->readLine();
 
-                if (currentLine.contains("break;")) {
+                if (currentLine.contains("}")) {
                     break;
                 } else {
                     this->m_defaultCommandHandler.append(currentLine + "\n");
