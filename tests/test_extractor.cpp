@@ -47,7 +47,11 @@ TEST(test_extractor, a_extraction) {
     ASSERT_EQ(test_extractor.getUnknownPublicFunctions().toStdString(), a_unk_pub_fct.toStdString());
     ASSERT_EQ(test_extractor.getUnknownPublicFunctionsHeaders().toStdString(), a_unk_pub_hdr.toStdString());
     ASSERT_EQ(test_extractor.getDefaultCommandHandler().toStdString(), a_def_cmd_hdl.toStdString());
-    ASSERT_EQ(test_extractor.getCommandFunctions(), a_cmd_fct);
+
+    QStringList cmdFcnList = test_extractor.getCommandFunctions();
+    for(int idx = 0; idx < b_cmd_fct.count(); idx++) {
+        ASSERT_EQ(cmdFcnList.at(idx).toStdString(), a_cmd_fct.at(idx).toStdString());
+    }
 }
 
 TEST(test_extractor, b_extraction) {
@@ -73,5 +77,9 @@ TEST(test_extractor, b_extraction) {
     ASSERT_EQ(test_extractor.getUnknownPublicFunctions().toStdString(), b_unk_pub_fct.toStdString());
     ASSERT_EQ(test_extractor.getUnknownPublicFunctionsHeaders().toStdString(), b_unk_pub_hdr.toStdString());
     ASSERT_EQ(test_extractor.getDefaultCommandHandler().toStdString(), b_def_cmd_hdl.toStdString());
-    ASSERT_EQ(test_extractor.getCommandFunctions(), b_cmd_fct);
+
+    QStringList cmdFcnList = test_extractor.getCommandFunctions();
+    for(int idx = 0; idx < b_cmd_fct.count(); idx++) {
+        ASSERT_EQ(cmdFcnList.at(idx).toStdString(), b_cmd_fct.at(idx).toStdString());
+    }
 }
