@@ -40,18 +40,19 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-# Find Qt5 (manual)
-# set(Qt5Core_DIR "/home/jean-roland/Qt/5.13.1/gcc_64/lib/cmake/Qt5Core/")
-# set(Qt5Widgets_DIR "/home/jean-roland/Qt/5.13.1/gcc_64/lib/cmake/Qt5Widgets/")
-# set(Qt5_DIR "/home/jean-roland/Qt/5.13.1/gcc_64/lib/cmake/Qt5/")
-# set(QT_QMAKE_EXECUTABLE "/home/jean-roland/Qt/5.13.1/gcc_64/bin/qmake/qmake.exe")
+# custom Qt5 directory location
+# set(Qt5Core_DIR "/home/jgosse/Qt/5.15.2/gcc_64/lib/cmake/Qt5Core/")
+# set(Qt5Widgets_DIR "/home/jgosse/Qt/5.15.2/gcc_64/lib/cmake/Qt5Widgets/")
+# set(Qt5_DIR "/home/jgosse/Qt/5.15.2/gcc_64/lib/cmake/Qt5/")
+# set(QT_QMAKE_EXECUTABLE "/home/jgosse/Qt/5.15.2/gcc_64/bin/qmake/qmake.exe")
 
 # Find Qt5
 find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
 
 # Check Qt version
-if (Qt5Core_VERSION VERSION_LESS 5.10.0)
-    message(FATAL_ERROR "Minimum supported Qt5 version is 5.10, current version is ${Qt5Core_VERSION}")
+set(REQ_QT5_VER 5.14.0)
+if (Qt5Core_VERSION VERSION_LESS ${REQ_QT5_VER})
+    message(FATAL_ERROR "Minimum supported Qt5 version is ${REQ_QT5_VER}, current version is ${Qt5Core_VERSION}")
 endif()
 
 # Target names
