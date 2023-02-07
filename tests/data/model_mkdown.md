@@ -1,5 +1,7 @@
 # Test protocol tables
 
+Test protocol id: 55
+
 ## Commands table
 
 | Name | Id | Direction | Description | Attributes? |

@@ -77,9 +77,9 @@ public:
     void generateBridgeHeader(QString protocolName, QString protocolId, QList<Command *> cmdList, QString dirPath);
     void generateBridge(QString protocolName, QList<Command *> cmdList, bool isA, QString dirPath);
     void generateDescription(QString protocolName, QList<Command *> cmdList, QString dirPath);
-    void generateWikiTable(QString protocolName, QList<Command *> cmdList, QString dirPath);
-    void generateDokuWikiTable(QString protocolName, QList<Command *> cmdList, QString dirPath);
-    void generateMkdownTable(QString protocolName, QList<Command *> cmdList, QString dirPath);
+    void generateWikiTable(QString protocolName, QString protocolId, QList<Command *> cmdList, QString dirPath);
+    void generateDokuWikiTable(QString protocolName, QString protocolId, QList<Command *> cmdList, QString dirPath);
+    void generateMkdownTable(QString protocolName, QString protocolId, QList<Command *> cmdList, QString dirPath);
 };
 
 #endif // CODEGENERATOR_H

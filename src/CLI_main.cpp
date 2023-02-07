@@ -205,9 +205,9 @@ int main(int argc, char *argv[]) {
     codegen.generateDescription(protocolName, cmdArray, outBPath);
     // Generate doc (if needed)
     if (parser.isSet("d")) {
-        codegen.generateWikiTable(protocolName, cmdArray, docPath);
-        codegen.generateDokuWikiTable(protocolName, cmdArray, docPath);
-        codegen.generateMkdownTable(protocolName, cmdArray, docPath);
+        codegen.generateWikiTable(protocolName, protocolId, cmdArray, docPath);
+        codegen.generateDokuWikiTable(protocolName, protocolId, cmdArray, docPath);
+        codegen.generateMkdownTable(protocolName, protocolId, cmdArray, docPath);
     }
     // End output
     out << "Generation complete." << Qt::endl;

@@ -1,5 +1,7 @@
 === Test protocol tables ===
 
+Test protocol id: 55
+
 == Commands table ==
 
 ^ Name ^ Id ^ Direction ^ Description ^ Attribute(s) Name ^ Attribute(s) Id ^ Optional? ^ Data type ^ Attribute Desc ^

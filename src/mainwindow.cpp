@@ -1363,6 +1363,8 @@ void MainWindow::on_pbGenerateDoc_clicked(void) {
     }
     protocolName = CheckAndCorrectInputString(protocolName);
 
+    QString protocolId(ui->leProtocolId->text().trimmed());
+
     if (this->m_cmdArray.size() <= 0) {
         QMessageBox::warning(nullptr, "Warning", "Protocol has no command!");
         return;
@@ -1372,9 +1374,9 @@ void MainWindow::on_pbGenerateDoc_clicked(void) {
         QMessageBox::warning(nullptr, "Warning", "Duplicate complex attribute name: '"+ dupName +"' found, this is not supported !");
         return;
     }
-    this->m_codegen.generateWikiTable(protocolName, this->m_cmdArray, exportDirPath);
-    this->m_codegen.generateDokuWikiTable(protocolName, this->m_cmdArray, exportDirPath);
-    this->m_codegen.generateMkdownTable(protocolName, this->m_cmdArray, exportDirPath);
+    this->m_codegen.generateWikiTable(protocolName, protocolId, this->m_cmdArray, exportDirPath);
+    this->m_codegen.generateDokuWikiTable(protocolName, protocolId, this->m_cmdArray, exportDirPath);
+    this->m_codegen.generateMkdownTable(protocolName, protocolId, this->m_cmdArray, exportDirPath);
     QMessageBox::information(nullptr, "Info","Documentation was created at: "+ exportDirPath);
 }
 

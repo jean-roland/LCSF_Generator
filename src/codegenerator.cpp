@@ -1512,7 +1512,7 @@ void CodeGenerator::generateDescription(QString protocolName, QList<Command *> c
    }
 }
 
-void CodeGenerator::generateWikiTable(QString protocolName, QList<Command *> cmdList, QString dirPath) {
+void CodeGenerator::generateWikiTable(QString protocolName, QString protocolId, QList<Command *> cmdList, QString dirPath) {
    QDir dir(dirPath);
    if (!dir.exists()) {
        dir.mkpath(".");
@@ -1526,6 +1526,8 @@ void CodeGenerator::generateWikiTable(QString protocolName, QList<Command *> cmd
 
       // Main table
       out << "=== " << protocolName << " protocol tables ===" << Qt::endl;
+      out << Qt::endl;
+      out << protocolName << " protocol id: " << protocolId << Qt::endl;
       out << Qt::endl;
       out << "==== Commands table ====" << Qt::endl;
       out << Qt::endl;
@@ -1605,7 +1607,7 @@ void CodeGenerator::generateWikiTable(QString protocolName, QList<Command *> cmd
    }
 }
 
-void CodeGenerator::generateDokuWikiTable(QString protocolName, QList<Command *> cmdList, QString dirPath) {
+void CodeGenerator::generateDokuWikiTable(QString protocolName, QString protocolId, QList<Command *> cmdList, QString dirPath) {
    QDir dir(dirPath);
    if (!dir.exists()) {
        dir.mkpath(".");
@@ -1619,6 +1621,8 @@ void CodeGenerator::generateDokuWikiTable(QString protocolName, QList<Command *>
 
       // Main table
       out << "=== " << protocolName << " protocol tables ===" << Qt::endl;
+      out << Qt::endl;
+      out << protocolName << " protocol id: " << protocolId << Qt::endl;
       out << Qt::endl;
       out << "== Commands table ==" << Qt::endl;
       out << Qt::endl;
@@ -1685,7 +1689,7 @@ void CodeGenerator::generateDokuWikiTable(QString protocolName, QList<Command *>
    }
 }
 
-void CodeGenerator::generateMkdownTable(QString protocolName, QList<Command *> cmdList, QString dirPath) {
+void CodeGenerator::generateMkdownTable(QString protocolName, QString protocolId, QList<Command *> cmdList, QString dirPath) {
     QDir dir(dirPath);
     if (!dir.exists()) {
         dir.mkpath(".");
@@ -1699,6 +1703,8 @@ void CodeGenerator::generateMkdownTable(QString protocolName, QList<Command *> c
 
         // Main table
         out << "# " << protocolName << " protocol tables" << Qt::endl;
+        out << Qt::endl;
+        out << protocolName << " protocol id: " << protocolId << Qt::endl;
         out << Qt::endl;
         out << "## Commands table" << Qt::endl;
         out << Qt::endl;
