@@ -57,17 +57,20 @@ Next, you have two options:
 
 If you're new with CMake, here's my process:
 * Install [Ninja](https://ninja-build.org/)
-* Run the command `cmake -B build/ -G Ninja` at the project root directory.
-* `cd build/`
-* `ninja`
+* Run the command `cmake -B build/ -G Ninja -DCMAKE_BUILD_TYPE="Release"` at the project root directory.
+* `ninja -C build/`
 
 Everything should now be compiling without issues.
 
 ## How to run tests
 
-To test, you'll need [googletest](https://github.com/google/googletest) and (re)build the project using CMake.
+To run unit-testing, you'll need [googletest](https://github.com/google/googletest) and (re)build the project using CMake.
 
-After that:
-* Go to build/
-* Run `./tests/LCSF_Generator_lib_tests`
+After that, from root directory, you can run:
+* `cmake --build build/ --target run_tests`
+
+To run cross-testing between LCSF Generator CLI generated code and the unit tests of LCSF C Stack, you need to specify the location of root LCSF C Stack directory in the main CMakeLists:
+* `set(LCSF_C_STACK_ROOT_DIR "path/to/lcsf_c_stack")`
+Now from root directory, you can run:
+* `cmake --build build/ --target cross_testing`
 
