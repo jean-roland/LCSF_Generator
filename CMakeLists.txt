@@ -61,6 +61,21 @@ set(CLI_BIN_NAME "lcsf_generator_cli")
 set(TESTS_BIN_NAME "lcsf_generator_tests")
 set(CORE_LIB_NAME "lcsf_generator_lib")
 
+# Cross-testing vars - set LCSF_C_STACK_ROOT_DIR accordingly
+set(LCSF_C_STACK_ROOT_DIR "../lcsf_c_stack/")
+set(CROSS_TEST_JSON "${PROJECT_SOURCE_DIR}/example/Test.json")
+set(CROSS_TEST_A_IMPORT "${LCSF_C_STACK_ROOT_DIR}/src/protocols_a/Test_Main.c")
+set(CROSS_TEST_B_IMPORT "${LCSF_C_STACK_ROOT_DIR}/src/protocols_b/Test_Main.c")
+
 # Project subdirs
 add_subdirectory(src)
 add_subdirectory(tests)
+
+# Cross-testing target
+add_custom_target(cross_testing
+    COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CLI_BIN_NAME} -l ${CROSS_TEST_JSON} -a ${CROSS_TEST_A_IMPORT} -b ${CROSS_TEST_B_IMPORT}
+    COMMAND cmake --build ${LCSF_C_STACK_ROOT_DIR}/build --target run_tests
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+    COMMENT "Run cross-testing")
+# Target depends on cli binary
+add_dependencies(cross_testing ${CLI_BIN_NAME})
