@@ -215,6 +215,4 @@ int main(int argc, char *argv[]) {
     if (parser.isSet("d")) {
         out << "Documentation generated in: " << docPath << Qt::endl;
     }
-    exit(EXIT_FAILURE);
-    return a.exec();
 }
