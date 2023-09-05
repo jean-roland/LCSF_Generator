@@ -2,7 +2,7 @@
 
 LCSF Generator is a C++/Qt graphical tool used to create, edit and deploy LCSF protocols.
 
-It generates code for the [LCSF C stack](https://github.com/jean-roland/LCSF_C_Stack) as well as documentation (markdown and wiki format).
+It generates code for [LCSF C stack](https://github.com/jean-roland/LCSF_C_Stack) and [LCSF Stack Rust](https://github.com/jean-roland/LCSF_Stack_Rust), as well as documentation (markdown and wiki format).
 
 There is also a CLI variant to help automate things or if you can't be bothered with a GUI, see below for the arguments documentation.
 
@@ -16,11 +16,11 @@ For more information, check the official LCSF documentation [here](https://jean-
 
 ### Windows
 * Go to the [release section](https://github.com/jean-roland/LCSF_Generator/releases) and download the latest Windows version.
-* Uncompress the archive and execute `LCSF_Generator.exe` (GUI) or `LCSF_Generator_CLI.exe + args` (CLI).
+* Unzip the archive and execute `LCSF_Generator.exe` (GUI) or `LCSF_Generator_CLI.exe + args` (CLI).
 
 ### Linux
 * Go to the [release section](https://github.com/jean-roland/LCSF_Generator/releases) and download the latest Linux version.
-* Uncompress the archive and execute `LCSF_Generator.sh`(GUI) or `LCSF_Generator_CLI.sh + args` (CLI).
+* Unzip the archive and execute `LCSF_Generator.sh`(GUI) or `LCSF_Generator_CLI.sh + args` (CLI).
 * There might be missing libraries, in that case you should use the `ldd` command on `LCSF_Generator` and `platforms/libqxcb.so` and install the missing packages.
 
 ### Other OS

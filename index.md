@@ -2,8 +2,8 @@
 
 LCSF Generator is a C++/Qt graphical tool that will allow you to:
 1. Create and edit protocols based on [LCSF](https://jean-roland.github.io/LCSF_Doc/) easily.
-2. Generate corresponding code for the [LCSF C Stack](https://github.com/jean-roland/LCSF_C_Stack).
-3. Import previous protocol source files to deploy modificatons without hassle.
+2. Generate corresponding code for the [LCSF C Stack](https://github.com/jean-roland/LCSF_C_Stack) and [LCSF Stack Rust](https://github.com/jean-roland/LCSF_Stack_Rust).
+3. Import previous protocol source files to deploy modificatons without hassle (only C files supported).
 4. Generate protocole documentation on wiki and markdown format.
 
 ## Interface Breakdown
@@ -39,7 +39,7 @@ The help menu structure is:
 
 This is where you fill the protocol parameters:
 * Protocol Name: The protocol name that will be used in files, code and documentation (Up to 64 alphanumerical characters and underscore allowed).
-* Protocol Id: The id that will be used in the LCSF C Stack to identify the protocol (Up to 4 hexadecimal characters allowed).
+* Protocol Id: The id that will be used in the LCSF stacks to identify the protocol (Up to 4 hexadecimal characters allowed).
 
 ### C - Table Tree
 
@@ -68,7 +68,7 @@ If the table detects two identitcal ids it will disable the save table button an
 
 The command table is composed of 5 columns:
 * Command Name: The name of the command that will be used in code and documentation (Up to 64 alphanumerical characters and underscore allowed).
-* Command Id: The id that will be used in the LCSF C Stack to identify the command (Up to 4 hexadecimal characters allowed, will be interpreted as 0 otherwise).
+* Command Id: The id that will be used in the LCSF stacks to identify the command (Up to 4 hexadecimal characters allowed, will be interpreted as 0 otherwise).
 * Attributes ?: Does the command have attributes or not (Yes or no choice).
 * Direction: Set the command direction (See the LCSF Documentation for more details).
 * Description: The command description that will be used in documentation.
@@ -77,7 +77,7 @@ The command table is composed of 5 columns:
 
 The attribute table is composed of 5 columns:
 * Attribute Name: The name of the attribute that will be used in code and documentation (Up to 64 alphanumerical characters and underscore allowed).
-* Attribute Id: The id that will be used in the LCSF C Stack to identify the attribute (Up to 4 hexadecimal characters allowed, will be interpreted as 0 otherwise).
+* Attribute Id: The id that will be used in the LCSF stacks to identify the attribute (Up to 4 hexadecimal characters allowed, will be interpreted as 0 otherwise).
 * Optional ?: Is the attribute optional or not (Yes or no choice).
 * Data Type: Set the attribute data type (See the LCSF Documentation for more details).
 * Description: The attribute description that will be used in documentation.
@@ -96,7 +96,7 @@ Table buttons have an effect on the table view (section D). It contains 5 button
 Output buttons are related to code and documentation generation. It contains 4 buttons:
 * Import Desc (A): Import previous code of the protocol A point of view (see LCSF directions), it will change the A output directory to the imported code location. Will turn green after import.
 * Import Desc (B): Import previous code of the protocol B point of view (see LCSF directions), it will change the B output directory to the imported code location. Will turn green after import.
-* Generate Desc: Generate protocol code for the LCSF C Stack, it will generate code for both A and B point of views.  
+* Generate Desc: Generate protocol code for the LCSF stacks, it will generate code for both A and B point of views.
 * Generate Doc: Generate protocol documentation, it will produce wiki and markdown format of the protocol command and attribute tables. 
 
 ### Tooltip
@@ -116,7 +116,7 @@ Just hover your mouse over them for a couple of seconds to make them appear.
 
 ## About Code Generation
 
-LCSF Generator will generate code for the LCSF C Stack following the protocol description.
+LCSF Generator will generate code for the LCSF stacks following the protocol description.
 It will generate code for both A and B points of view.
 
 It will fully generate the descriptor and bridge files but only build a template for the main files as it cannot produce application code.
