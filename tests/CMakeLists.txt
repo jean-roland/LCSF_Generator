@@ -34,7 +34,7 @@ if (GTEST_FOUND)
 
     # Test Executables
    	package_add_test(${TESTS_BIN_NAME} test_attribute.cpp test_command.cpp test_extractor.cpp
-        test_generator.cpp test_deschandler.cpp test_data.cpp)
+        test_generator.cpp test_rustgenerator.cpp test_deschandler.cpp test_data.cpp)
     target_link_libraries(${TESTS_BIN_NAME} ${CORE_LIB_NAME})
     target_include_directories(${TESTS_BIN_NAME} PUBLIC "../include/")
 
