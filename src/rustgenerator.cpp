@@ -756,7 +756,7 @@ void RustGenerator::generateBridge(QString protocolName, QString protocolId, QLi
         for (Command *command : cmdList) {
             out << "        CMD_ID_" << command->getName().toUpper() << " => CmdEnum::" << command->getName().toUpper() << "," << Qt::endl;
         }
-        out << "        _ => CmdEnum::SC1," << Qt::endl;
+        out << "        _ => panic!(\"Unreachable values\")," << Qt::endl;
         out << "    }" << Qt::endl;
         out << "}" << Qt::endl;
         out << Qt::endl;

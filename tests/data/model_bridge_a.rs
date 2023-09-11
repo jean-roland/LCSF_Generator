@@ -57,7 +57,7 @@ fn cmd_id_to_name(cmd_id: u16) -> CmdEnum {
         CMD_ID_CC4 => CmdEnum::CC4,
         CMD_ID_CC5 => CmdEnum::CC5,
         CMD_ID_CC6 => CmdEnum::CC6,
-        _ => CmdEnum::SC1,
+        _ => panic!("Unreachable values"),
     }
 }
 
