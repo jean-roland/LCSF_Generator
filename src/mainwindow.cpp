@@ -1327,18 +1327,26 @@ void MainWindow::on_pbGenerateDesc_clicked(void) {
         return;
     }
 
-    // Generate "A" C files
+    // Generate "A" files
     this->m_codegen.generateMainHeader(protocolName, this->m_cmdArray, this->m_codeextractA, outAPath);
     this->m_codegen.generateMain(protocolName, this->m_cmdArray, this->m_codeextractA, true, outAPath);
     this->m_codegen.generateBridgeHeader(protocolName, protocolId, this->m_cmdArray, outAPath);
     this->m_codegen.generateBridge(protocolName, this->m_cmdArray, true, outAPath);
     this->m_codegen.generateDescription(protocolName, this->m_cmdArray, outAPath);
-    // Generate "B" C files
+
+    this->m_rustgen.generateMain(protocolName, this->m_cmdArray, true, rustoutAPath);
+    this->m_rustgen.generateBridge(protocolName, protocolId, this->m_cmdArray, true, rustoutAPath);
+
+    // Generate "B" files
     this->m_codegen.generateMainHeader(protocolName, this->m_cmdArray, this->m_codeextractB, outBPath);
     this->m_codegen.generateMain(protocolName, this->m_cmdArray, this->m_codeextractB, false, outBPath);
     this->m_codegen.generateBridgeHeader(protocolName, protocolId, this->m_cmdArray, outBPath);
     this->m_codegen.generateBridge(protocolName, this->m_cmdArray, false, outBPath);
     this->m_codegen.generateDescription(protocolName, this->m_cmdArray, outBPath);
+
+    this->m_rustgen.generateMain(protocolName, this->m_cmdArray, false, rustoutBPath);
+    this->m_rustgen.generateBridge(protocolName, protocolId, this->m_cmdArray, false, rustoutBPath);
+
     QMessageBox::information(nullptr, "Info", "Code A has been generated in: " + outAPath + "\nCode B has been generated in: " + outBPath);
 }
 

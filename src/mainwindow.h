@@ -39,6 +39,7 @@
 #include "command.h"
 #include "enumtype.h"
 #include "codegenerator.h"
+#include "rustgenerator.h"
 #include "codeextractor.h"
 
 namespace Ui {
@@ -52,6 +53,7 @@ private:
     Ui::MainWindow *ui;
     QList<Command *> m_cmdArray;
     CodeGenerator m_codegen;
+    RustGenerator m_rustgen;
     CodeExtractor m_codeextractA;
     CodeExtractor m_codeextractB;
     QString outAPath;
@@ -60,6 +62,8 @@ private:
     const QString defProtocolName = "Default";
     const QString defoutAPath = "./OutputA";
     const QString defoutBPath = "./OutputB";
+    const QString rustoutAPath = "./RustOutputA";
+    const QString rustoutBPath = "./RustOutputB";
     const QString cmdArrayName = "Commands";
     const QString attArraySuffix = "_Attributes";
     const QString descDirPath = "./Description";
