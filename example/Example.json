@@ -1,0 +1,231 @@
+{
+    "commands": [
+        {
+            "attributes": [
+            ],
+            "description": "Send a ping",
+            "direction": 2,
+            "hasAtt": false,
+            "id": 0,
+            "name": "Ping",
+            "parentName": "NONE",
+            "size": 0
+        },
+        {
+            "attributes": [
+                {
+                    "dataType": 2,
+                    "desc": "Time to wait before reset",
+                    "id": 2,
+                    "isOptional": true,
+                    "name": "Time",
+                    "size": 0
+                }
+            ],
+            "description": "Reset the target",
+            "direction": 0,
+            "hasAtt": true,
+            "id": 1,
+            "name": "Reset",
+            "parentName": "NONE",
+            "size": 1
+        },
+        {
+            "attributes": [
+                {
+                    "dataType": 0,
+                    "desc": "Indicates which error was encountered",
+                    "id": 0,
+                    "isOptional": false,
+                    "name": "ErrorCode",
+                    "size": 0
+                }
+            ],
+            "description": "Indicates error",
+            "direction": 1,
+            "hasAtt": true,
+            "id": 2,
+            "name": "Error",
+            "parentName": "NONE",
+            "size": 1
+        },
+        {
+            "attributes": [
+            ],
+            "description": "Acknowledge commands",
+            "direction": 1,
+            "hasAtt": false,
+            "id": 3,
+            "name": "Ack",
+            "parentName": "NONE",
+            "size": 0
+        },
+        {
+            "attributes": [
+            ],
+            "description": "Abort current process",
+            "direction": 0,
+            "hasAtt": false,
+            "id": 4,
+            "name": "Abort",
+            "parentName": "NONE",
+            "size": 0
+        },
+        {
+            "attributes": [
+                {
+                    "dataType": 2,
+                    "desc": "Address where the target must jump",
+                    "id": 1,
+                    "isOptional": false,
+                    "name": "JumpAddr",
+                    "size": 0
+                }
+            ],
+            "description": "Jump to an address",
+            "direction": 0,
+            "hasAtt": true,
+            "id": 5,
+            "name": "Jump",
+            "parentName": "NONE",
+            "size": 1
+        },
+        {
+            "attributes": [
+                {
+                    "dataType": 4,
+                    "desc": "",
+                    "id": 16,
+                    "isOptional": true,
+                    "name": "YUV",
+                    "size": 3,
+                    "subAttr": [
+                        {
+                            "dataType": 0,
+                            "desc": "",
+                            "id": 32,
+                            "isOptional": false,
+                            "name": "Y",
+                            "size": 0
+                        },
+                        {
+                            "dataType": 0,
+                            "desc": "",
+                            "id": 33,
+                            "isOptional": false,
+                            "name": "U",
+                            "size": 0
+                        },
+                        {
+                            "dataType": 0,
+                            "desc": "",
+                            "id": 34,
+                            "isOptional": false,
+                            "name": "V",
+                            "size": 0
+                        }
+                    ]
+                },
+                {
+                    "dataType": 4,
+                    "desc": "",
+                    "id": 17,
+                    "isOptional": true,
+                    "name": "RGB",
+                    "size": 3,
+                    "subAttr": [
+                        {
+                            "dataType": 0,
+                            "desc": "",
+                            "id": 35,
+                            "isOptional": false,
+                            "name": "R",
+                            "size": 0
+                        },
+                        {
+                            "dataType": 0,
+                            "desc": "",
+                            "id": 36,
+                            "isOptional": false,
+                            "name": "G",
+                            "size": 0
+                        },
+                        {
+                            "dataType": 0,
+                            "desc": "",
+                            "id": 37,
+                            "isOptional": false,
+                            "name": "B",
+                            "size": 0
+                        }
+                    ]
+                }
+            ],
+            "description": "Send color space data",
+            "direction": 2,
+            "hasAtt": true,
+            "id": 6,
+            "name": "ColorSpace",
+            "parentName": "NONE",
+            "size": 2
+        },
+        {
+            "attributes": [
+            ],
+            "description": "Request sensor data",
+            "direction": 0,
+            "hasAtt": false,
+            "id": 7,
+            "name": "ReqSensor",
+            "parentName": "NONE",
+            "size": 0
+        },
+        {
+            "attributes": [
+                {
+                    "dataType": 4,
+                    "desc": "Return color sensor data",
+                    "id": 3,
+                    "isOptional": true,
+                    "name": "ColorData",
+                    "size": 2,
+                    "subAttr": [
+                        {
+                            "dataType": 0,
+                            "desc": "Indicates the colorspace type",
+                            "id": 4,
+                            "isOptional": false,
+                            "name": "ColorspaceType",
+                            "size": 0
+                        },
+                        {
+                            "dataType": 3,
+                            "desc": "Always 6 bytes, contains the 3 colorspace component",
+                            "id": 5,
+                            "isOptional": false,
+                            "name": "ColorspaceValues",
+                            "size": 0
+                        }
+                    ]
+                },
+                {
+                    "dataType": 0,
+                    "desc": "Return temperature sensor data",
+                    "id": 7,
+                    "isOptional": true,
+                    "name": "TempData",
+                    "size": 0
+                }
+            ],
+            "description": "Give sensor data",
+            "direction": 1,
+            "hasAtt": true,
+            "id": 8,
+            "name": "SensorData",
+            "parentName": "NONE",
+            "size": 2
+        }
+    ],
+    "id": "00",
+    "name": "Example"
+}

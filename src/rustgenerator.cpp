@@ -28,6 +28,16 @@ RustGenerator::RustGenerator() {
 }
 
 // Set all chars of a string to lower then the first to upper
+bool RustGenerator::is_CString_needed(QList<RustGenerator::T_attInfos> attInfosList) {
+   for (RustGenerator::T_attInfos attInfo : attInfosList) {
+    if (attInfo.dataType == NS_AttDataType::STRING) {
+        return true;
+    }
+   }
+   return false;
+}
+
+// Set all chars of a string to lower then the first to upper
 QString RustGenerator::capitalize(const QString &str) {
    QString tmp = str;
    tmp = tmp.toLower();
@@ -460,10 +470,13 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
         out << Qt::endl;
         out << "use crate::lcsf_lib::lcsf_core;" << Qt::endl;
         out << "use crate::lcsf_lib::lcsf_validator;" << Qt::endl;
-        out << "use crate::lcsf_prot::lcsf_protocol_test;" << Qt::endl;
+        out << "use crate::lcsf_prot::lcsf_protocol_" << low_prot_name << ";" << Qt::endl;
         out << "use lcsf_core::LcsfCore;" << Qt::endl;
         out << "use lcsf_validator::LcsfValidCmd;" << Qt::endl;
-        out << "use std::ffi::CString;" << Qt::endl;
+        // Check if Cstring needed
+        if (this->is_CString_needed(attInfosList)) {
+            out << "use std::ffi::CString;" << Qt::endl;
+        }
         out << Qt::endl;
 
         // Command id enum
@@ -471,7 +484,7 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
         out << "#[derive(Debug, PartialEq, Copy, Clone)]" << Qt::endl;
         out << "pub enum CmdEnum {" << Qt::endl;
         for (Command *command : cmdList) {
-            out << "    " << command->getName().toUpper() << "," << Qt::endl;
+            out << "    " << this->capitalize(command->getName()) << "," << Qt::endl;
         }
         out << "}" << Qt::endl;
         out << Qt::endl;
@@ -642,7 +655,7 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
         out << "    match cmd_name {" << Qt::endl;
         for (Command *command : cmdList) {
             if (command->isReceivable(isA)) {
-                out << "        CmdEnum::" << command->getName().toUpper() << " => ";
+                out << "        CmdEnum::" << this->capitalize(command->getName()) << " => ";
                 if (command->getAttArray().size() == 0) {
                     out << "execute_" << command->getName().toLower() << "()," << Qt::endl;
                 } else {
@@ -715,7 +728,7 @@ void RustGenerator::generateBridge(QString protocolName, QString protocolId, QLi
         out << "//! It shouldn't be edited manually" << Qt::endl;
         out << Qt::endl;
         out << "use crate::lcsf_lib::lcsf_validator;" << Qt::endl;
-        out << "use crate::lcsf_prot::protocol_test;" << Qt::endl;
+        out << "use crate::lcsf_prot::protocol_" << low_prot_name << ";" << Qt::endl;
         out << "use lazy_static::lazy_static;" << Qt::endl;
         out << "use lcsf_validator::LcsfAttDesc;" << Qt::endl;
         out << "use lcsf_validator::LcsfCmdDesc;" << Qt::endl;
@@ -724,7 +737,10 @@ void RustGenerator::generateBridge(QString protocolName, QString protocolId, QLi
         out << "use lcsf_validator::LcsfValidAtt;" << Qt::endl;
         out << "use lcsf_validator::LcsfValidAttPayload;" << Qt::endl;
         out << "use lcsf_validator::LcsfValidCmd;" << Qt::endl;
-        out << "use std::ffi::CString;" << Qt::endl;
+        // Check if Cstring needed
+        if (this->is_CString_needed(attInfosList)) {
+            out << "use std::ffi::CString;" << Qt::endl;
+        }
         out << Qt::endl;
 
         // Import Attribute
@@ -745,7 +761,7 @@ void RustGenerator::generateBridge(QString protocolName, QString protocolId, QLi
         out << "fn cmd_name_to_id(cmd_name: CmdEnum) -> u16 {" << Qt::endl;
         out << "    match cmd_name {" << Qt::endl;
         for (Command *command : cmdList) {
-            out << "        CmdEnum::" << command->getName().toUpper() << " => CMD_ID_" << command->getName().toUpper() << "," << Qt::endl;
+            out << "        CmdEnum::" << this->capitalize(command->getName()) << " => CMD_ID_" << command->getName().toUpper() << "," << Qt::endl;
         }
         out << "    }" << Qt::endl;
         out << "}" << Qt::endl;
@@ -754,7 +770,7 @@ void RustGenerator::generateBridge(QString protocolName, QString protocolId, QLi
         out << "fn cmd_id_to_name(cmd_id: u16) -> CmdEnum {" << Qt::endl;
         out << "    match cmd_id {" << Qt::endl;
         for (Command *command : cmdList) {
-            out << "        CMD_ID_" << command->getName().toUpper() << " => CmdEnum::" << command->getName().toUpper() << "," << Qt::endl;
+            out << "        CMD_ID_" << command->getName().toUpper() << " => CmdEnum::" << this->capitalize(command->getName()) << "," << Qt::endl;
         }
         out << "        _ => panic!(\"Unreachable values\")," << Qt::endl;
         out << "    }" << Qt::endl;
@@ -891,7 +907,7 @@ void RustGenerator::generateBridge(QString protocolName, QString protocolId, QLi
         out << "    let cmd_payload = match cmd_name {" << Qt::endl;
         for (Command *command : cmdList) {
             if ((command->getAttArray().size() > 0) && (command->isReceivable(isA))) {
-                out << "        CmdEnum::" << command->getName().toUpper() << " => " << command->getName().toLower()
+                out << "        CmdEnum::" << this->capitalize(command->getName()) << " => " << command->getName().toLower()
                     << "_get_data(&valid_cmd.att_arr)," << Qt::endl;
             }
         }
@@ -989,7 +1005,7 @@ void RustGenerator::generateBridge(QString protocolName, QString protocolId, QLi
         out << "    match cmd_name {" << Qt::endl;
         for (Command *command : cmdList) {
             if ((command->getAttArray().size() > 0) && (command->isTransmittable(isA))) {
-                out << "        CmdEnum::" << command->getName() << " => send_cmd.att_arr = "
+                out << "        CmdEnum::" << this->capitalize(command->getName()) << " => send_cmd.att_arr = "
                     << command->getName().toLower() << "_fill_att(cmd_payload)," << Qt::endl;
             }
         }

@@ -48,6 +48,7 @@ private:
         QString attDesc;
     }T_attInfos;
 
+    bool is_CString_needed(QList<RustGenerator::T_attInfos> attInfosList);
     QString capitalize(const QString &str);
     QString getPayloadPath(QStringList parentNames);
     QString getIndent(int indentNb);

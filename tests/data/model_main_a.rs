@@ -13,15 +13,15 @@ use std::ffi::CString;
 /// Command enum
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub enum CmdEnum {
-    SC1,
-    SC2,
-    SC3,
-    CC1,
-    CC2,
-    CC3,
-    CC4,
-    CC5,
-    CC6,
+    Sc1,
+    Sc2,
+    Sc3,
+    Cc1,
+    Cc2,
+    Cc3,
+    Cc4,
+    Cc5,
+    Cc6,
 }
 
 /// Command payload union
@@ -329,24 +329,24 @@ fn execute_cc6(payload: &Cc6AttPayload) {
 /// cmd_payload: pointer to command payload
 fn execute_cmd(cmd_name: CmdEnum, cmd_payload: &CmdPayload) {
     match cmd_name {
-        CmdEnum::SC2 => execute_sc2(),
-        CmdEnum::SC3 => execute_sc3(),
-        CmdEnum::CC2 => {
+        CmdEnum::Sc2 => execute_sc2(),
+        CmdEnum::Sc3 => execute_sc3(),
+        CmdEnum::Cc2 => {
             if let CmdPayload::Cc2Payload(payload) = cmd_payload {
                 execute_cc2(payload);
             }
         }
-        CmdEnum::CC3 => {
+        CmdEnum::Cc3 => {
             if let CmdPayload::Cc3Payload(payload) = cmd_payload {
                 execute_cc3(payload);
             }
         }
-        CmdEnum::CC5 => {
+        CmdEnum::Cc5 => {
             if let CmdPayload::Cc5Payload(payload) = cmd_payload {
                 execute_cc5(payload);
             }
         }
-        CmdEnum::CC6 => {
+        CmdEnum::Cc6 => {
             if let CmdPayload::Cc6Payload(payload) = cmd_payload {
                 execute_cc6(payload);
             }

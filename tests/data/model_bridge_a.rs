@@ -33,30 +33,30 @@ use protocol_test::CmdPayload;
 /// Convert command name to lcsf command id
 fn cmd_name_to_id(cmd_name: CmdEnum) -> u16 {
     match cmd_name {
-        CmdEnum::SC1 => CMD_ID_SC1,
-        CmdEnum::SC2 => CMD_ID_SC2,
-        CmdEnum::SC3 => CMD_ID_SC3,
-        CmdEnum::CC1 => CMD_ID_CC1,
-        CmdEnum::CC2 => CMD_ID_CC2,
-        CmdEnum::CC3 => CMD_ID_CC3,
-        CmdEnum::CC4 => CMD_ID_CC4,
-        CmdEnum::CC5 => CMD_ID_CC5,
-        CmdEnum::CC6 => CMD_ID_CC6,
+        CmdEnum::Sc1 => CMD_ID_SC1,
+        CmdEnum::Sc2 => CMD_ID_SC2,
+        CmdEnum::Sc3 => CMD_ID_SC3,
+        CmdEnum::Cc1 => CMD_ID_CC1,
+        CmdEnum::Cc2 => CMD_ID_CC2,
+        CmdEnum::Cc3 => CMD_ID_CC3,
+        CmdEnum::Cc4 => CMD_ID_CC4,
+        CmdEnum::Cc5 => CMD_ID_CC5,
+        CmdEnum::Cc6 => CMD_ID_CC6,
     }
 }
 
 /// Convert lcsf command id to command name
 fn cmd_id_to_name(cmd_id: u16) -> CmdEnum {
     match cmd_id {
-        CMD_ID_SC1 => CmdEnum::SC1,
-        CMD_ID_SC2 => CmdEnum::SC2,
-        CMD_ID_SC3 => CmdEnum::SC3,
-        CMD_ID_CC1 => CmdEnum::CC1,
-        CMD_ID_CC2 => CmdEnum::CC2,
-        CMD_ID_CC3 => CmdEnum::CC3,
-        CMD_ID_CC4 => CmdEnum::CC4,
-        CMD_ID_CC5 => CmdEnum::CC5,
-        CMD_ID_CC6 => CmdEnum::CC6,
+        CMD_ID_SC1 => CmdEnum::Sc1,
+        CMD_ID_SC2 => CmdEnum::Sc2,
+        CMD_ID_SC3 => CmdEnum::Sc3,
+        CMD_ID_CC1 => CmdEnum::Cc1,
+        CMD_ID_CC2 => CmdEnum::Cc2,
+        CMD_ID_CC3 => CmdEnum::Cc3,
+        CMD_ID_CC4 => CmdEnum::Cc4,
+        CMD_ID_CC5 => CmdEnum::Cc5,
+        CMD_ID_CC6 => CmdEnum::Cc6,
         _ => panic!("Unreachable values"),
     }
 }
@@ -400,10 +400,10 @@ fn cc6_get_data(att_arr: &[LcsfValidAtt]) -> CmdPayload {
 pub fn receive_cmd(valid_cmd: &LcsfValidCmd) -> (CmdEnum, CmdPayload) {
     let cmd_name = cmd_id_to_name(valid_cmd.cmd_id);
     let cmd_payload = match cmd_name {
-        CmdEnum::CC2 => cc2_get_data(&valid_cmd.att_arr),
-        CmdEnum::CC3 => cc3_get_data(&valid_cmd.att_arr),
-        CmdEnum::CC5 => cc5_get_data(&valid_cmd.att_arr),
-        CmdEnum::CC6 => cc6_get_data(&valid_cmd.att_arr),
+        CmdEnum::Cc2 => cc2_get_data(&valid_cmd.att_arr),
+        CmdEnum::Cc3 => cc3_get_data(&valid_cmd.att_arr),
+        CmdEnum::Cc5 => cc5_get_data(&valid_cmd.att_arr),
+        CmdEnum::Cc6 => cc6_get_data(&valid_cmd.att_arr),
         _ => CmdPayload::Empty,
     };
     (cmd_name, cmd_payload)
@@ -615,10 +615,10 @@ pub fn send_cmd(cmd_name: CmdEnum, cmd_payload: &CmdPayload) -> LcsfValidCmd {
         att_arr: Vec::new(),
     };
     match cmd_name {
-        CmdEnum::CC1 => send_cmd.att_arr = cc1_fill_att(cmd_payload),
-        CmdEnum::CC3 => send_cmd.att_arr = cc3_fill_att(cmd_payload),
-        CmdEnum::CC4 => send_cmd.att_arr = cc4_fill_att(cmd_payload),
-        CmdEnum::CC6 => send_cmd.att_arr = cc6_fill_att(cmd_payload),
+        CmdEnum::Cc1 => send_cmd.att_arr = cc1_fill_att(cmd_payload),
+        CmdEnum::Cc3 => send_cmd.att_arr = cc3_fill_att(cmd_payload),
+        CmdEnum::Cc4 => send_cmd.att_arr = cc4_fill_att(cmd_payload),
+        CmdEnum::Cc6 => send_cmd.att_arr = cc6_fill_att(cmd_payload),
         _ => {}
     }
     send_cmd
