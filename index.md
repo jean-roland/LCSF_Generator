@@ -126,3 +126,5 @@ If you already wrote application code for the protocol, you can import it throug
 ## About Code Importation
 
 The code importation feature relies heavily on its internal model of a protocol main source file to extract useful information. This means that heavy modification of this file formatting (sections names mainly) might yield unpredicted behaviour when importing and generating code with it.
+
+This is why the feature is currently only available for C code and not for Rust code.

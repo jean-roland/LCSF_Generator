@@ -20,8 +20,8 @@ For more information, check the official LCSF documentation [here](https://jean-
 
 ### Linux
 * Go to the [release section](https://github.com/jean-roland/LCSF_Generator/releases) and download the latest Linux version.
-* Unzip the archive and execute `LCSF_Generator.sh`(GUI) or `LCSF_Generator_CLI.sh + args` (CLI).
-* There might be missing libraries, in that case you should use the `ldd` command on `LCSF_Generator` and `platforms/libqxcb.so` and install the missing packages.
+* Unzip the archive and execute `lcsf_generator_gui.sh` or `lcsf_generator_cli.sh + args`
+* There might be missing libraries, in that case you should use the `ldd` command on the executables to find the missing packages.
 
 ### Other OS
 * No other OS are currently supported.
@@ -49,7 +49,7 @@ Examples:
 
 ## How to build
 
-If for some reasons you want or need to build the application yourself, you will need to have Qt5.10 or higher installed on your machine.
+If for some reasons you want or need to build the application yourself, you will need to have Qt5.14 or higher installed on your machine.
 
 Next, you have two options:
 * Use the Qt Creator IDE, the project file is found at `src/LCSF_Generator.pro`, and compile from here.
