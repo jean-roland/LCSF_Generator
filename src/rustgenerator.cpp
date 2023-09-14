@@ -909,9 +909,10 @@ void RustGenerator::generateBridge(QString protocolName, QString protocolId, QLi
             if ((command->getAttArray().size() > 0) && (command->isReceivable(isA))) {
                 out << "        CmdEnum::" << this->capitalize(command->getName()) << " => " << command->getName().toLower()
                     << "_get_data(&valid_cmd.att_arr)," << Qt::endl;
+            } else {
+                out << "        CmdEnum::" << this->capitalize(command->getName()) << " => CmdPayload::Empty," << Qt::endl;
             }
         }
-        out << "        _ => CmdPayload::Empty," << Qt::endl;
         out << "    };" << Qt::endl;
         out << "    (cmd_name, cmd_payload)" << Qt::endl;
         out << "}" << Qt::endl;
@@ -1007,9 +1008,10 @@ void RustGenerator::generateBridge(QString protocolName, QString protocolId, QLi
             if ((command->getAttArray().size() > 0) && (command->isTransmittable(isA))) {
                 out << "        CmdEnum::" << this->capitalize(command->getName()) << " => send_cmd.att_arr = "
                     << command->getName().toLower() << "_fill_att(cmd_payload)," << Qt::endl;
+            } else {
+                out << "        CmdEnum::" << this->capitalize(command->getName()) << " => {}," << Qt::endl;
             }
         }
-        out << "        _ => {}" << Qt::endl;
         out << "    }" << Qt::endl;
         out << "    send_cmd" << Qt::endl;
         out << "}" << Qt::endl;

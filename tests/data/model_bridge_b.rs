@@ -400,11 +400,15 @@ fn cc6_get_data(att_arr: &[LcsfValidAtt]) -> CmdPayload {
 pub fn receive_cmd(valid_cmd: &LcsfValidCmd) -> (CmdEnum, CmdPayload) {
     let cmd_name = cmd_id_to_name(valid_cmd.cmd_id);
     let cmd_payload = match cmd_name {
+        CmdEnum::Sc1 => CmdPayload::Empty,
+        CmdEnum::Sc2 => CmdPayload::Empty,
+        CmdEnum::Sc3 => CmdPayload::Empty,
         CmdEnum::Cc1 => cc1_get_data(&valid_cmd.att_arr),
+        CmdEnum::Cc2 => CmdPayload::Empty,
         CmdEnum::Cc3 => cc3_get_data(&valid_cmd.att_arr),
         CmdEnum::Cc4 => cc4_get_data(&valid_cmd.att_arr),
+        CmdEnum::Cc5 => CmdPayload::Empty,
         CmdEnum::Cc6 => cc6_get_data(&valid_cmd.att_arr),
-        _ => CmdPayload::Empty,
     };
     (cmd_name, cmd_payload)
 }
@@ -615,11 +619,15 @@ pub fn send_cmd(cmd_name: CmdEnum, cmd_payload: &CmdPayload) -> LcsfValidCmd {
         att_arr: Vec::new(),
     };
     match cmd_name {
+        CmdEnum::Sc1 => {},
+        CmdEnum::Sc2 => {},
+        CmdEnum::Sc3 => {},
+        CmdEnum::Cc1 => {},
         CmdEnum::Cc2 => send_cmd.att_arr = cc2_fill_att(cmd_payload),
         CmdEnum::Cc3 => send_cmd.att_arr = cc3_fill_att(cmd_payload),
+        CmdEnum::Cc4 => {},
         CmdEnum::Cc5 => send_cmd.att_arr = cc5_fill_att(cmd_payload),
         CmdEnum::Cc6 => send_cmd.att_arr = cc6_fill_att(cmd_payload),
-        _ => {}
     }
     send_cmd
 }
