@@ -36,7 +36,7 @@ QString CodeGenerator::getAttDataRxPath(QString protocolName, QStringList parent
       for (int idx = 0; idx < parentNames.size() - 1; idx++) {
          attDataPath.append(namePrefix + parentNames.at(idx).toUpper() + "_ATT_" + parentNames.at(idx + 1).toUpper() + "].Payload.pSubAttArray[" );
       }
-      attDataPath.append(namePrefix + parentNames.last().toUpper() + "_ATT_" + attName.toUpper() + "].Payload.pData");
+      attDataPath.append(namePrefix + parentNames.last().toUpper() + "_ATT_" + attName.toUpper() + "].Payload");
    }
    return attDataPath;
 }
@@ -250,7 +250,6 @@ void CodeGenerator::fillSubAttData_Rec(QString protocolName, QStringList parentN
     }
     QStringList nextParentNames = QStringList();
     QString indent = this->getIndent(indentNb);
-    QString attDataPath;
 
     for (Attribute *attribute : attList) {
        if (attribute->getIsOptional()) {
@@ -262,7 +261,8 @@ void CodeGenerator::fillSubAttData_Rec(QString protocolName, QStringList parentN
     for (Attribute *attribute : attList) {
        // Clear sub-attribute list between attributes
        nextParentNames = parentNames;
-       attDataPath = this->getAttDataRxPath(protocolName, parentNames, attribute->getName());
+       QString attDataPath = this->getAttDataRxPath(protocolName, parentNames, attribute->getName()) + ".pData";
+       QString attSizePath = this->getAttDataRxPath(protocolName, parentNames, attribute->getName()) + "Size";
        *pOut << indent << "// Retrieve data of sub-attribute " << attribute->getName() << Qt::endl;
        if (attribute->getIsOptional()) {
           *pOut << indent << "if (" << attDataPath << " != NULL) {" << Qt::endl;
@@ -279,9 +279,8 @@ void CodeGenerator::fillSubAttData_Rec(QString protocolName, QStringList parentN
                       << " = " << attDataPath << ";" << Qt::endl;
           } else {
              *pOut << indent << "// Retrieve data of sub-attribute " << attribute->getName() << Qt::endl;
-             QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
              *pOut << indent << "memcpy(&(pCmdPayload->" << this->getPayloadPath(parentNames) << attribute->getName().toLower()
-                      << "), " << attDataPath << ", sizeof(" << typeString.chopped(1) << "));" << Qt::endl;
+                      << "), " << attDataPath << ", " << attSizePath << ");" << Qt::endl;
           }
           indent = this->getIndent(indentNb);
           *pOut << indent << "}" << Qt::endl;
@@ -293,9 +292,8 @@ void CodeGenerator::fillSubAttData_Rec(QString protocolName, QStringList parentN
              *pOut << indent << "pCmdPayload->" << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower()
                       << " = " << attDataPath << ";" << Qt::endl;
           } else {
-             QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
              *pOut << indent << "memcpy(&(pCmdPayload->" << this->getPayloadPath(parentNames) << attribute->getName().toLower()
-                      << "), " << attDataPath << ", sizeof(" << typeString.chopped(1) << "));" << Qt::endl;
+                      << "), " << attDataPath << ", " << attSizePath << ");" << Qt::endl;
           }
        }
     }
@@ -339,6 +337,8 @@ void CodeGenerator::fillSubAttPayload_Rec(QString protocolName, QStringList pare
                 *pOut << indent << attDataPath << "Payload.pData = pCmdPayload->"
                 << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower() << ";" << Qt::endl;
             } else {
+                *pOut << indent << attDataPath << "PayloadSize = GetVLESize(pCmdPayload->" 
+                << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ");" << Qt::endl;
                 *pOut << indent << attDataPath << "Payload.pData = &(pCmdPayload->"
                 << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ");" << Qt::endl;
             }
@@ -366,6 +366,8 @@ void CodeGenerator::fillSubAttPayload_Rec(QString protocolName, QStringList pare
                 *pOut << indent << attDataPath << "Payload.pData = pCmdPayload->"
                 << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower() << ";" << Qt::endl;
             } else {
+                *pOut << indent << attDataPath << "PayloadSize = GetVLESize(pCmdPayload->" 
+                << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ");" << Qt::endl;
                 *pOut << indent << attDataPath << "Payload.pData = &(pCmdPayload->"
                 << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ");" << Qt::endl;
             }
@@ -1153,6 +1155,23 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       out << "// *** End Definitions ***" << Qt::endl;
       out << Qt::endl;
       out << "// *** Private Functions ***" << Qt::endl;
+      out << "/**" << Qt::endl;
+      out << " * \\brief Return byte number to encode value" << Qt::endl;
+      out << " *" << Qt::endl;
+      out << " * \\param value value to encode" << Qt::endl;
+      out << " * \\return uint32_t: number of bytes to encode value" << Qt::endl;
+      out << " */" << Qt::endl;
+      out << "static uint32_t GetVLESize(uint32_t value) {" << Qt::endl;
+      out << "   if (value <= 0x000000ff) {" << Qt::endl;
+      out << "      return 1;" << Qt::endl;
+      out << "   } else if (value <= 0x0000ffff) {" << Qt::endl;
+      out << "      return 2;" << Qt::endl;
+      out << "   } else if (value <= 0x00ffffff) {" << Qt::endl;
+      out << "      return 3;" << Qt::endl;
+      out << "   } else {" << Qt::endl;
+      out << "      return 4;" << Qt::endl;
+      out << "   }" << Qt::endl;
+      out << "}" << Qt::endl;
       out << Qt::endl;
       out << "/**" << Qt::endl;
       out << " * \\fn static uint16_t LCSF_Bridge_" << protocolName << "_CMDID2CMDNAME(uint_fast16_t cmdId)" << Qt::endl;
@@ -1211,10 +1230,10 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
                             << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
                             << "].Payload.pData;" << Qt::endl;
                   } else {
-                     QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
                      out << "        memcpy(&(pCmdPayload->" << command->getName().toLower() << "_payload." << attribute->getName().toLower() << "), pAttArray["
                             << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
-                            << "].Payload.pData, sizeof(" << typeString.chopped(1) << "));" << Qt::endl;
+                            << "].Payload.pData, pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
+                            << "].PayloadSize);" << Qt::endl;
                   }
                   out << "    }" << Qt::endl;
                } else {
@@ -1226,10 +1245,10 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
                             << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
                             << "].Payload.pData;" << Qt::endl;
                   } else {
-                     QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
                      out << "    memcpy(&(pCmdPayload->" << command->getName().toLower() << "_payload." << attribute->getName().toLower() << "), pAttArray["
                             << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
-                            << "].Payload.pData, sizeof(" << typeString.chopped(1) << "));" << Qt::endl;
+                            << "].Payload.pData, pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
+                            << "].PayloadSize);" << Qt::endl;
                   }
                }
             }
@@ -1323,6 +1342,8 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
                             << command->getName().toLower() << "_payload.p_" << attribute->getName().toLower() << ";" << Qt::endl;
                   } else {
                      out << "        pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
+                            << "].PayloadSize = GetVLESize(pCmdPayload->" << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ");" << Qt::endl;
+                     out << "        pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
                             << "].Payload.pData = &(pCmdPayload->" << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ");" << Qt::endl;
                   }
                   out << "    } else {" << Qt::endl;
@@ -1353,6 +1374,8 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
                             << attribute->getName().toUpper() << "].Payload.pData = pCmdPayload->"
                             << command->getName().toLower() << "_payload.p_" << attribute->getName().toLower() << ";" << Qt::endl;
                   } else {
+                     out << "    pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
+                            << "].PayloadSize = GetVLESize(pCmdPayload->" << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ");" << Qt::endl;
                      out << "    pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
                             << "].Payload.pData = &(pCmdPayload->" << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ");" << Qt::endl;
                   }
