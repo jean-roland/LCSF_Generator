@@ -26,6 +26,7 @@
 #include <QJsonValue>
 #include <QList>
 
+#include "enumtype.h"
 #include "deschandler.h"
 #include "attribute.h"
 
@@ -41,23 +42,36 @@ static QString correctInputString(QString input) {
     }
 }
 
-static void loadAtt_Rec(Command *pParentCmd, Attribute *pParentAtt, const QJsonObject& attribute) {
-    int datatype = attribute.value(QLatin1String("dataType")).toInt();
-    if (datatype >= NS_AttDataType::SL_AttDataType.size()) {
-        datatype = 0;
+static NS_AttDataType::T_AttDataType convertDataType(QString type) {
+    if (type == "LCSF_UINT8") {
+        return NS_AttDataType::UINT8;
+    } else if (type == "LCSF_UINT16") {
+        return NS_AttDataType::UINT16;
+    } else if (type == "LCSF_UINT32") {
+        return NS_AttDataType::UINT32;
+    } else if (type == "LCSF_BYTE_ARRAY") {
+        return NS_AttDataType::BYTE_ARRAY;
+    } else if (type == "LCSF_SUB_ATTRIBUTES") {
+        return NS_AttDataType::SUB_ATTRIBUTES;
+    } else if (type == "LCSF_STRING") {
+        return NS_AttDataType::STRING;
+    } else {
+        return NS_AttDataType::UNKNOWN;
     }
+}
 
+static void loadAtt_Rec(Command *pParentCmd, Attribute *pParentAtt, const QJsonObject& attribute) {
     Attribute *Attr(new Attribute(attribute.value(QLatin1String("name")).toString(),
                                 static_cast<short>(attribute.value(QLatin1String("id")).toInt()),
                                 attribute.value(QLatin1String("isOptional")).toBool(),
-                                NS_AttDataType::SLAttDataType2Enum[datatype],
+                                convertDataType(attribute.value(QLatin1String("dataType")).toString()),
                                 attribute.value(QLatin1String("desc")).toString()));
     // If this is a sub-attribute
     if (pParentAtt != nullptr) {
         pParentAtt->addSubAtt(Attr);
     }
     // Parse sub-attributes
-    if (NS_AttDataType::SLAttDataType2Enum[datatype] == NS_AttDataType::SUB_ATTRIBUTES) {
+    if (Attr->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
         for (const QJsonValueRef SubAttr : attribute.value(QLatin1String("subAttr")).toArray()) {
             QJsonObject SubAttrObject(SubAttr.toObject());
             loadAtt_Rec(nullptr, Attr, SubAttrObject);
@@ -78,7 +92,7 @@ static void saveAtt_Rec(QJsonArray& attributes, QList<Attribute *> attList) {
       Attr.insert(QLatin1String("name"), attribute->getName());
       Attr.insert(QLatin1String("id"), attribute->getId());
       Attr.insert(QLatin1String("isOptional"), attribute->getIsOptional());
-      Attr.insert(QLatin1String("dataType"), attribute->getDataType());
+      Attr.insert(QLatin1String("dataType"), NS_AttDataType::SL_AttDataType.at(attribute->getDataType()));
       Attr.insert(QLatin1String("desc"), attribute->getDesc());
       Attr.insert(QLatin1String("size"), attribute->getSubAttArray().size());
 

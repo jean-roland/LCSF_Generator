@@ -36,7 +36,7 @@
         {
             "attributes": [
                 {
-                    "dataType": 0,
+                    "dataType": "LCSF_UINT8",
                     "desc": "Non optional uint8 simple attribute",
                     "id": 0,
                     "isOptional": false,
@@ -44,7 +44,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 1,
+                    "dataType": "LCSF_UINT16",
                     "desc": "Non optional uint16 simple attribute",
                     "id": 1,
                     "isOptional": false,
@@ -52,7 +52,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 2,
+                    "dataType": "LCSF_UINT32",
                     "desc": "Non optional uint32 simple attribute",
                     "id": 2,
                     "isOptional": false,
@@ -60,7 +60,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 3,
+                    "dataType": "LCSF_BYTE_ARRAY",
                     "desc": "Non optional byte array simple attribute",
                     "id": 3,
                     "isOptional": false,
@@ -68,7 +68,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 5,
+                    "dataType": "LCSF_STRING",
                     "desc": "Non optional string simple attribute",
                     "id": 4,
                     "isOptional": false,
@@ -76,7 +76,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 0,
+                    "dataType": "LCSF_UINT8",
                     "desc": "Optional uint8 simple attribute",
                     "id": 5,
                     "isOptional": true,
@@ -84,7 +84,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 1,
+                    "dataType": "LCSF_UINT16",
                     "desc": "Optional uint16 simple attribute",
                     "id": 6,
                     "isOptional": true,
@@ -92,7 +92,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 2,
+                    "dataType": "LCSF_UINT32",
                     "desc": "Optional uint32 simple attribute",
                     "id": 7,
                     "isOptional": true,
@@ -100,7 +100,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 3,
+                    "dataType": "LCSF_BYTE_ARRAY",
                     "desc": "Optional byte array simple attribute",
                     "id": 8,
                     "isOptional": true,
@@ -108,7 +108,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 5,
+                    "dataType": "LCSF_STRING",
                     "desc": "Optional string simple attribute",
                     "id": 9,
                     "isOptional": true,
@@ -127,7 +127,7 @@
         {
             "attributes": [
                 {
-                    "dataType": 0,
+                    "dataType": "LCSF_UINT8",
                     "desc": "Non optional uint8 simple attribute",
                     "id": 0,
                     "isOptional": false,
@@ -135,7 +135,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 1,
+                    "dataType": "LCSF_UINT16",
                     "desc": "Non optional uint16 simple attribute",
                     "id": 1,
                     "isOptional": false,
@@ -143,7 +143,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 2,
+                    "dataType": "LCSF_UINT32",
                     "desc": "Non optional uint32 simple attribute",
                     "id": 2,
                     "isOptional": false,
@@ -151,7 +151,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 3,
+                    "dataType": "LCSF_BYTE_ARRAY",
                     "desc": "Non optional byte array simple attribute",
                     "id": 3,
                     "isOptional": false,
@@ -159,7 +159,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 5,
+                    "dataType": "LCSF_STRING",
                     "desc": "Non optional string simple attribute",
                     "id": 4,
                     "isOptional": false,
@@ -167,7 +167,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 0,
+                    "dataType": "LCSF_UINT8",
                     "desc": "Optional uint8 simple attribute",
                     "id": 5,
                     "isOptional": true,
@@ -175,7 +175,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 1,
+                    "dataType": "LCSF_UINT16",
                     "desc": "Optional uint16 simple attribute",
                     "id": 6,
                     "isOptional": true,
@@ -183,7 +183,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 2,
+                    "dataType": "LCSF_UINT32",
                     "desc": "Optional uint32 simple attribute",
                     "id": 7,
                     "isOptional": true,
@@ -191,7 +191,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 3,
+                    "dataType": "LCSF_BYTE_ARRAY",
                     "desc": "Optional byte array simple attribute",
                     "id": 8,
                     "isOptional": true,
@@ -199,7 +199,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 5,
+                    "dataType": "LCSF_STRING",
                     "desc": "Optional string simple attribute",
                     "id": 9,
                     "isOptional": true,
@@ -218,7 +218,7 @@
         {
             "attributes": [
                 {
-                    "dataType": 0,
+                    "dataType": "LCSF_UINT8",
                     "desc": "Non optional uint8 simple attribute",
                     "id": 0,
                     "isOptional": false,
@@ -226,7 +226,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 1,
+                    "dataType": "LCSF_UINT16",
                     "desc": "Non optional uint16 simple attribute",
                     "id": 1,
                     "isOptional": false,
@@ -234,7 +234,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 2,
+                    "dataType": "LCSF_UINT32",
                     "desc": "Non optional uint32 simple attribute",
                     "id": 2,
                     "isOptional": false,
@@ -242,7 +242,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 3,
+                    "dataType": "LCSF_BYTE_ARRAY",
                     "desc": "Non optional byte array simple attribute",
                     "id": 3,
                     "isOptional": false,
@@ -250,7 +250,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 5,
+                    "dataType": "LCSF_STRING",
                     "desc": "Non optional string simple attribute",
                     "id": 4,
                     "isOptional": false,
@@ -258,7 +258,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 0,
+                    "dataType": "LCSF_UINT8",
                     "desc": "Optional uint8 simple attribute",
                     "id": 5,
                     "isOptional": true,
@@ -266,7 +266,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 1,
+                    "dataType": "LCSF_UINT16",
                     "desc": "Optional uint16 simple attribute",
                     "id": 6,
                     "isOptional": true,
@@ -274,7 +274,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 2,
+                    "dataType": "LCSF_UINT32",
                     "desc": "Optional uint32 simple attribute",
                     "id": 7,
                     "isOptional": true,
@@ -282,7 +282,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 3,
+                    "dataType": "LCSF_BYTE_ARRAY",
                     "desc": "Optional byte array simple attribute",
                     "id": 8,
                     "isOptional": true,
@@ -290,7 +290,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 5,
+                    "dataType": "LCSF_STRING",
                     "desc": "Optional string simple attribute",
                     "id": 9,
                     "isOptional": true,
@@ -309,7 +309,7 @@
         {
             "attributes": [
                 {
-                    "dataType": 0,
+                    "dataType": "LCSF_UINT8",
                     "desc": "Non optional uint8 simple attribute",
                     "id": 0,
                     "isOptional": false,
@@ -317,7 +317,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 4,
+                    "dataType": "LCSF_SUB_ATTRIBUTES",
                     "desc": "Non optional complex attribute",
                     "id": 10,
                     "isOptional": false,
@@ -325,7 +325,7 @@
                     "size": 3,
                     "subAttr": [
                         {
-                            "dataType": 0,
+                            "dataType": "LCSF_UINT8",
                             "desc": "Non optional uint8 simple attribute",
                             "id": 0,
                             "isOptional": false,
@@ -333,7 +333,7 @@
                             "size": 0
                         },
                         {
-                            "dataType": 1,
+                            "dataType": "LCSF_UINT16",
                             "desc": "Non optional uint16 simple attribute",
                             "id": 1,
                             "isOptional": false,
@@ -341,7 +341,7 @@
                             "size": 0
                         },
                         {
-                            "dataType": 2,
+                            "dataType": "LCSF_UINT32",
                             "desc": "Optional uint32 simple attribute",
                             "id": 2,
                             "isOptional": true,
@@ -351,7 +351,7 @@
                     ]
                 },
                 {
-                    "dataType": 4,
+                    "dataType": "LCSF_SUB_ATTRIBUTES",
                     "desc": "Optional complex attribute",
                     "id": 11,
                     "isOptional": true,
@@ -359,7 +359,7 @@
                     "size": 2,
                     "subAttr": [
                         {
-                            "dataType": 0,
+                            "dataType": "LCSF_UINT8",
                             "desc": "Optional uint8 simple attribute",
                             "id": 0,
                             "isOptional": true,
@@ -367,7 +367,7 @@
                             "size": 0
                         },
                         {
-                            "dataType": 4,
+                            "dataType": "LCSF_SUB_ATTRIBUTES",
                             "desc": "Non-optional complex attribute",
                             "id": 11,
                             "isOptional": false,
@@ -375,7 +375,7 @@
                             "size": 2,
                             "subAttr": [
                                 {
-                                    "dataType": 0,
+                                    "dataType": "LCSF_UINT8",
                                     "desc": "Optional uint8 simple attribute",
                                     "id": 0,
                                     "isOptional": true,
@@ -383,7 +383,7 @@
                                     "size": 0
                                 },
                                 {
-                                    "dataType": 4,
+                                    "dataType": "LCSF_SUB_ATTRIBUTES",
                                     "desc": "Non-optional complex attribute",
                                     "id": 10,
                                     "isOptional": false,
@@ -391,7 +391,7 @@
                                     "size": 1,
                                     "subAttr": [
                                         {
-                                            "dataType": 3,
+                                            "dataType": "LCSF_BYTE_ARRAY",
                                             "desc": "Non-optional byte array simple attribute",
                                             "id": 3,
                                             "isOptional": false,
@@ -416,7 +416,7 @@
         {
             "attributes": [
                 {
-                    "dataType": 1,
+                    "dataType": "LCSF_UINT16",
                     "desc": "Non optional uint16 simple attribute",
                     "id": 1,
                     "isOptional": false,
@@ -424,7 +424,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 4,
+                    "dataType": "LCSF_SUB_ATTRIBUTES",
                     "desc": "Non optional complex attribute",
                     "id": 10,
                     "isOptional": false,
@@ -432,7 +432,7 @@
                     "size": 3,
                     "subAttr": [
                         {
-                            "dataType": 0,
+                            "dataType": "LCSF_UINT8",
                             "desc": "Non optional uint8 simple attribute",
                             "id": 0,
                             "isOptional": false,
@@ -440,7 +440,7 @@
                             "size": 0
                         },
                         {
-                            "dataType": 1,
+                            "dataType": "LCSF_UINT16",
                             "desc": "Non optional uint16 simple attribute",
                             "id": 1,
                             "isOptional": false,
@@ -448,7 +448,7 @@
                             "size": 0
                         },
                         {
-                            "dataType": 2,
+                            "dataType": "LCSF_UINT32",
                             "desc": "Optional uint32 simple attribute",
                             "id": 2,
                             "isOptional": true,
@@ -458,7 +458,7 @@
                     ]
                 },
                 {
-                    "dataType": 4,
+                    "dataType": "LCSF_SUB_ATTRIBUTES",
                     "desc": "Optional complex attribute",
                     "id": 11,
                     "isOptional": true,
@@ -466,7 +466,7 @@
                     "size": 2,
                     "subAttr": [
                         {
-                            "dataType": 0,
+                            "dataType": "LCSF_UINT8",
                             "desc": "Optional uint8 simple attribute",
                             "id": 0,
                             "isOptional": true,
@@ -474,7 +474,7 @@
                             "size": 0
                         },
                         {
-                            "dataType": 4,
+                            "dataType": "LCSF_SUB_ATTRIBUTES",
                             "desc": "Non-optional complex attribute",
                             "id": 11,
                             "isOptional": false,
@@ -482,7 +482,7 @@
                             "size": 2,
                             "subAttr": [
                                 {
-                                    "dataType": 0,
+                                    "dataType": "LCSF_UINT8",
                                     "desc": "Optional uint8 simple attribute",
                                     "id": 0,
                                     "isOptional": true,
@@ -490,7 +490,7 @@
                                     "size": 0
                                 },
                                 {
-                                    "dataType": 4,
+                                    "dataType": "LCSF_SUB_ATTRIBUTES",
                                     "desc": "Non-optional complex attribute",
                                     "id": 10,
                                     "isOptional": false,
@@ -498,7 +498,7 @@
                                     "size": 1,
                                     "subAttr": [
                                         {
-                                            "dataType": 3,
+                                            "dataType": "LCSF_BYTE_ARRAY",
                                             "desc": "Non-optional byte array simple attribute",
                                             "id": 3,
                                             "isOptional": false,
@@ -523,7 +523,7 @@
         {
             "attributes": [
                 {
-                    "dataType": 3,
+                    "dataType": "LCSF_BYTE_ARRAY",
                     "desc": "Non optional byte array simple attribute",
                     "id": 3,
                     "isOptional": false,
@@ -531,7 +531,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 4,
+                    "dataType": "LCSF_SUB_ATTRIBUTES",
                     "desc": "Non optional complex attribute",
                     "id": 10,
                     "isOptional": false,
@@ -539,7 +539,7 @@
                     "size": 3,
                     "subAttr": [
                         {
-                            "dataType": 0,
+                            "dataType": "LCSF_UINT8",
                             "desc": "Non optional uint8 simple attribute",
                             "id": 0,
                             "isOptional": false,
@@ -547,7 +547,7 @@
                             "size": 0
                         },
                         {
-                            "dataType": 1,
+                            "dataType": "LCSF_UINT16",
                             "desc": "Non optional uint16 simple attribute",
                             "id": 1,
                             "isOptional": false,
@@ -555,7 +555,7 @@
                             "size": 0
                         },
                         {
-                            "dataType": 2,
+                            "dataType": "LCSF_UINT32",
                             "desc": "Optional uint32 simple attribute",
                             "id": 2,
                             "isOptional": true,
@@ -565,7 +565,7 @@
                     ]
                 },
                 {
-                    "dataType": 4,
+                    "dataType": "LCSF_SUB_ATTRIBUTES",
                     "desc": "Optional complex attribute",
                     "id": 11,
                     "isOptional": true,
@@ -573,7 +573,7 @@
                     "size": 2,
                     "subAttr": [
                         {
-                            "dataType": 0,
+                            "dataType": "LCSF_UINT8",
                             "desc": "Optional uint8 simple attribute",
                             "id": 0,
                             "isOptional": true,
@@ -581,7 +581,7 @@
                             "size": 0
                         },
                         {
-                            "dataType": 4,
+                            "dataType": "LCSF_SUB_ATTRIBUTES",
                             "desc": "Non-optional complex attribute",
                             "id": 11,
                             "isOptional": false,
@@ -589,7 +589,7 @@
                             "size": 2,
                             "subAttr": [
                                 {
-                                    "dataType": 0,
+                                    "dataType": "LCSF_UINT8",
                                     "desc": "Optional uint8 simple attribute",
                                     "id": 0,
                                     "isOptional": true,
@@ -597,7 +597,7 @@
                                     "size": 0
                                 },
                                 {
-                                    "dataType": 4,
+                                    "dataType": "LCSF_SUB_ATTRIBUTES",
                                     "desc": "Non-optional complex attribute",
                                     "id": 10,
                                     "isOptional": false,
@@ -605,7 +605,7 @@
                                     "size": 1,
                                     "subAttr": [
                                         {
-                                            "dataType": 3,
+                                            "dataType": "LCSF_BYTE_ARRAY",
                                             "desc": "Non-optional byte array simple attribute",
                                             "id": 3,
                                             "isOptional": false,

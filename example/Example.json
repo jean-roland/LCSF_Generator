@@ -14,7 +14,7 @@
         {
             "attributes": [
                 {
-                    "dataType": 2,
+                    "dataType": "LCSF_UINT32",
                     "desc": "Time to wait before reset",
                     "id": 2,
                     "isOptional": true,
@@ -33,7 +33,7 @@
         {
             "attributes": [
                 {
-                    "dataType": 0,
+                    "dataType": "LCSF_UINT8",
                     "desc": "Indicates which error was encountered",
                     "id": 0,
                     "isOptional": false,
@@ -74,7 +74,7 @@
         {
             "attributes": [
                 {
-                    "dataType": 2,
+                    "dataType": "LCSF_UINT32",
                     "desc": "Address where the target must jump",
                     "id": 1,
                     "isOptional": false,
@@ -93,7 +93,7 @@
         {
             "attributes": [
                 {
-                    "dataType": 4,
+                    "dataType": "LCSF_SUB_ATTRIBUTES",
                     "desc": "",
                     "id": 16,
                     "isOptional": true,
@@ -101,7 +101,7 @@
                     "size": 3,
                     "subAttr": [
                         {
-                            "dataType": 0,
+                            "dataType": "LCSF_UINT8",
                             "desc": "",
                             "id": 32,
                             "isOptional": false,
@@ -109,7 +109,7 @@
                             "size": 0
                         },
                         {
-                            "dataType": 0,
+                            "dataType": "LCSF_UINT8",
                             "desc": "",
                             "id": 33,
                             "isOptional": false,
@@ -117,7 +117,7 @@
                             "size": 0
                         },
                         {
-                            "dataType": 0,
+                            "dataType": "LCSF_UINT8",
                             "desc": "",
                             "id": 34,
                             "isOptional": false,
@@ -127,7 +127,7 @@
                     ]
                 },
                 {
-                    "dataType": 4,
+                    "dataType": "LCSF_SUB_ATTRIBUTES",
                     "desc": "",
                     "id": 17,
                     "isOptional": true,
@@ -135,7 +135,7 @@
                     "size": 3,
                     "subAttr": [
                         {
-                            "dataType": 0,
+                            "dataType": "LCSF_UINT8",
                             "desc": "",
                             "id": 35,
                             "isOptional": false,
@@ -143,7 +143,7 @@
                             "size": 0
                         },
                         {
-                            "dataType": 0,
+                            "dataType": "LCSF_UINT8",
                             "desc": "",
                             "id": 36,
                             "isOptional": false,
@@ -151,7 +151,7 @@
                             "size": 0
                         },
                         {
-                            "dataType": 0,
+                            "dataType": "LCSF_UINT8",
                             "desc": "",
                             "id": 37,
                             "isOptional": false,
@@ -183,7 +183,7 @@
         {
             "attributes": [
                 {
-                    "dataType": 4,
+                    "dataType": "LCSF_SUB_ATTRIBUTES",
                     "desc": "Return color sensor data",
                     "id": 3,
                     "isOptional": true,
@@ -191,7 +191,7 @@
                     "size": 2,
                     "subAttr": [
                         {
-                            "dataType": 0,
+                            "dataType": "LCSF_UINT8",
                             "desc": "Indicates the colorspace type",
                             "id": 4,
                             "isOptional": false,
@@ -199,7 +199,7 @@
                             "size": 0
                         },
                         {
-                            "dataType": 3,
+                            "dataType": "LCSF_BYTE_ARRAY",
                             "desc": "Always 6 bytes, contains the 3 colorspace component",
                             "id": 5,
                             "isOptional": false,
@@ -209,7 +209,7 @@
                     ]
                 },
                 {
-                    "dataType": 0,
+                    "dataType": "LCSF_UINT8",
                     "desc": "Return temperature sensor data",
                     "id": 7,
                     "isOptional": true,
@@ -226,6 +226,7 @@
             "size": 2
         }
     ],
+    "desc": "",
     "id": "00",
     "name": "Example"
 }

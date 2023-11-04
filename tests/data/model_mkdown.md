@@ -1,6 +1,6 @@
 # Test protocol
 
-This is a test description.
+The test protocol used to test/bench the lcsf ecosystem.
 
 Protocol id: `55`
 

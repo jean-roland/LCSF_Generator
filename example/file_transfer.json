@@ -3,7 +3,7 @@
         {
             "attributes": [
                 {
-                    "dataType": 3,
+                    "dataType": "LCSF_BYTE_ARRAY",
                     "desc": "File content",
                     "id": 0,
                     "isOptional": false,
@@ -11,7 +11,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 2,
+                    "dataType": "LCSF_UINT32",
                     "desc": "File size",
                     "id": 1,
                     "isOptional": false,
@@ -19,7 +19,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 2,
+                    "dataType": "LCSF_UINT32",
                     "desc": "Address to write the file (if writing to memory directly)",
                     "id": 2,
                     "isOptional": true,
@@ -27,7 +27,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 5,
+                    "dataType": "LCSF_STRING",
                     "desc": "Path to write the file (if writing on a file system)",
                     "id": 3,
                     "isOptional": true,
@@ -46,7 +46,7 @@
         {
             "attributes": [
                 {
-                    "dataType": 2,
+                    "dataType": "LCSF_UINT32",
                     "desc": "File size",
                     "id": 0,
                     "isOptional": false,
@@ -54,7 +54,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 2,
+                    "dataType": "LCSF_UINT32",
                     "desc": "Address to write the file (if writing to memory directly)",
                     "id": 1,
                     "isOptional": true,
@@ -62,7 +62,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 5,
+                    "dataType": "LCSF_STRING",
                     "desc": "Path to write the file (if writing on a file system)",
                     "id": 2,
                     "isOptional": true,
@@ -81,7 +81,7 @@
         {
             "attributes": [
                 {
-                    "dataType": 3,
+                    "dataType": "LCSF_BYTE_ARRAY",
                     "desc": "File content",
                     "id": 0,
                     "isOptional": false,
@@ -89,7 +89,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 2,
+                    "dataType": "LCSF_UINT32",
                     "desc": "File size",
                     "id": 1,
                     "isOptional": false,
@@ -97,7 +97,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 2,
+                    "dataType": "LCSF_UINT32",
                     "desc": "Address to write the file (if writing to memory directly)",
                     "id": 2,
                     "isOptional": true,
@@ -105,7 +105,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 5,
+                    "dataType": "LCSF_STRING",
                     "desc": "Path to write the file (if writing on a file system)",
                     "id": 3,
                     "isOptional": true,
@@ -124,7 +124,7 @@
         {
             "attributes": [
                 {
-                    "dataType": 2,
+                    "dataType": "LCSF_UINT32",
                     "desc": "File size",
                     "id": 0,
                     "isOptional": false,
@@ -132,7 +132,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 2,
+                    "dataType": "LCSF_UINT32",
                     "desc": "Address to write the file (if writing to memory directly)",
                     "id": 1,
                     "isOptional": true,
@@ -140,7 +140,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 5,
+                    "dataType": "LCSF_STRING",
                     "desc": "Path to write the file (if writing on a file system)",
                     "id": 2,
                     "isOptional": true,
@@ -159,7 +159,7 @@
         {
             "attributes": [
                 {
-                    "dataType": 3,
+                    "dataType": "LCSF_BYTE_ARRAY",
                     "desc": "Fragment content",
                     "id": 0,
                     "isOptional": false,
@@ -167,7 +167,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": 2,
+                    "dataType": "LCSF_UINT32",
                     "desc": "Fragment size",
                     "id": 1,
                     "isOptional": false,
@@ -186,8 +186,8 @@
         {
             "attributes": [
                 {
-                    "dataType": 0,
-                    "desc": "Error code enum, user defined (e.g: out of memory, missing address/path, bad address/path...)",
+                    "dataType": "LCSF_UINT8",
+                    "desc": "Error code enum, user defined (e.g: out of memory, missing address/bath, bad address/path...)",
                     "id": 0,
                     "isOptional": false,
                     "name": "error_code",
