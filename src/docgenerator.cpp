@@ -87,7 +87,7 @@ QList<Attribute::T_attInfos> DocGenerator::removeCommandAttributes(QList<Attribu
    return trimmedAttInfosList;
 }
 
-void DocGenerator::generateWikiTable(QString protocolName, QString protocolId, QList<Command *> cmdList, QString dirPath) {
+void DocGenerator::generateWikiTable(QString protocolName, QString protocolId, QString protocolDesc, QList<Command *> cmdList, QString dirPath) {
    QDir dir(dirPath);
    if (!dir.exists()) {
        dir.mkpath(".");
@@ -103,6 +103,7 @@ void DocGenerator::generateWikiTable(QString protocolName, QString protocolId, Q
       out << "=== " << protocolName << " protocol tables ===" << Qt::endl;
       out << Qt::endl;
       out << protocolName << " protocol id: " << protocolId << Qt::endl;
+      out << protocolName << " protocol description: " << protocolDesc << Qt::endl;
       out << Qt::endl;
       out << "==== Commands table ====" << Qt::endl;
       out << Qt::endl;
@@ -182,7 +183,7 @@ void DocGenerator::generateWikiTable(QString protocolName, QString protocolId, Q
    }
 }
 
-void DocGenerator::generateDokuWikiTable(QString protocolName, QString protocolId, QList<Command *> cmdList, QString dirPath) {
+void DocGenerator::generateDokuWikiTable(QString protocolName, QString protocolId, QString protocolDesc, QList<Command *> cmdList, QString dirPath) {
    QDir dir(dirPath);
    if (!dir.exists()) {
        dir.mkpath(".");
@@ -198,6 +199,7 @@ void DocGenerator::generateDokuWikiTable(QString protocolName, QString protocolI
       out << "=== " << protocolName << " protocol tables ===" << Qt::endl;
       out << Qt::endl;
       out << protocolName << " protocol id: " << protocolId << Qt::endl;
+      out << protocolName << " protocol description: " << protocolDesc << Qt::endl;
       out << Qt::endl;
       out << "== Commands table ==" << Qt::endl;
       out << Qt::endl;
@@ -264,7 +266,7 @@ void DocGenerator::generateDokuWikiTable(QString protocolName, QString protocolI
    }
 }
 
-void DocGenerator::generateMkdownTable(QString protocolName, QString protocolId, QList<Command *> cmdList, QString dirPath) {
+void DocGenerator::generateMkdownTable(QString protocolName, QString protocolId, QString protocolDesc, QList<Command *> cmdList, QString dirPath) {
     QDir dir(dirPath);
     if (!dir.exists()) {
         dir.mkpath(".");
@@ -279,7 +281,8 @@ void DocGenerator::generateMkdownTable(QString protocolName, QString protocolId,
         // Main table
         out << "# " << protocolName << " protocol tables" << Qt::endl;
         out << Qt::endl;
-        out << protocolName << " protocol id: " << protocolId << Qt::endl;
+        out << protocolName << " protocol id: `" << protocolId << "`" << Qt::endl;
+        out << protocolName << " protocol description: " << protocolDesc << Qt::endl;
         out << Qt::endl;
         out << "## Commands table" << Qt::endl;
         out << Qt::endl;

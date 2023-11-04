@@ -220,9 +220,9 @@ int main(int argc, char *argv[]) {
 
     // Generate doc (if needed)
     if (parser.isSet("d")) {
-        docgen.generateWikiTable(protocolName, protocolId, cmdArray, docPath);
-        docgen.generateDokuWikiTable(protocolName, protocolId, cmdArray, docPath);
-        docgen.generateMkdownTable(protocolName, protocolId, cmdArray, docPath);
+        docgen.generateWikiTable(protocolName, protocolId, protocolDesc, cmdArray, docPath);
+        docgen.generateDokuWikiTable(protocolName, protocolId, protocolDesc, cmdArray, docPath);
+        docgen.generateMkdownTable(protocolName, protocolId, protocolDesc, cmdArray, docPath);
     }
     // End output
     out << "Generation complete." << Qt::endl;

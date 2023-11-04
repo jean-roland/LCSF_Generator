@@ -34,9 +34,9 @@ TEST(test_docgenerator, doc_output) {
     QStringList model_content, output_content;
 
     // Generate doc
-    test_generator.generateWikiTable(protocol_name, protocol_id, cmd_list, path);
-    test_generator.generateDokuWikiTable(protocol_name, protocol_id, cmd_list, path);
-    test_generator.generateMkdownTable(protocol_name, protocol_id, cmd_list, path);
+    test_generator.generateWikiTable(protocol_name, protocol_id, protocol_desc, cmd_list, path);
+    test_generator.generateDokuWikiTable(protocol_name, protocol_id, protocol_desc, cmd_list, path);
+    test_generator.generateMkdownTable(protocol_name, protocol_id, protocol_desc, cmd_list, path);
 
     // Check wiki
     ASSERT_TRUE(openFile(&model_file, MODEL_DIR_PATH, "model_wiki.txt"));

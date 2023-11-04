@@ -44,9 +44,9 @@ private:
 
 public:
     DocGenerator();
-    void generateWikiTable(QString protocolName, QString protocolId, QList<Command *> cmdList, QString dirPath);
-    void generateDokuWikiTable(QString protocolName, QString protocolId, QList<Command *> cmdList, QString dirPath);
-    void generateMkdownTable(QString protocolName, QString protocolId, QList<Command *> cmdList, QString dirPath);
+    void generateWikiTable(QString protocolName, QString protocolId, QString protocolDesc, QList<Command *> cmdList, QString dirPath);
+    void generateDokuWikiTable(QString protocolName, QString protocolId, QString protocolDesc, QList<Command *> cmdList, QString dirPath);
+    void generateMkdownTable(QString protocolName, QString protocolId, QString protocolDesc, QList<Command *> cmdList, QString dirPath);
 };
 
 #endif // DocGenerator_H

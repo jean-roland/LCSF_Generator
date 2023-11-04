@@ -1,6 +1,7 @@
 # Test protocol tables
 
-Test protocol id: 55
+Test protocol id: `55`
+Test protocol description: This is a test description.
 
 ## Commands table
 
