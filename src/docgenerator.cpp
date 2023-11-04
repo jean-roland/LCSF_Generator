@@ -100,10 +100,11 @@ void DocGenerator::generateWikiTable(QString protocolName, QString protocolId, Q
       QTextStream out(&saveFile);
 
       // Main table
-      out << "=== " << protocolName << " protocol tables ===" << Qt::endl;
+      out << "=== " << protocolName << " protocol ===" << Qt::endl;
       out << Qt::endl;
-      out << protocolName << " protocol id: " << protocolId << Qt::endl;
-      out << protocolName << " protocol description: " << protocolDesc << Qt::endl;
+      out << protocolDesc << Qt::endl;
+      out << Qt::endl;
+      out << "Protocol id: " << protocolId << Qt::endl;
       out << Qt::endl;
       out << "==== Commands table ====" << Qt::endl;
       out << Qt::endl;
@@ -196,10 +197,11 @@ void DocGenerator::generateDokuWikiTable(QString protocolName, QString protocolI
       QTextStream out(&saveFile);
 
       // Main table
-      out << "=== " << protocolName << " protocol tables ===" << Qt::endl;
+      out << "=== " << protocolName << " protocol ===" << Qt::endl;
       out << Qt::endl;
-      out << protocolName << " protocol id: " << protocolId << Qt::endl;
-      out << protocolName << " protocol description: " << protocolDesc << Qt::endl;
+      out << protocolDesc << Qt::endl;
+      out << Qt::endl;
+      out << "Protocol id: " << protocolId << Qt::endl;
       out << Qt::endl;
       out << "== Commands table ==" << Qt::endl;
       out << Qt::endl;
@@ -279,10 +281,11 @@ void DocGenerator::generateMkdownTable(QString protocolName, QString protocolId,
         QTextStream out(&saveFile);
 
         // Main table
-        out << "# " << protocolName << " protocol tables" << Qt::endl;
+        out << "# " << protocolName << " protocol" << Qt::endl;
         out << Qt::endl;
-        out << protocolName << " protocol id: `" << protocolId << "`" << Qt::endl;
-        out << protocolName << " protocol description: " << protocolDesc << Qt::endl;
+        out << protocolDesc << Qt::endl;
+        out << Qt::endl;
+        out <<"Protocol id: `" << protocolId << "`" << Qt::endl;
         out << Qt::endl;
         out << "## Commands table" << Qt::endl;
         out << Qt::endl;

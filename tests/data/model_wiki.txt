@@ -1,7 +1,8 @@
-=== Test protocol tables ===
+=== Test protocol ===
 
-Test protocol id: 55
-Test protocol description: This is a test description.
+This is a test description.
+
+Protocol id: 55
 
 ==== Commands table ====
 
