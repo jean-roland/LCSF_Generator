@@ -1,0 +1,209 @@
+{
+    "commands": [
+        {
+            "attributes": [
+                {
+                    "dataType": 3,
+                    "desc": "File content",
+                    "id": 0,
+                    "isOptional": false,
+                    "name": "data",
+                    "size": 0
+                },
+                {
+                    "dataType": 2,
+                    "desc": "File size",
+                    "id": 1,
+                    "isOptional": false,
+                    "name": "size",
+                    "size": 0
+                },
+                {
+                    "dataType": 2,
+                    "desc": "Address to write the file (if writing to memory directly)",
+                    "id": 2,
+                    "isOptional": true,
+                    "name": "address",
+                    "size": 0
+                },
+                {
+                    "dataType": 5,
+                    "desc": "Path to write the file (if writing on a file system)",
+                    "id": 3,
+                    "isOptional": true,
+                    "name": "path",
+                    "size": 0
+                }
+            ],
+            "description": "Write a file",
+            "direction": 2,
+            "hasAtt": true,
+            "id": 0,
+            "name": "write",
+            "parentName": "NONE",
+            "size": 4
+        },
+        {
+            "attributes": [
+                {
+                    "dataType": 2,
+                    "desc": "File size",
+                    "id": 0,
+                    "isOptional": false,
+                    "name": "size",
+                    "size": 0
+                },
+                {
+                    "dataType": 2,
+                    "desc": "Address to write the file (if writing to memory directly)",
+                    "id": 1,
+                    "isOptional": true,
+                    "name": "address",
+                    "size": 0
+                },
+                {
+                    "dataType": 5,
+                    "desc": "Path to write the file (if writing on a file system)",
+                    "id": 2,
+                    "isOptional": true,
+                    "name": "path",
+                    "size": 0
+                }
+            ],
+            "description": "Anounce a file write (if transfered on a transport without fragmentation)",
+            "direction": 2,
+            "hasAtt": true,
+            "id": 1,
+            "name": "prep_write",
+            "parentName": "NONE",
+            "size": 3
+        },
+        {
+            "attributes": [
+                {
+                    "dataType": 3,
+                    "desc": "File content",
+                    "id": 0,
+                    "isOptional": false,
+                    "name": "data",
+                    "size": 0
+                },
+                {
+                    "dataType": 2,
+                    "desc": "File size",
+                    "id": 1,
+                    "isOptional": false,
+                    "name": "size",
+                    "size": 0
+                },
+                {
+                    "dataType": 2,
+                    "desc": "Address to write the file (if writing to memory directly)",
+                    "id": 2,
+                    "isOptional": true,
+                    "name": "address",
+                    "size": 0
+                },
+                {
+                    "dataType": 5,
+                    "desc": "Path to write the file (if writing on a file system)",
+                    "id": 3,
+                    "isOptional": true,
+                    "name": "path",
+                    "size": 0
+                }
+            ],
+            "description": "Read a file",
+            "direction": 2,
+            "hasAtt": true,
+            "id": 2,
+            "name": "read",
+            "parentName": "NONE",
+            "size": 4
+        },
+        {
+            "attributes": [
+                {
+                    "dataType": 2,
+                    "desc": "File size",
+                    "id": 0,
+                    "isOptional": false,
+                    "name": "size",
+                    "size": 0
+                },
+                {
+                    "dataType": 2,
+                    "desc": "Address to write the file (if writing to memory directly)",
+                    "id": 1,
+                    "isOptional": true,
+                    "name": "address",
+                    "size": 0
+                },
+                {
+                    "dataType": 5,
+                    "desc": "Path to write the file (if writing on a file system)",
+                    "id": 2,
+                    "isOptional": true,
+                    "name": "path",
+                    "size": 0
+                }
+            ],
+            "description": "Anounce a file read (if transfered on a transport without fragmentation)",
+            "direction": 2,
+            "hasAtt": true,
+            "id": 3,
+            "name": "prep_read",
+            "parentName": "NONE",
+            "size": 3
+        },
+        {
+            "attributes": [
+                {
+                    "dataType": 3,
+                    "desc": "Fragment content",
+                    "id": 0,
+                    "isOptional": false,
+                    "name": "content",
+                    "size": 0
+                },
+                {
+                    "dataType": 2,
+                    "desc": "Fragment size",
+                    "id": 1,
+                    "isOptional": false,
+                    "name": "size",
+                    "size": 0
+                }
+            ],
+            "description": "A file fragment (if transfered on a transport without fragmentation)",
+            "direction": 2,
+            "hasAtt": true,
+            "id": 4,
+            "name": "fragment",
+            "parentName": "NONE",
+            "size": 2
+        },
+        {
+            "attributes": [
+                {
+                    "dataType": 0,
+                    "desc": "Error code enum, user defined (e.g: out of memory, missing address/path, bad address/path...)",
+                    "id": 0,
+                    "isOptional": false,
+                    "name": "error_code",
+                    "size": 0
+                }
+            ],
+            "description": "Protocol level error",
+            "direction": 2,
+            "hasAtt": true,
+            "id": 5,
+            "name": "error",
+            "parentName": "NONE",
+            "size": 1
+        }
+    ],
+    "desc": "A generic file transfer protocol over LCSF",
+    "id": "15",
+    "name": "file_transfer"
+}
