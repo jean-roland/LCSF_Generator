@@ -28,8 +28,8 @@ RustGenerator::RustGenerator() {
 }
 
 // Set all chars of a string to lower then the first to upper
-bool RustGenerator::is_CString_needed(QList<RustGenerator::T_attInfos> attInfosList) {
-   for (RustGenerator::T_attInfos attInfo : attInfosList) {
+bool RustGenerator::is_CString_needed(QList<Attribute::T_attInfos> attInfosList) {
+   for (Attribute::T_attInfos attInfo : attInfosList) {
     if (attInfo.dataType == NS_AttDataType::STRING) {
         return true;
     }
@@ -66,9 +66,9 @@ QString RustGenerator::getIndent(int indentNb) {
 }
 
 // Recursively flatten an attribute list
-QList<RustGenerator::T_attInfos> RustGenerator::getAttInfos_Rec(QString parentName, QList<Attribute *> attList) {
-   QList<RustGenerator::T_attInfos> resultList = QList<RustGenerator::T_attInfos>();
-   RustGenerator::T_attInfos localAttInfos;
+QList<Attribute::T_attInfos> RustGenerator::getAttInfos_Rec(QString parentName, QList<Attribute *> attList) {
+   QList<Attribute::T_attInfos> resultList = QList<Attribute::T_attInfos>();
+   Attribute::T_attInfos localAttInfos;
    for (Attribute *attribute : attList) {
       localAttInfos.parentName = parentName;
       localAttInfos.attName = attribute->getName();
@@ -90,8 +90,8 @@ QList<RustGenerator::T_attInfos> RustGenerator::getAttInfos_Rec(QString parentNa
 }
 
 // Header function for getAttInfos_Rec
-QList<RustGenerator::T_attInfos> RustGenerator::getAttInfos(QList<Command *> cmdList) {
-   QList<RustGenerator::T_attInfos> resultList = QList<RustGenerator::T_attInfos>();
+QList<Attribute::T_attInfos> RustGenerator::getAttInfos(QList<Command *> cmdList) {
+   QList<Attribute::T_attInfos> resultList = QList<Attribute::T_attInfos>();
    this->protocolHasSubAtt = false;
    for (Command *command : cmdList) {
       QString cmdName = command->getName();
@@ -102,9 +102,9 @@ QList<RustGenerator::T_attInfos> RustGenerator::getAttInfos(QList<Command *> cmd
    return resultList;
 }
 
-QList<RustGenerator::T_attInfos> RustGenerator::insertSortAttInfosListByParentName(QList<RustGenerator::T_attInfos> attInfosList) {
-   QList<RustGenerator::T_attInfos> sortedList = attInfosList;
-   RustGenerator::T_attInfos bufferAttInfos;
+QList<Attribute::T_attInfos> RustGenerator::insertSortAttInfosListByParentName(QList<Attribute::T_attInfos> attInfosList) {
+   QList<Attribute::T_attInfos> sortedList = attInfosList;
+   Attribute::T_attInfos bufferAttInfos;
    int j = 0;
    int listSize = sortedList.size();
    for (int i = 0; i < listSize; i++) {
@@ -455,7 +455,7 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
         dir.mkpath(".");
     }
     QString fileName = dirPath + "/protocol_" + low_prot_name + ".rs";
-    QList<RustGenerator::T_attInfos> attInfosList = this->getAttInfos(cmdList);
+    QList<Attribute::T_attInfos> attInfosList = this->getAttInfos(cmdList);
     QFile file(fileName);
 
     if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
@@ -538,7 +538,7 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
         // Attribute payload structs
         if (this->protocolHasSubAtt) {
             out << "// Attribute with sub-attributes structures" << Qt::endl;
-            RustGenerator::T_attInfos currentAttInfo;
+            Attribute::T_attInfos currentAttInfo;
             // Parse the list
             for (int idx = 0; idx < attInfosList.size(); idx++) {
                 currentAttInfo = attInfosList.at(idx);
@@ -548,7 +548,7 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
                     int subIdx = idx + 1;
                     int subAttCpt = 0;
                     while ((subIdx < attInfosList.size()) || (subAttCpt < currentAttInfo.subAttNb)) {
-                        RustGenerator::T_attInfos currentSubAttInfo = attInfosList.at(subIdx);
+                        Attribute::T_attInfos currentSubAttInfo = attInfosList.at(subIdx);
                         if (currentSubAttInfo.parentName == currentAttInfo.attName) {
                             subAttCpt++;
                             // Note the optional attribute field
@@ -713,8 +713,8 @@ void RustGenerator::generateBridge(QString protocolName, QString protocolId, QLi
         dir.mkpath(".");
     }
     QString fileName = dirPath + "/lcsf_protocol_" + low_prot_name + ".rs";
-    QList<RustGenerator::T_attInfos> attInfosList = this->getAttInfos(cmdList);
-    QList<RustGenerator::T_attInfos> sortedAttInfosList = this->insertSortAttInfosListByParentName(attInfosList);
+    QList<Attribute::T_attInfos> attInfosList = this->getAttInfos(cmdList);
+    QList<Attribute::T_attInfos> sortedAttInfosList = this->insertSortAttInfosListByParentName(attInfosList);
     QFile file(fileName);
 
     if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
@@ -1035,7 +1035,7 @@ void RustGenerator::generateBridge(QString protocolName, QString protocolId, QLi
         // Attributes Ids enums
         if (!attInfosList.isEmpty()) {
             for (int idx = 0; idx < sortedAttInfosList.size(); idx++) {
-                RustGenerator::T_attInfos currentAttInfo = sortedAttInfosList.at(idx);
+                Attribute::T_attInfos currentAttInfo = sortedAttInfosList.at(idx);
                 out << "// " << this->capitalize(currentAttInfo.parentName) << " attribute ids" << Qt::endl;
                 QString previousParentName = currentAttInfo.parentName;
                 out << "const " << currentAttInfo.parentName.toUpper() << "_ATT_ID_" << currentAttInfo.attName.toUpper() << ": u16 = 0x"

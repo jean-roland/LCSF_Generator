@@ -31,6 +31,7 @@
 #include "command.h"
 #include "attribute.h"
 #include "enumtype.h"
+#include "docgenerator.h"
 #include "codegenerator.h"
 #include "rustgenerator.h"
 #include "codeextractor.h"
@@ -47,6 +48,7 @@ static QString rustOutAPath = "./RustOutputA";
 static QString rustOutBPath = "./RustOutputB";
 static QString docPath = "./Export";
 
+static DocGenerator docgen;
 static CodeGenerator codegen;
 static RustGenerator rustgen;
 static CodeExtractor codeextractA;
@@ -218,9 +220,9 @@ int main(int argc, char *argv[]) {
 
     // Generate doc (if needed)
     if (parser.isSet("d")) {
-        codegen.generateWikiTable(protocolName, protocolId, cmdArray, docPath);
-        codegen.generateDokuWikiTable(protocolName, protocolId, cmdArray, docPath);
-        codegen.generateMkdownTable(protocolName, protocolId, cmdArray, docPath);
+        docgen.generateWikiTable(protocolName, protocolId, cmdArray, docPath);
+        docgen.generateDokuWikiTable(protocolName, protocolId, cmdArray, docPath);
+        docgen.generateMkdownTable(protocolName, protocolId, cmdArray, docPath);
     }
     // End output
     out << "Generation complete." << Qt::endl;

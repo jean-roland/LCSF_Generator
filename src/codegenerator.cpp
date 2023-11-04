@@ -168,9 +168,9 @@ QString CodeGenerator::getAttDescString(QString protocolName, QString parentName
    return descString;
 }
 
-QList<CodeGenerator::T_attInfos> CodeGenerator::getAttInfos_Rec(QString parentName, QList<Attribute *> attList) {
-   QList<CodeGenerator::T_attInfos> resultList = QList<CodeGenerator::T_attInfos>();
-   CodeGenerator::T_attInfos localAttInfos;
+QList<Attribute::T_attInfos> CodeGenerator::getAttInfos_Rec(QString parentName, QList<Attribute *> attList) {
+   QList<Attribute::T_attInfos> resultList = QList<Attribute::T_attInfos>();
+   Attribute::T_attInfos localAttInfos;
    for (Attribute *attribute : attList) {
       localAttInfos.parentName = parentName;
       localAttInfos.attName = attribute->getName();
@@ -191,8 +191,8 @@ QList<CodeGenerator::T_attInfos> CodeGenerator::getAttInfos_Rec(QString parentNa
    return resultList;
 }
 
-QList<CodeGenerator::T_attInfos> CodeGenerator::getAttInfos(QList<Command *> cmdList) {
-   QList<CodeGenerator::T_attInfos> resultList = QList<CodeGenerator::T_attInfos>();
+QList<Attribute::T_attInfos> CodeGenerator::getAttInfos(QList<Command *> cmdList) {
+   QList<Attribute::T_attInfos> resultList = QList<Attribute::T_attInfos>();
    this->protocolHasSubAtt = false;
    for (Command *command : cmdList) {
       QString cmdName = command->getName();
@@ -203,9 +203,9 @@ QList<CodeGenerator::T_attInfos> CodeGenerator::getAttInfos(QList<Command *> cmd
    return resultList;
 }
 
-QList<CodeGenerator::T_attInfos> CodeGenerator::insertSortAttInfosListByParentName(QList<CodeGenerator::T_attInfos> attInfosList) {
-   QList<CodeGenerator::T_attInfos> sortedList = attInfosList;
-   CodeGenerator::T_attInfos bufferAttInfos;
+QList<Attribute::T_attInfos> CodeGenerator::insertSortAttInfosListByParentName(QList<Attribute::T_attInfos> attInfosList) {
+   QList<Attribute::T_attInfos> sortedList = attInfosList;
+   Attribute::T_attInfos bufferAttInfos;
    int j = 0;
    int listSize = sortedList.size();
    for (int i = 0; i < listSize; i++) {
@@ -220,10 +220,10 @@ QList<CodeGenerator::T_attInfos> CodeGenerator::insertSortAttInfosListByParentNa
    return sortedList;
 }
 
-bool CodeGenerator::findAttInfoId(short attId, QList<CodeGenerator::T_attInfos> attInfosList) {
+bool CodeGenerator::findAttInfoId(short attId, QList<Attribute::T_attInfos> attInfosList) {
    bool isThere = false;
 
-   for (CodeGenerator::T_attInfos attInfo : attInfosList) {
+   for (Attribute::T_attInfos attInfo : attInfosList) {
       if (attInfo.attId == attId) {
          isThere = true;
          break;
@@ -232,10 +232,10 @@ bool CodeGenerator::findAttInfoId(short attId, QList<CodeGenerator::T_attInfos> 
    return isThere;
 }
 
-QList<CodeGenerator::T_attInfos> CodeGenerator::removeAttInfosDuplicate(QList<CodeGenerator::T_attInfos> attInfosList) {
-   QList<CodeGenerator::T_attInfos> noDuplicateAttInfosList = QList<CodeGenerator::T_attInfos>();
+QList<Attribute::T_attInfos> CodeGenerator::removeAttInfosDuplicate(QList<Attribute::T_attInfos> attInfosList) {
+   QList<Attribute::T_attInfos> noDuplicateAttInfosList = QList<Attribute::T_attInfos>();
 
-   for (CodeGenerator::T_attInfos attInfo : attInfosList) {
+   for (Attribute::T_attInfos attInfo : attInfosList) {
       if (!this->findAttInfoId(attInfo.attId, noDuplicateAttInfosList)) {
          noDuplicateAttInfosList.append(attInfo);
       }
@@ -453,10 +453,10 @@ QString CodeGenerator::toFirstLetterUpperCase(const QString& s) {
    return parts.join("");
 }
 
-QList<CodeGenerator::T_attInfos> CodeGenerator::removeCommandAttributes(QList<CodeGenerator::T_attInfos> attInfosList, QList<Command *> cmdList) {
-   QList<CodeGenerator::T_attInfos> trimmedAttInfosList = QList<CodeGenerator::T_attInfos>();
+QList<Attribute::T_attInfos> CodeGenerator::removeCommandAttributes(QList<Attribute::T_attInfos> attInfosList, QList<Command *> cmdList) {
+   QList<Attribute::T_attInfos> trimmedAttInfosList = QList<Attribute::T_attInfos>();
 
-   for (CodeGenerator::T_attInfos attInfo : attInfosList) {
+   for (Attribute::T_attInfos attInfo : attInfosList) {
        // If attribute doesn't have command as parent
       if (Command::findCmdAddr(attInfo.parentName, cmdList) == nullptr) {
          trimmedAttInfosList.append(attInfo);
@@ -483,7 +483,7 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
        dir.mkpath(".");
    }
    QString fileName = dirPath + "/" +protocolName + "_Main.h";
-   QList<CodeGenerator::T_attInfos> attInfosList = this->getAttInfos(cmdList);
+   QList<Attribute::T_attInfos> attInfosList = this->getAttInfos(cmdList);
    bool hasOptAtt = false;
    QFile file(fileName);
 
@@ -520,11 +520,11 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
       out << Qt::endl;
 
       // Attributes enums
-      QList<CodeGenerator::T_attInfos> sortedAttInfosList = this->insertSortAttInfosListByParentName(attInfosList);
+      QList<Attribute::T_attInfos> sortedAttInfosList = this->insertSortAttInfosListByParentName(attInfosList);
       if (sortedAttInfosList.size() > 0) {
          out << "// Attributes enums" << Qt::endl;
          for (int idx = 0; idx < sortedAttInfosList.size(); idx++) {
-            CodeGenerator::T_attInfos currentAttInfo = sortedAttInfosList.at(idx);
+            Attribute::T_attInfos currentAttInfo = sortedAttInfosList.at(idx);
             out << "enum _" << protocolName.toLower() << "_" << currentAttInfo.parentName.toLower() << "_att_names {" << Qt::endl;
             QString previousParentName = currentAttInfo.parentName;
             out << "    " << protocolName.toUpper() << "_" << currentAttInfo.parentName.toUpper() << "_ATT_" << currentAttInfo.attName.toUpper() << "," << Qt::endl;
@@ -549,7 +549,7 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
       // Attributes payload structs
       if (this->protocolHasSubAtt) {
          out << "// Attribute with sub-attributes structures" << Qt::endl;
-         CodeGenerator::T_attInfos currentAttInfo;
+         Attribute::T_attInfos currentAttInfo;
          // Parse the list on reverse to declare sub-attributes before their parent and solve dependencies
          for (int idx = attInfosList.size() - 1; idx >= 0; idx--) {
             hasOptAtt = false;
@@ -574,7 +574,7 @@ void CodeGenerator::generateMainHeader(QString protocolName, QList<Command *> cm
                int subIdx = idx + 1;
                int subAttCpt = 0;
                while ((subIdx < attInfosList.size()) || (subAttCpt < currentAttInfo.subAttNb)) {
-                  CodeGenerator::T_attInfos currentSubAttInfo = attInfosList.at(subIdx);
+                  Attribute::T_attInfos currentSubAttInfo = attInfosList.at(subIdx);
                   if (currentSubAttInfo.parentName == currentAttInfo.attName) {
                      // Skip the sub-attributes
                      subAttCpt++;
@@ -951,8 +951,8 @@ void CodeGenerator::generateBridgeHeader(QString protocolName, QString protocolI
        dir.mkpath(".");
    }
    QString fileName = dirPath + "/LCSF_Bridge_" + protocolName + ".h";
-   QList<CodeGenerator::T_attInfos> attIdxList = this->getAttInfos(cmdList);
-   QList<CodeGenerator::T_attInfos> sortedAttInfosList = this->insertSortAttInfosListByParentName(attIdxList);
+   QList<Attribute::T_attInfos> attIdxList = this->getAttInfos(cmdList);
+   QList<Attribute::T_attInfos> sortedAttInfosList = this->insertSortAttInfosListByParentName(attIdxList);
    QFile file(fileName);
 
    if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
@@ -994,7 +994,7 @@ void CodeGenerator::generateBridgeHeader(QString protocolName, QString protocolI
       if (!attIdxList.isEmpty()) {
          out << "// Attribute identifier enums" << Qt::endl;
          for (int idx = 0; idx < sortedAttInfosList.size(); idx++) {
-            CodeGenerator::T_attInfos currentAttInfo = sortedAttInfosList.at(idx);
+            Attribute::T_attInfos currentAttInfo = sortedAttInfosList.at(idx);
             out << "enum _lcsf_" << protocolName.toLower() << "_" << currentAttInfo.parentName.toLower() << "_att_id {" << Qt::endl;
             QString previousParentName = currentAttInfo.parentName;
             out << "    LCSF_" << protocolName.toUpper() << "_" << currentAttInfo.parentName.toUpper() << "_ATT_ID_" << currentAttInfo.attName.toUpper() << " = 0x"
@@ -1034,7 +1034,7 @@ void CodeGenerator::generateBridgeHeader(QString protocolName, QString protocolI
          }
          if (this->protocolHasSubAtt) {
             out << "// Attribute sub-attributes number" << Qt::endl;
-            for (CodeGenerator::T_attInfos currentAttInfo : attIdxList) {
+            for (Attribute::T_attInfos currentAttInfo : attIdxList) {
                if (currentAttInfo.subAttNb > 0) {
                   out << "#define LCSF_" << protocolName.toUpper() << "_ATT_" << currentAttInfo.attName.toUpper() << "_SUBATT_NB "
                          << currentAttInfo.subAttNb << Qt::endl;
@@ -1453,7 +1453,7 @@ void CodeGenerator::generateDescription(QString protocolName, QList<Command *> c
        dir.mkpath(".");
    }
    QString fileName = dirPath + "/LCSF_Desc_" + protocolName + ".c";
-   QList<CodeGenerator::T_attInfos> attInfosList = this->getAttInfos(cmdList);
+   QList<Attribute::T_attInfos> attInfosList = this->getAttInfos(cmdList);
    QFile file(fileName);
 
    if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
@@ -1481,7 +1481,7 @@ void CodeGenerator::generateDescription(QString protocolName, QList<Command *> c
       // Sub-attribute descriptor arrays
       if (this->protocolHasSubAtt) {
          for (int idx = attInfosList.size() - 1; idx >= 0; idx--) {
-            CodeGenerator::T_attInfos attInfo = attInfosList.at(idx);
+            Attribute::T_attInfos attInfo = attInfosList.at(idx);
             if (attInfo.subAttNb > 0) {
                out << "// Sub-attribute array descriptor of attribute " << attInfo.attName << Qt::endl;
                out << "static const lcsf_attribute_desc_t LCSF_" << protocolName << "_" << attInfo.attName << "_AttDescArray[LCSF_"
@@ -1533,262 +1533,4 @@ void CodeGenerator::generateDescription(QString protocolName, QList<Command *> c
 
       file.close();
    }
-}
-
-void CodeGenerator::generateWikiTable(QString protocolName, QString protocolId, QList<Command *> cmdList, QString dirPath) {
-   QDir dir(dirPath);
-   if (!dir.exists()) {
-       dir.mkpath(".");
-   }
-   QString fileName = dirPath + "/LCSF_" + protocolName + "_WikiTables.txt";
-   QFile saveFile(fileName);
-   QFileInfo fileInfo(saveFile);
-
-   if (saveFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-      QTextStream out(&saveFile);
-
-      // Main table
-      out << "=== " << protocolName << " protocol tables ===" << Qt::endl;
-      out << Qt::endl;
-      out << protocolName << " protocol id: " << protocolId << Qt::endl;
-      out << Qt::endl;
-      out << "==== Commands table ====" << Qt::endl;
-      out << Qt::endl;
-      out << "{| class=\"wikitable sortable\"" << Qt::endl;
-      out << "|-" << Qt::endl;
-      out << "! Name !! Id !! Direction !! Description !! Attribute(s) Name !! Attribute(s) Id !! Optional? !! Data type !! Attribute Desc" << Qt::endl;
-      out << "|-" << Qt::endl;
-
-      for (Command *command : cmdList) {
-         if ((command->getHasAtt()) && (command->getAttArray().size() > 0)) {
-            bool isFirtAttribute = true;
-            int attNb = command->getAttArray().size();
-            out << "| rowspan=\"" << attNb << "\" | " << command->getName() << " || rowspan=\"" << attNb << "\" | '''"
-                      << QString::number(command->getId(), 16).rightJustified(2, '0').prepend("0x") << "''' || rowspan=\"" << attNb << "\" | "
-                      <<  NS_DirectionType::SL_DirectionType[command->getDirection()] << " || rowspan=\"" << attNb << "\" | " << command->getDesc() << " || ";
-            for (Attribute *attribute : command->getAttArray()) {
-               if (isFirtAttribute) {
-                  isFirtAttribute = false;
-                  out << attribute->getName() << " || '''" <<  QString::number(attribute->getId(), 16).rightJustified(2, '0').prepend("0x") << "''' || "
-                      << ((attribute->getIsOptional()) ? "Yes" : "No") << " || '''" << NS_AttDataType::SL_DocAttDataType[attribute->getDataType()] << "''' || " << attribute->getDesc() << Qt::endl;
-                  out << "|-" << Qt::endl;
-               } else {
-                  out << "| " << attribute->getName() << " || '''" <<  QString::number(attribute->getId(), 16).rightJustified(2, '0').prepend("0x") << "''' || "
-                      << ((attribute->getIsOptional()) ? "Yes" : "No") << " || '''" << NS_AttDataType::SL_DocAttDataType[attribute->getDataType()] << "''' || " << attribute->getDesc() << Qt::endl;
-                  out << "|-" << Qt::endl;
-               }
-            }
-         } else {
-            out << "| " << command->getName() << " || '''" << QString::number(command->getId(), 16).rightJustified(2, '0').prepend("0x") << "''' || "
-                      <<  NS_DirectionType::SL_DirectionType[command->getDirection()] << " || " << command->getDesc() << " || || || || || " << Qt::endl;
-            out << "|-" << Qt::endl;
-         }
-      }
-      out << "|}" << Qt::endl;
-      out << Qt::endl;
-
-      // Secondary tables
-      QList<CodeGenerator::T_attInfos> attInfosList = this->getAttInfos(cmdList);
-      QList<CodeGenerator::T_attInfos> sortedAttInfosList = this->insertSortAttInfosListByParentName(attInfosList);
-      QList<CodeGenerator::T_attInfos> trimmedAttInfosList = this->removeCommandAttributes(sortedAttInfosList, cmdList);
-
-      for (int idx = 0; idx < trimmedAttInfosList.size(); idx++) {
-         CodeGenerator::T_attInfos currentAttInfo = trimmedAttInfosList.at(idx);
-         QString previousParentName = currentAttInfo.parentName;
-
-         out << "==== " << previousParentName << " sub-attributes table ====" << Qt::endl;
-         out << Qt::endl;
-         out << "{| class=\"wikitable sortable\"" << Qt::endl;
-         out << "|-" << Qt::endl;
-         out << "! Name !! Id !! Optional? !! Data type !! Description" << Qt::endl;
-         out << "|-" << Qt::endl;
-         out << "| " << currentAttInfo.attName << " || '''" <<  QString::number(currentAttInfo.attId, 16).rightJustified(2, '0').prepend("0x") << "''' || "
-             << ((currentAttInfo.isOptional) ? "Yes" : "No") << " || '''" << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << "''' || " << currentAttInfo.attDesc << Qt::endl;
-         out << "|-" << Qt::endl;
-
-         if (idx < trimmedAttInfosList.size() - 1) {
-            currentAttInfo = trimmedAttInfosList.at(idx+1);
-
-            while (currentAttInfo.parentName.compare(previousParentName) == 0) {
-               out << "| " << currentAttInfo.attName << " || '''" <<  QString::number(currentAttInfo.attId, 16).rightJustified(2, '0').prepend("0x") << "''' || "
-                   << ((currentAttInfo.isOptional) ? "Yes" : "No") << " || '''" << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << "''' || " << currentAttInfo.attDesc << Qt::endl;
-               out << "|-" << Qt::endl;
-               previousParentName = currentAttInfo.parentName;
-               idx++;
-
-               if (idx < trimmedAttInfosList.size() - 1) {
-                  currentAttInfo = trimmedAttInfosList.at(idx+1);
-               } else {
-                  break;
-               }
-            }
-         }
-         out << "|}" << Qt::endl;
-         out << Qt::endl;
-      }
-      saveFile.close();
-   }
-}
-
-void CodeGenerator::generateDokuWikiTable(QString protocolName, QString protocolId, QList<Command *> cmdList, QString dirPath) {
-   QDir dir(dirPath);
-   if (!dir.exists()) {
-       dir.mkpath(".");
-   }
-   QString fileName = dirPath + "/LCSF_" + protocolName + "_DokuWikiTables.txt";
-   QFile saveFile(fileName);
-   QFileInfo fileInfo(saveFile);
-
-   if (saveFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-      QTextStream out(&saveFile);
-
-      // Main table
-      out << "=== " << protocolName << " protocol tables ===" << Qt::endl;
-      out << Qt::endl;
-      out << protocolName << " protocol id: " << protocolId << Qt::endl;
-      out << Qt::endl;
-      out << "== Commands table ==" << Qt::endl;
-      out << Qt::endl;
-      out << "^ Name ^ Id ^ Direction ^ Description ^ Attribute(s) Name ^ Attribute(s) Id ^ Optional? ^ Data type ^ Attribute Desc ^" << Qt::endl;
-
-      for (Command *command : cmdList) {
-         if ((command->getHasAtt()) && (command->getAttArray().size() > 0)) {
-            bool isFirtAttribute = true;
-            int attNb = command->getAttArray().size();
-            out << "| " << command->getName() << " | "
-                      << QString::number(command->getId(), 16).rightJustified(2, '0').prepend("0x") << " | "
-                      <<  NS_DirectionType::SL_DirectionType[command->getDirection()] << " | " << command->getDesc() << " | ";
-            for (Attribute *attribute : command->getAttArray()) {
-               if (isFirtAttribute) {
-                  isFirtAttribute = false;
-                  out << attribute->getName() << " | " <<  QString::number(attribute->getId(), 16).rightJustified(2, '0').prepend("0x") << " | "
-                      << ((attribute->getIsOptional()) ? "Yes" : "No") << " | " << NS_AttDataType::SL_DocAttDataType[attribute->getDataType()] << " | " << attribute->getDesc() << " |" << Qt::endl;
-               } else {
-                  out << "| ::: | ::: | ::: | ::: " << "| " << attribute->getName() << " | " <<  QString::number(attribute->getId(), 16).rightJustified(2, '0').prepend("0x") << " | "
-                      << ((attribute->getIsOptional()) ? "Yes" : "No") << " | " << NS_AttDataType::SL_DocAttDataType[attribute->getDataType()] << " | " << attribute->getDesc() << " |" << Qt::endl;
-               }
-            }
-         } else {
-            out << "| " << command->getName() << " | " << QString::number(command->getId(), 16).rightJustified(2, '0').prepend("0x") << " | "
-                      <<  NS_DirectionType::SL_DirectionType[command->getDirection()] << " | " << command->getDesc() << " | | | | | " << Qt::endl;
-         }
-      }
-      out << Qt::endl;
-
-      // Secondary tables
-      QList<CodeGenerator::T_attInfos> attInfosList = this->getAttInfos(cmdList);
-      QList<CodeGenerator::T_attInfos> sortedAttInfosList = this->insertSortAttInfosListByParentName(attInfosList);
-      QList<CodeGenerator::T_attInfos> trimmedAttInfosList = this->removeCommandAttributes(sortedAttInfosList, cmdList);
-
-      for (int idx = 0; idx < trimmedAttInfosList.size(); idx++) {
-         CodeGenerator::T_attInfos currentAttInfo = trimmedAttInfosList.at(idx);
-         QString previousParentName = currentAttInfo.parentName;
-
-         out << "== " << previousParentName << " sub-attributes table ==" << Qt::endl;
-         out << Qt::endl;
-         out << "^ Name ^ Id ^ Optional? ^ Data type ^ Description ^" << Qt::endl;
-         out << "| " << currentAttInfo.attName << " | " <<  QString::number(currentAttInfo.attId, 16).rightJustified(2, '0').prepend("0x") << " | "
-             << ((currentAttInfo.isOptional) ? "Yes" : "No") << " | " << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << " | " << currentAttInfo.attDesc << " |" << Qt::endl;
-
-         if (idx < trimmedAttInfosList.size() - 1) {
-            currentAttInfo = trimmedAttInfosList.at(idx+1);
-
-            while (currentAttInfo.parentName.compare(previousParentName) == 0) {
-               out << "| " << currentAttInfo.attName << " | " <<  QString::number(currentAttInfo.attId, 16).rightJustified(2, '0').prepend("0x") << " | "
-                   << ((currentAttInfo.isOptional) ? "Yes" : "No") << " | " << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << " | " << currentAttInfo.attDesc << " |" << Qt::endl;
-               previousParentName = currentAttInfo.parentName;
-               idx++;
-
-               if (idx < trimmedAttInfosList.size() - 1) {
-                  currentAttInfo = trimmedAttInfosList.at(idx+1);
-               } else {
-                  break;
-               }
-            }
-         }
-         out << Qt::endl;
-      }
-      saveFile.close();
-   }
-}
-
-void CodeGenerator::generateMkdownTable(QString protocolName, QString protocolId, QList<Command *> cmdList, QString dirPath) {
-    QDir dir(dirPath);
-    if (!dir.exists()) {
-        dir.mkpath(".");
-    }
-    QString fileName = dirPath + "/LCSF_" + protocolName + "_MkdownTables.md";
-    QFile saveFile(fileName);
-    QFileInfo fileInfo(saveFile);
-
-    if (saveFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-        QTextStream out(&saveFile);
-
-        // Main table
-        out << "# " << protocolName << " protocol tables" << Qt::endl;
-        out << Qt::endl;
-        out << protocolName << " protocol id: " << protocolId << Qt::endl;
-        out << Qt::endl;
-        out << "## Commands table" << Qt::endl;
-        out << Qt::endl;
-        out << "| Name | Id | Direction | Description | Attributes? |" << Qt::endl;
-        out << "|:----:|:--:|:---------:|:-----------:|:------------:|" << Qt::endl;
-        for (Command *command : cmdList) {
-            out << "| " << command->getName() << " | `" << QString::number(command->getId(), 16).rightJustified(2, '0').prepend("0x")
-                << "` | `" <<  NS_DirectionType::SL_DirectionType[command->getDirection()] << "` | " << command->getDesc() << " | "
-                << ((command->getHasAtt() && (command->getAttArray().size() > 0)) ? "Yes" : "No") << " |" << Qt::endl;
-        }
-        out << Qt::endl;
-        // Command tables
-        for (Command *command : cmdList) {
-            if (!command->getHasAtt() || (command->getAttArray().size() == 0)) {
-                continue;
-            }
-            out << "## " << command->getName() << " attributes table" << Qt::endl;
-            out << Qt::endl;
-            out << "| Name | Id | Optional? | Data type | Attribute Description |" << Qt::endl;
-            out << "|:----:|:--:|:----------:|:---------:|:---------------------:|" << Qt::endl;
-            for (Attribute *attribute : command->getAttArray()) {
-                out << "| " << attribute->getName() << " | `" <<  QString::number(attribute->getId(), 16).rightJustified(2, '0').prepend("0x")
-                    << "` | " << ((attribute->getIsOptional()) ? "Yes" : "No") << " | `" << NS_AttDataType::SL_DocAttDataType[attribute->getDataType()]
-                    << "` | " << attribute->getDesc() << " |" << Qt::endl;
-            }
-            out << Qt::endl;
-        }
-        // Attribute tables
-        QList<CodeGenerator::T_attInfos> attInfosList = this->getAttInfos(cmdList);
-        QList<CodeGenerator::T_attInfos> sortedAttInfosList = this->insertSortAttInfosListByParentName(attInfosList);
-        QList<CodeGenerator::T_attInfos> trimmedAttInfosList = this->removeCommandAttributes(sortedAttInfosList, cmdList);
-
-        for (int idx = 0; idx < trimmedAttInfosList.size(); idx++) {
-            CodeGenerator::T_attInfos currentAttInfo = trimmedAttInfosList.at(idx);
-            QString previousParentName = currentAttInfo.parentName;
-
-            out << "## " << previousParentName << " sub-attributes table" << Qt::endl;
-            out << Qt::endl;
-            out << "| Name | Id | Optional? | Data type | Description |" << Qt::endl;
-            out << "|:----:|:--:|:----------:|:---------:|:-----------:|" << Qt::endl;
-            out << "| " << currentAttInfo.attName << " | `" <<  QString::number(currentAttInfo.attId, 16).rightJustified(2, '0').prepend("0x") << "` | "
-            << ((currentAttInfo.isOptional) ? "Yes" : "No") << " | `" << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << "` | " << currentAttInfo.attDesc << Qt::endl;
-
-            if (idx < trimmedAttInfosList.size() - 1) {
-                currentAttInfo = trimmedAttInfosList.at(idx+1);
-
-                while (currentAttInfo.parentName.compare(previousParentName) == 0) {
-                    out << "| " << currentAttInfo.attName << " | `" <<  QString::number(currentAttInfo.attId, 16).rightJustified(2, '0').prepend("0x") << "` | "
-                    << ((currentAttInfo.isOptional) ? "Yes" : "No") << " | `" << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << "` | " << currentAttInfo.attDesc << Qt::endl;
-                    previousParentName = currentAttInfo.parentName;
-                    idx++;
-
-                    if (idx < trimmedAttInfosList.size() - 1) {
-                        currentAttInfo = trimmedAttInfosList.at(idx+1);
-                    } else {
-                        break;
-                    }
-                }
-            }
-            out << Qt::endl;
-        }
-        saveFile.close();
-    }
 }

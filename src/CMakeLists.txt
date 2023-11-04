@@ -16,7 +16,7 @@
 # Author: Jean-Roland Gosse
 
 # Libraries
-add_library(${CORE_LIB_NAME} SHARED attribute.cpp codeextractor.cpp codegenerator.cpp rustgenerator.cpp command.cpp deschandler.cpp)
+add_library(${CORE_LIB_NAME} SHARED attribute.cpp docgenerator.cpp codeextractor.cpp codegenerator.cpp rustgenerator.cpp command.cpp deschandler.cpp)
 target_link_libraries(${CORE_LIB_NAME} Qt5::Core)
 target_include_directories(${CORE_LIB_NAME} PUBLIC "../include/")
 

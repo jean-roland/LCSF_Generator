@@ -36,6 +36,17 @@ private:
     void *pObj;
 
 public:
+    typedef struct _attInfos {
+        QString parentName;
+        QString attName;
+        NS_AttDataType::T_AttDataType  dataType;
+        Attribute *attPointer;
+        bool isOptional;
+        short attId;
+        int subAttNb;
+        QString attDesc;
+    } T_attInfos;
+
     Attribute(void);
     Attribute(QString attName, short attId, bool attIsOptional, NS_AttDataType::T_AttDataType attDataType, QString attDesc);
     Attribute(QString attName, short attId, bool attIsOptional, NS_AttDataType::T_AttDataType attDataType, QList<Attribute *> attSubAttArray, QString attDesc);

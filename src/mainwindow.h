@@ -38,6 +38,7 @@
 // Custom include
 #include "command.h"
 #include "enumtype.h"
+#include "docgenerator.h"
 #include "codegenerator.h"
 #include "rustgenerator.h"
 #include "codeextractor.h"
@@ -52,6 +53,7 @@ class MainWindow : public QMainWindow {
 private:
     Ui::MainWindow *ui;
     QList<Command *> m_cmdArray;
+    DocGenerator m_docgen;
     CodeGenerator m_codegen;
     RustGenerator m_rustgen;
     CodeExtractor m_codeextractA;

@@ -37,24 +37,14 @@ class RustGenerator {
 
 private:
     bool protocolHasSubAtt;
-    typedef struct _attInfos {
-        QString parentName;
-        QString attName;
-        NS_AttDataType::T_AttDataType  dataType;
-        Attribute *attPointer;
-        bool isOptional;
-        short attId;
-        int subAttNb;
-        QString attDesc;
-    }T_attInfos;
 
-    bool is_CString_needed(QList<RustGenerator::T_attInfos> attInfosList);
+    bool is_CString_needed(QList<Attribute::T_attInfos> attInfosList);
     QString capitalize(const QString &str);
     QString getPayloadPath(QStringList parentNames);
     QString getIndent(int indentNb);
-    QList<RustGenerator::T_attInfos> insertSortAttInfosListByParentName(QList<RustGenerator::T_attInfos> attInfosList);
-    QList<RustGenerator::T_attInfos> getAttInfos_Rec(QString parentName, QList<Attribute *> attList);
-    QList<RustGenerator::T_attInfos> getAttInfos(QList<Command *> cmdList);
+    QList<Attribute::T_attInfos> insertSortAttInfosListByParentName(QList<Attribute::T_attInfos> attInfosList);
+    QList<Attribute::T_attInfos> getAttInfos_Rec(QString parentName, QList<Attribute *> attList);
+    QList<Attribute::T_attInfos> getAttInfos(QList<Command *> cmdList);
     void declareAtt_REC(QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, bool parentIsOpt);
     void grabAttValues_REC(QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, int indentNb, bool parentIsOpt);
     void printInclude_Rec(QString protocolName, QString parentName, QList<Attribute *> attList, QTextStream *pOut);
