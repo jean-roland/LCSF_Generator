@@ -21,7 +21,7 @@
 
 #include <QStringBuilder>
 
-#include "DocGenerator.h"
+#include "docgenerator.h"
 
 DocGenerator::DocGenerator() {
 
