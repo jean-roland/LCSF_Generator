@@ -33,6 +33,7 @@
 // Model protocol info
 extern QString protocol_name;
 extern QString protocol_id;
+extern QString protocol_desc;
 
 // Command list
 extern const QList<Command *> cmd_list;

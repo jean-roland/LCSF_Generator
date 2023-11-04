@@ -61,6 +61,7 @@ void MainWindow::on_actionNew_protocol_triggered(void) {
 void MainWindow::on_actionSave_protocol_triggered(void) {
     QString protocolName(ui->leProtocolName->text());
     const QString protocolId(ui->leProtocolId->text().trimmed());
+    const QString protocolDesc(ui->leProtocolDesc->text());
 
     if (protocolName.isEmpty()) {
         QMessageBox::warning(nullptr, "Warning", "Protocol name is empty!");
@@ -98,7 +99,7 @@ void MainWindow::on_actionSave_protocol_triggered(void) {
     filename = descDirPath + "/" + completeFileName.baseName();
     qDebug() << "File selected: " << filename;
     // Save data
-    if (!DescHandler::save_desc(filename, this->m_cmdArray, protocolName, protocolId)) {
+    if (!DescHandler::save_desc(filename, this->m_cmdArray, protocolName, protocolId, protocolDesc)) {
        QMessageBox::warning(nullptr, "Warning", "Couldn't create json descriptor file!");
     }
 }
@@ -120,11 +121,12 @@ void MainWindow::on_actionLoad_protocol_triggered(void) {
         return;
     }
     // Extract data
-    QString protocolName, protocolId;
-    DescHandler::load_desc(file, this->m_cmdArray, protocolName, protocolId);
+    QString protocolName, protocolId, protocolDesc;
+    DescHandler::load_desc(file, this->m_cmdArray, protocolName, protocolId, protocolDesc);
 
     ui->leProtocolName->setText(protocolName);
     ui->leProtocolId->setText(protocolId);
+    ui->leProtocolDesc->setText(protocolDesc);
 
     // Update UI
     this->updateDescTreeCmd();

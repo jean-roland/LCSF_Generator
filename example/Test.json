@@ -628,6 +628,7 @@
             "size": 3
         }
     ],
+    "desc": "The test protocol used to test/bench the lcsf ecosystem.",
     "id": "55",
     "name": "Test"
 }

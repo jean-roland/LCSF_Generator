@@ -29,6 +29,6 @@ private:
 
 public:
     DescHandler();
-    static void load_desc(QFile& file, QList<Command *>& cmdArray, QString& protocolName, QString& protocolId);
-    static bool save_desc(QString filename, QList<Command *> cmdArray, QString protocolName, QString protocolId);
+    static void load_desc(QFile& file, QList<Command *>& cmdArray, QString& protocolName, QString& protocolId, QString& protocolDesc);
+    static bool save_desc(QString filename, QList<Command *> cmdArray, QString protocolName, QString protocolId, QString protocolDesc);
 };

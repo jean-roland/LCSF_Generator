@@ -39,6 +39,7 @@
 // Private variables
 static QString protocolName;
 static QString protocolId;
+static QString protocolDesc;
 static QList<Command *> cmdArray;
 static QString outAPath = "./OutputA";
 static QString outBPath = "./OutputB";
@@ -147,7 +148,7 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
     // Process description file
-    DescHandler::load_desc(descFile, cmdArray, protocolName, protocolId);
+    DescHandler::load_desc(descFile, cmdArray, protocolName, protocolId, protocolDesc);
     descFile.close();
 
     // Check import

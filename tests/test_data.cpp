@@ -52,6 +52,7 @@ QStringList readFileContent(QFile *pFile) {
 // Model protocol info
 QString protocol_name = "Test";
 QString protocol_id = "55";
+QString protocol_desc = "This is a test description.";
 
 // Model command/attributes
 Command SC1("SC1", 0, false, NS_DirectionType::A_TO_B, "Simple command A to B");
