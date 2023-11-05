@@ -19,7 +19,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 # Project
-project(LCSF_Generator VERSION 1.3 LANGUAGES CXX)
+project(LCSF_Generator VERSION 1.4 LANGUAGES CXX)
 
 # Includes
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
@@ -75,6 +75,7 @@ add_subdirectory(tests)
 add_custom_target(cross_testing
     COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CLI_BIN_NAME} -l ${CROSS_TEST_JSON} -a ${CROSS_TEST_A_IMPORT} -b ${CROSS_TEST_B_IMPORT}
     COMMAND cmake --build ${LCSF_C_STACK_ROOT_DIR}/build --target run_tests
+    COMMAND rm -rf RustOutput*
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     COMMENT "Run cross-testing")
 # Target depends on cli binary
