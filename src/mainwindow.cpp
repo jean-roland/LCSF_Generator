@@ -1349,7 +1349,8 @@ void MainWindow::on_pbGenerateDesc_clicked(void) {
     this->m_rustgen.generateMain(protocolName, this->m_cmdArray, false, rustoutBPath);
     this->m_rustgen.generateBridge(protocolName, protocolId, this->m_cmdArray, false, rustoutBPath);
 
-    QMessageBox::information(nullptr, "Info", "Code A has been generated in: " + outAPath + "\nCode B has been generated in: " + outBPath);
+    QMessageBox::information(nullptr, "Info", "C code has been generated in A: " + outAPath + ", B: " + outBPath 
+        + "\nRust code has been generated in A: " + rustoutAPath + ", B: " + rustoutBPath);
 }
 
 // Close event action

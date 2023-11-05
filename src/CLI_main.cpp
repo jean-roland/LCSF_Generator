@@ -42,8 +42,8 @@ static QString protocolName;
 static QString protocolId;
 static QString protocolDesc;
 static QList<Command *> cmdArray;
-static QString outAPath = "./OutputA";
-static QString outBPath = "./OutputB";
+static QString outAPath = "./COutputA";
+static QString outBPath = "./COutputB";
 static QString rustOutAPath = "./RustOutputA";
 static QString rustOutBPath = "./RustOutputB";
 static QString docPath = "./Export";
@@ -226,8 +226,8 @@ int main(int argc, char *argv[]) {
     }
     // End output
     out << "Generation complete." << Qt::endl;
-    out << "Code A generated in: " << outAPath << ", code B generated in: " << outBPath << Qt::endl;
-    out << "Rust code A generated in: " << rustOutAPath << ", Rust code B generated in: " << rustOutBPath << Qt::endl;
+    out << "C code A generated in: " << outAPath << ", code B generated in: " << outBPath << Qt::endl;
+    out << "Rust code A generated in: " << rustOutAPath << ", code B generated in: " << rustOutBPath << Qt::endl;
     if (parser.isSet("d")) {
         out << "Documentation generated in: " << docPath << Qt::endl;
     }

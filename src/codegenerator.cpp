@@ -109,6 +109,18 @@ QString CodeGenerator::getTypeStringFromDataType(NS_AttDataType::T_AttDataType d
       case NS_AttDataType::UINT32 :
          typeString = "uint32_t ";
          break;
+   
+      case NS_AttDataType::UINT64 :
+         typeString = "uint64_t ";
+         break;
+
+      case NS_AttDataType::FLOAT32 :
+         typeString = "float ";
+         break;
+
+      case NS_AttDataType::FLOAT64 :
+         typeString = "double ";
+         break;
 
       case NS_AttDataType::BYTE_ARRAY :
          typeString = "uint8_t *";
@@ -131,6 +143,9 @@ QString CodeGenerator::getInitStringFromDataType(NS_AttDataType::T_AttDataType d
       case NS_AttDataType::UINT8 :
       case NS_AttDataType::UINT16 :
       case NS_AttDataType::UINT32 :
+      case NS_AttDataType::UINT64 :
+      case NS_AttDataType::FLOAT32 :
+      case NS_AttDataType::FLOAT64 :
       default:
          initString = " = 0";
       break;
@@ -318,58 +333,88 @@ void CodeGenerator::fillSubAttPayload_Rec(QString protocolName, QStringList pare
             << parentNames.last().toUpper() << "_ATT_" << attribute->getName().toUpper() << "_FLAG) != 0) {" << Qt::endl;
             indent = this->getIndent(indentNb + 1);
 
-            if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
-                *pOut << indent << "// Intermediary variable" << Qt::endl;
-                *pOut << indent << "pSubAttArray = &(" << attDataPath << "Payload.pSubAttArray);" << Qt::endl;
-                *pOut << indent << "// Allocate sub-attribute array" << Qt::endl;
-                *pOut << indent << "if (!FiloGet(&LcsfBridge" << protocolName << "Info.Filo, LCSF_" << protocolName.toUpper() << "_ATT_"
-                << attribute->getName().toUpper() << "_SUBATT_NB, (void *)pSubAttArray)) {" << Qt::endl;
-                *pOut << indent << "    return false;" << Qt::endl;
-                *pOut << indent << "}" << Qt::endl;
-                nextParentNames.append(attribute->getName());
-                this->fillSubAttPayload_Rec(protocolName, nextParentNames, attribute->getSubAttArray(), pOut, indentNb + 1);
-            } else if (attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) {
-                *pOut << indent << attDataPath << "PayloadSize = pCmdPayload->"
-                << this->getPayloadPath(parentNames) << attribute->getName().toLower() << "Size;" << Qt::endl;
-                *pOut << indent << attDataPath << "Payload.pData = pCmdPayload->"
-                << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower() << ";" << Qt::endl;
-            } else if (attribute->getDataType() == NS_AttDataType::STRING) {
-                *pOut << indent << attDataPath << "Payload.pData = pCmdPayload->"
-                << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower() << ";" << Qt::endl;
-            } else {
-                *pOut << indent << attDataPath << "PayloadSize = GetVLESize(pCmdPayload->" 
-                << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ");" << Qt::endl;
-                *pOut << indent << attDataPath << "Payload.pData = &(pCmdPayload->"
-                << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ");" << Qt::endl;
+            switch (attribute->getDataType()) {
+               case NS_AttDataType::SUB_ATTRIBUTES: {
+                  *pOut << indent << "// Intermediary variable" << Qt::endl;
+                  *pOut << indent << "pSubAttArray = &(" << attDataPath << "Payload.pSubAttArray);" << Qt::endl;
+                  *pOut << indent << "// Allocate sub-attribute array" << Qt::endl;
+                  *pOut << indent << "if (!FiloGet(&LcsfBridge" << protocolName << "Info.Filo, LCSF_" << protocolName.toUpper() << "_ATT_"
+                  << attribute->getName().toUpper() << "_SUBATT_NB, (void *)pSubAttArray)) {" << Qt::endl;
+                  *pOut << indent << "    return false;" << Qt::endl;
+                  *pOut << indent << "}" << Qt::endl;
+                  nextParentNames.append(attribute->getName());
+                  this->fillSubAttPayload_Rec(protocolName, nextParentNames, attribute->getSubAttArray(), pOut, indentNb + 1);
+               } break;
+               case NS_AttDataType::BYTE_ARRAY:
+                  *pOut << indent << attDataPath << "PayloadSize = pCmdPayload->"
+                  << this->getPayloadPath(parentNames) << attribute->getName().toLower() << "Size;" << Qt::endl;
+                  *pOut << indent << attDataPath << "Payload.pData = pCmdPayload->"
+                  << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower() << ";" << Qt::endl;
+                  break;
+               case NS_AttDataType::STRING:
+                  *pOut << indent << attDataPath << "Payload.pData = pCmdPayload->"
+                  << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower() << ";" << Qt::endl;
+                  break;
+               case NS_AttDataType::FLOAT32:
+                  *pOut << indent << attDataPath << "PayloadSize = sizeof(float);" << Qt::endl;
+                  *pOut << indent << attDataPath << "Payload.pData = &(pCmdPayload->"
+                  << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ");" << Qt::endl;
+                  break;
+               case NS_AttDataType::FLOAT64:
+                  *pOut << indent << attDataPath << "PayloadSize = sizeof(double);" << Qt::endl;
+                  *pOut << indent << attDataPath << "Payload.pData = &(pCmdPayload->"
+                  << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ");" << Qt::endl;
+                  break;
+               default:
+                  *pOut << indent << attDataPath << "PayloadSize = GetVLESize(pCmdPayload->" 
+                  << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ");" << Qt::endl;
+                  *pOut << indent << attDataPath << "Payload.pData = &(pCmdPayload->"
+                  << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ");" << Qt::endl;
+                  break;
             }
             indent = this->getIndent(indentNb);
             *pOut << indent << "} else {" << Qt::endl;
             *pOut << indent << "    " << attDataPath << "Payload.pData = NULL;" << Qt::endl;
             *pOut << indent << "}" << Qt::endl;
         } else {
-            if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
-                *pOut << indent << "// Intermediary variable" << Qt::endl;
-                *pOut << indent << "pSubAttArray = &(" << attDataPath << "Payload.pSubAttArray);" << Qt::endl;
-                *pOut << indent << "// Allocate sub-attribute array" << Qt::endl;
-                *pOut << indent << "if (!FiloGet(&LcsfBridge" << protocolName << "Info.Filo, LCSF_" << protocolName.toUpper() << "_ATT_"
-                << attribute->getName().toUpper() << "_SUBATT_NB, (void *)pSubAttArray)) {" << Qt::endl;
-                *pOut << indent << "    return false;" << Qt::endl;
-                *pOut << indent << "}" << Qt::endl;
-                nextParentNames.append(attribute->getName());
-                this->fillSubAttPayload_Rec(protocolName, nextParentNames, attribute->getSubAttArray(), pOut, indentNb + 1);
-            } else if (attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) {
-                *pOut << indent << attDataPath << "PayloadSize = pCmdPayload->"
-                << this->getPayloadPath(parentNames) << attribute->getName().toLower() << "Size;" << Qt::endl;
-                *pOut << indent << attDataPath << "Payload.pData = pCmdPayload->"
-                << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower() << ";" << Qt::endl;
-            } else if (attribute->getDataType() == NS_AttDataType::STRING) {
-                *pOut << indent << attDataPath << "Payload.pData = pCmdPayload->"
-                << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower() << ";" << Qt::endl;
-            } else {
-                *pOut << indent << attDataPath << "PayloadSize = GetVLESize(pCmdPayload->" 
-                << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ");" << Qt::endl;
-                *pOut << indent << attDataPath << "Payload.pData = &(pCmdPayload->"
-                << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ");" << Qt::endl;
+            switch(attribute->getDataType()) {
+               case NS_AttDataType::SUB_ATTRIBUTES: {
+                  *pOut << indent << "// Intermediary variable" << Qt::endl;
+                  *pOut << indent << "pSubAttArray = &(" << attDataPath << "Payload.pSubAttArray);" << Qt::endl;
+                  *pOut << indent << "// Allocate sub-attribute array" << Qt::endl;
+                  *pOut << indent << "if (!FiloGet(&LcsfBridge" << protocolName << "Info.Filo, LCSF_" << protocolName.toUpper() << "_ATT_"
+                  << attribute->getName().toUpper() << "_SUBATT_NB, (void *)pSubAttArray)) {" << Qt::endl;
+                  *pOut << indent << "    return false;" << Qt::endl;
+                  *pOut << indent << "}" << Qt::endl;
+                  nextParentNames.append(attribute->getName());
+                  this->fillSubAttPayload_Rec(protocolName, nextParentNames, attribute->getSubAttArray(), pOut, indentNb + 1);
+               } break;
+               case NS_AttDataType::BYTE_ARRAY:
+                  *pOut << indent << attDataPath << "PayloadSize = pCmdPayload->"
+                  << this->getPayloadPath(parentNames) << attribute->getName().toLower() << "Size;" << Qt::endl;
+                  *pOut << indent << attDataPath << "Payload.pData = pCmdPayload->"
+                  << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower() << ";" << Qt::endl;
+                  break;
+               case NS_AttDataType::STRING:
+                  *pOut << indent << attDataPath << "Payload.pData = pCmdPayload->"
+                  << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower() << ";" << Qt::endl;
+                  break;
+               case NS_AttDataType::FLOAT32:
+                  *pOut << indent << attDataPath << "PayloadSize = sizeof(float);" << Qt::endl;
+                  *pOut << indent << attDataPath << "Payload.pData = &(pCmdPayload->"
+                  << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ");" << Qt::endl;
+                  break;
+               case NS_AttDataType::FLOAT64:
+                  *pOut << indent << attDataPath << "PayloadSize = sizeof(double);" << Qt::endl;
+                  *pOut << indent << attDataPath << "Payload.pData = &(pCmdPayload->"
+                  << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ");" << Qt::endl;
+                  break;
+               default:
+                  *pOut << indent << attDataPath << "PayloadSize = GetVLESize(pCmdPayload->" 
+                  << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ");" << Qt::endl;
+                  *pOut << indent << attDataPath << "Payload.pData = &(pCmdPayload->"
+                  << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ");" << Qt::endl;
+               break;
             }
         }
     }
@@ -1155,23 +1200,6 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       out << "// *** End Definitions ***" << Qt::endl;
       out << Qt::endl;
       out << "// *** Private Functions ***" << Qt::endl;
-      out << "/**" << Qt::endl;
-      out << " * \\brief Return byte number to encode value" << Qt::endl;
-      out << " *" << Qt::endl;
-      out << " * \\param value value to encode" << Qt::endl;
-      out << " * \\return uint32_t: number of bytes to encode value" << Qt::endl;
-      out << " */" << Qt::endl;
-      out << "static uint32_t GetVLESize(uint32_t value) {" << Qt::endl;
-      out << "   if (value <= 0x000000ff) {" << Qt::endl;
-      out << "      return 1;" << Qt::endl;
-      out << "   } else if (value <= 0x0000ffff) {" << Qt::endl;
-      out << "      return 2;" << Qt::endl;
-      out << "   } else if (value <= 0x00ffffff) {" << Qt::endl;
-      out << "      return 3;" << Qt::endl;
-      out << "   } else {" << Qt::endl;
-      out << "      return 4;" << Qt::endl;
-      out << "   }" << Qt::endl;
-      out << "}" << Qt::endl;
       out << Qt::endl;
       out << "/**" << Qt::endl;
       out << " * \\fn static uint16_t LCSF_Bridge_" << protocolName << "_CMDID2CMDNAME(uint_fast16_t cmdId)" << Qt::endl;
@@ -1318,66 +1346,100 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
                if (attribute->getIsOptional()) {
                   out << "    if ((pCmdPayload->" << command->getName().toLower() << "_payload.optAttFlagsBitfield & " << protocolName.toUpper() << "_"
                          << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper() << "_FLAG) != 0) {" << Qt::endl;
-                  if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
-                     out << "        // Intermediary variable" << Qt::endl;
-                     out << "        pSubAttArray = &(pAttArray[" << protocolName.toUpper() << "_"
-                            << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper() << "].Payload.pSubAttArray);" << Qt::endl;
-                     out << "        // Allocate sub-attribute array" << Qt::endl;
-                     out << "        if (!FiloGet(&LcsfBridge" << protocolName << "Info.Filo, LCSF_" << protocolName.toUpper() << "_ATT_"
-                            << attribute->getName().toUpper() << "_SUBATT_NB, (void *)pSubAttArray)) {" << Qt::endl;
-                     out << "            return false;" << Qt::endl;
-                     out << "        }" << Qt::endl;
-                     QStringList parentNames = { command->getName(), attribute->getName() };
-                     this->fillSubAttPayload_Rec(protocolName, parentNames, attribute->getSubAttArray(), &out, 2);
-                  } else if (attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) {
-                     out << "        pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_"
-                            << attribute->getName().toUpper() << "].PayloadSize = pCmdPayload->"
-                            << command->getName().toLower() << "_payload." << attribute->getName().toLower() << "Size;" << Qt::endl;
-                     out << "        pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_"
-                            << attribute->getName().toUpper() << "].Payload.pData = pCmdPayload->"
-                            << command->getName().toLower() << "_payload.p_" << attribute->getName().toLower() << ";" << Qt::endl;
-                  } else if (attribute->getDataType() == NS_AttDataType::STRING) {
-                     out << "        pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_"
-                            << attribute->getName().toUpper() << "].Payload.pData = pCmdPayload->"
-                            << command->getName().toLower() << "_payload.p_" << attribute->getName().toLower() << ";" << Qt::endl;
-                  } else {
-                     out << "        pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
-                            << "].PayloadSize = GetVLESize(pCmdPayload->" << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ");" << Qt::endl;
-                     out << "        pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
-                            << "].Payload.pData = &(pCmdPayload->" << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ");" << Qt::endl;
-                  }
+                  switch (attribute->getDataType()) {
+                     case NS_AttDataType::SUB_ATTRIBUTES: {
+                        out << "        // Intermediary variable" << Qt::endl;
+                        out << "        pSubAttArray = &(pAttArray[" << protocolName.toUpper() << "_"
+                              << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper() << "].Payload.pSubAttArray);" << Qt::endl;
+                        out << "        // Allocate sub-attribute array" << Qt::endl;
+                        out << "        if (!FiloGet(&LcsfBridge" << protocolName << "Info.Filo, LCSF_" << protocolName.toUpper() << "_ATT_"
+                              << attribute->getName().toUpper() << "_SUBATT_NB, (void *)pSubAttArray)) {" << Qt::endl;
+                        out << "            return false;" << Qt::endl;
+                        out << "        }" << Qt::endl;
+                        QStringList parentNames = { command->getName(), attribute->getName() };
+                        this->fillSubAttPayload_Rec(protocolName, parentNames, attribute->getSubAttArray(), &out, 2);
+                     } break;
+                     case NS_AttDataType::BYTE_ARRAY:
+                        out << "        pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_"
+                              << attribute->getName().toUpper() << "].PayloadSize = pCmdPayload->"
+                              << command->getName().toLower() << "_payload." << attribute->getName().toLower() << "Size;" << Qt::endl;
+                        out << "        pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_"
+                              << attribute->getName().toUpper() << "].Payload.pData = pCmdPayload->"
+                              << command->getName().toLower() << "_payload.p_" << attribute->getName().toLower() << ";" << Qt::endl;
+                        break;
+                     case NS_AttDataType::STRING:
+                        out << "        pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_"
+                              << attribute->getName().toUpper() << "].Payload.pData = pCmdPayload->"
+                              << command->getName().toLower() << "_payload.p_" << attribute->getName().toLower() << ";" << Qt::endl;
+                        break;
+                     case NS_AttDataType::FLOAT32:
+                        out << "        pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
+                              << "].PayloadSize = sizeof(float);" << Qt::endl;
+                        out << "        pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
+                              << "].Payload.pData = &(pCmdPayload->" << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ");" << Qt::endl;
+                        break;
+                     case NS_AttDataType::FLOAT64:
+                        out << "        pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
+                              << "].PayloadSize = sizeof(double);" << Qt::endl;
+                        out << "        pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
+                              << "].Payload.pData = &(pCmdPayload->" << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ");" << Qt::endl;
+                        break;
+                     default:
+                        out << "        pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
+                              << "].PayloadSize = GetVLESize(pCmdPayload->" << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ");" << Qt::endl;
+                        out << "        pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
+                              << "].Payload.pData = &(pCmdPayload->" << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ");" << Qt::endl;
+                     break;
+                  } 
                   out << "    } else {" << Qt::endl;
                   out << "        pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
                       << "].Payload.pData = NULL;" << Qt::endl;
                   out << "    }" << Qt::endl;
                } else {
-                  if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
-                      out << "    // Intermediary variable" << Qt::endl;
-                      out << "    pSubAttArray = &(pAttArray[" << protocolName.toUpper() << "_"
-                             << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper() << "].Payload.pSubAttArray);" << Qt::endl;
-                      out << "    // Allocate sub-attribute array" << Qt::endl;
-                      out << "    if (!FiloGet(&LcsfBridge" << protocolName << "Info.Filo, LCSF_" << protocolName.toUpper() << "_ATT_"
-                             << attribute->getName().toUpper() << "_SUBATT_NB, (void *)pSubAttArray)) {" << Qt::endl;
-                      out << "        return false;" << Qt::endl;
-                      out << "    }" << Qt::endl;
-                      QStringList parentNames = { command->getName(), attribute->getName() };
-                      this->fillSubAttPayload_Rec(protocolName, parentNames, attribute->getSubAttArray(), &out, 1);
-                  } else if (attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) {
-                     out << "    pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_"
-                            << attribute->getName().toUpper() << "].PayloadSize = pCmdPayload->"
-                            << command->getName().toLower() << "_payload." << attribute->getName().toLower() << "Size;" << Qt::endl;
-                     out << "    pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_"
-                            << attribute->getName().toUpper() << "].Payload.pData = pCmdPayload->"
-                            << command->getName().toLower() << "_payload.p_" << attribute->getName().toLower() << ";" << Qt::endl;
-                  } else if (attribute->getDataType() == NS_AttDataType::STRING) {
-                     out << "    pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_"
-                            << attribute->getName().toUpper() << "].Payload.pData = pCmdPayload->"
-                            << command->getName().toLower() << "_payload.p_" << attribute->getName().toLower() << ";" << Qt::endl;
-                  } else {
-                     out << "    pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
-                            << "].PayloadSize = GetVLESize(pCmdPayload->" << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ");" << Qt::endl;
-                     out << "    pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
-                            << "].Payload.pData = &(pCmdPayload->" << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ");" << Qt::endl;
+                  switch (attribute->getDataType()) {
+                     case NS_AttDataType::SUB_ATTRIBUTES: {
+                        out << "    // Intermediary variable" << Qt::endl;
+                        out << "    pSubAttArray = &(pAttArray[" << protocolName.toUpper() << "_"
+                              << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper() << "].Payload.pSubAttArray);" << Qt::endl;
+                        out << "    // Allocate sub-attribute array" << Qt::endl;
+                        out << "    if (!FiloGet(&LcsfBridge" << protocolName << "Info.Filo, LCSF_" << protocolName.toUpper() << "_ATT_"
+                              << attribute->getName().toUpper() << "_SUBATT_NB, (void *)pSubAttArray)) {" << Qt::endl;
+                        out << "        return false;" << Qt::endl;
+                        out << "    }" << Qt::endl;
+                        QStringList parentNames = { command->getName(), attribute->getName() };
+                        this->fillSubAttPayload_Rec(protocolName, parentNames, attribute->getSubAttArray(), &out, 1);
+                     } break;
+                     case NS_AttDataType::BYTE_ARRAY:
+                        out << "    pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_"
+                              << attribute->getName().toUpper() << "].PayloadSize = pCmdPayload->"
+                              << command->getName().toLower() << "_payload." << attribute->getName().toLower() << "Size;" << Qt::endl;
+                        out << "    pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_"
+                              << attribute->getName().toUpper() << "].Payload.pData = pCmdPayload->"
+                              << command->getName().toLower() << "_payload.p_" << attribute->getName().toLower() << ";" << Qt::endl;
+                        break;
+                     case NS_AttDataType::STRING:
+                        out << "    pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_"
+                              << attribute->getName().toUpper() << "].Payload.pData = pCmdPayload->"
+                              << command->getName().toLower() << "_payload.p_" << attribute->getName().toLower() << ";" << Qt::endl;
+                        break;
+                     case NS_AttDataType::FLOAT32:
+                        out << "    pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
+                              << "].PayloadSize = sizeof(float);" << Qt::endl;
+                        out << "    pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
+                              << "].Payload.pData = &(pCmdPayload->" << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ");" << Qt::endl;
+                        break;
+                     case NS_AttDataType::FLOAT64:
+                        out << "    pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
+                              << "].PayloadSize = sizeof(double);" << Qt::endl;
+                        out << "    pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
+                              << "].Payload.pData = &(pCmdPayload->" << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ");" << Qt::endl;
+                        break;
+                     default:
+                        out << "    pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
+                              << "].PayloadSize = GetVLESize(pCmdPayload->" << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ");" << Qt::endl;
+                        out << "    pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
+                              << "].Payload.pData = &(pCmdPayload->" << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ");" << Qt::endl;
+                        break;
                   }
                }
             }

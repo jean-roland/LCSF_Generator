@@ -54,6 +54,9 @@ pub struct Cc1AttPayload {
     pub sa9: Vec<u8>,
     pub is_sa10_here: bool,
     pub sa10: CString,
+    pub sa11: u64,
+    pub sa12: f32,
+    pub sa13: f64,
 }
 
 #[derive(Debug, PartialEq)]
@@ -73,6 +76,9 @@ pub struct Cc2AttPayload {
     pub sa9: Vec<u8>,
     pub is_sa10_here: bool,
     pub sa10: CString,
+    pub sa11: u64,
+    pub sa12: f32,
+    pub sa13: f64,
 }
 
 #[derive(Debug, PartialEq)]
@@ -92,6 +98,9 @@ pub struct Cc3AttPayload {
     pub sa9: Vec<u8>,
     pub is_sa10_here: bool,
     pub sa10: CString,
+    pub sa11: u64,
+    pub sa12: f32,
+    pub sa13: f64,
 }
 
 #[derive(Debug, PartialEq)]
@@ -222,6 +231,9 @@ fn execute_cc2(payload: &Cc2AttPayload) {
     let mut sa8 = 0;
     let mut sa9 = &Vec::new();
     let mut sa10 = &CString::new("").unwrap();
+    let sa11 = payload.sa11;
+    let sa12 = payload.sa12;
+    let sa13 = payload.sa13;
     if payload.is_sa6_here {
         sa6 = payload.sa6;
     }
@@ -253,6 +265,9 @@ fn execute_cc3(payload: &Cc3AttPayload) {
     let mut sa8 = 0;
     let mut sa9 = &Vec::new();
     let mut sa10 = &CString::new("").unwrap();
+    let sa11 = payload.sa11;
+    let sa12 = payload.sa12;
+    let sa13 = payload.sa13;
     if payload.is_sa6_here {
         sa6 = payload.sa6;
     }

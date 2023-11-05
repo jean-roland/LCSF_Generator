@@ -32,6 +32,9 @@ Protocol id: `55`
 | SA8 | `0x07` | Yes | `(u)int32` | Optional uint32 simple attribute |
 | SA9 | `0x08` | Yes | `byte array` | Optional byte array simple attribute |
 | SA10 | `0x09` | Yes | `string` | Optional string simple attribute |
+| SA11 | `0x0a` | No | `(u)int64` | Non optional uint64 simple attribute |
+| SA12 | `0x0b` | No | `float32` | Non optional float32 simple attribute |
+| SA13 | `0x0c` | No | `float64` | Non optional float64 simple attribute |
 
 ## CC2 attributes table
 
@@ -47,6 +50,9 @@ Protocol id: `55`
 | SA8 | `0x07` | Yes | `(u)int32` | Optional uint32 simple attribute |
 | SA9 | `0x08` | Yes | `byte array` | Optional byte array simple attribute |
 | SA10 | `0x09` | Yes | `string` | Optional string simple attribute |
+| SA11 | `0x0a` | No | `(u)int64` | Non optional uint64 simple attribute |
+| SA12 | `0x0b` | No | `float32` | Non optional float32 simple attribute |
+| SA13 | `0x0c` | No | `float64` | Non optional float64 simple attribute |
 
 ## CC3 attributes table
 
@@ -62,6 +68,9 @@ Protocol id: `55`
 | SA8 | `0x07` | Yes | `(u)int32` | Optional uint32 simple attribute |
 | SA9 | `0x08` | Yes | `byte array` | Optional byte array simple attribute |
 | SA10 | `0x09` | Yes | `string` | Optional string simple attribute |
+| SA11 | `0x0a` | No | `(u)int64` | Non optional uint64 simple attribute |
+| SA12 | `0x0b` | No | `float32` | Non optional float32 simple attribute |
+| SA13 | `0x0c` | No | `float64` | Non optional float64 simple attribute |
 
 ## CC4 attributes table
 

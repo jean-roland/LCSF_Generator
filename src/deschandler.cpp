@@ -49,6 +49,12 @@ static NS_AttDataType::T_AttDataType convertDataType(QString type) {
         return NS_AttDataType::UINT16;
     } else if (type == "LCSF_UINT32") {
         return NS_AttDataType::UINT32;
+    } else if (type == "LCSF_UINT64") {
+        return NS_AttDataType::UINT64;
+    } else if (type == "LCSF_FLOAT32") {
+        return NS_AttDataType::FLOAT32;
+    } else if (type == "LCSF_FLOAT64") {
+        return NS_AttDataType::FLOAT64;
     } else if (type == "LCSF_BYTE_ARRAY") {
         return NS_AttDataType::BYTE_ARRAY;
     } else if (type == "LCSF_SUB_ATTRIBUTES") {

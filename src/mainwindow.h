@@ -62,8 +62,8 @@ private:
     QString outBPath;
     bool treeIsCleared;
     const QString defProtocolName = "Default";
-    const QString defoutAPath = "./OutputA";
-    const QString defoutBPath = "./OutputB";
+    const QString defoutAPath = "./COutputA";
+    const QString defoutBPath = "./COutputB";
     const QString rustoutAPath = "./RustOutputA";
     const QString rustoutBPath = "./RustOutputB";
     const QString cmdArrayName = "Commands";

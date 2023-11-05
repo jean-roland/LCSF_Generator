@@ -29,16 +29,21 @@ namespace NS_AttDataType {
         UINT8,
         UINT16,
         UINT32,
+        UINT64,
+        FLOAT32,
+        FLOAT64,
         BYTE_ARRAY,
         SUB_ATTRIBUTES,
         STRING,
         UNKNOWN,
     }T_AttDataType;
 
-    const T_AttDataType SLAttDataType2Enum[6] = { UINT8, UINT16, UINT32, BYTE_ARRAY, SUB_ATTRIBUTES, STRING };
+    const T_AttDataType SLAttDataType2Enum[9] = { UINT8, UINT16, UINT32, UINT64, FLOAT32, FLOAT64, BYTE_ARRAY, SUB_ATTRIBUTES, STRING };
 
-    const QStringList SL_AttDataType = (QStringList() << "LCSF_UINT8" << "LCSF_UINT16" << "LCSF_UINT32" << "LCSF_BYTE_ARRAY" << "LCSF_SUB_ATTRIBUTES" << "LCSF_STRING");
-    const QStringList SL_DocAttDataType = (QStringList() << "(u)int8" << "(u)int16" << "(u)int32" << "byte array" << "sub-attributes" << "string");
+    const QStringList SL_AttDataType = (QStringList() << "LCSF_UINT8" << "LCSF_UINT16" << "LCSF_UINT32" << "LCSF_UINT64" 
+        << "LCSF_FLOAT32" << "LCSF_FLOAT64" << "LCSF_BYTE_ARRAY" << "LCSF_SUB_ATTRIBUTES" << "LCSF_STRING");
+    const QStringList SL_DocAttDataType = (QStringList() << "(u)int8" << "(u)int16" << "(u)int32" << "(u)int64" 
+        << "float32" << "float64" << "byte array" << "sub-attributes" << "string");
 }
 
 namespace NS_DirectionType {

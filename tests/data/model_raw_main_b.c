@@ -109,6 +109,9 @@ static bool TestExecuteCC1(test_cmd_payload_t *pCmdPayload) {
     uint8_t *m_cc1_sa9 = NULL;
     bool m_cc1_sa10_isHere = false;
     char *m_cc1_sa10 = NULL;
+    uint64_t m_cc1_sa11 = 0;
+    float m_cc1_sa12 = 0;
+    double m_cc1_sa13 = 0;
     // Retrieve attributes data
     m_cc1_sa1 = pCmdPayload->cc1_payload.sa1;
     m_cc1_sa2 = pCmdPayload->cc1_payload.sa2;
@@ -135,6 +138,9 @@ static bool TestExecuteCC1(test_cmd_payload_t *pCmdPayload) {
         m_cc1_sa10 = pCmdPayload->cc1_payload.p_sa10;
         m_cc1_sa10_isHere = true;
     }
+    m_cc1_sa11 = pCmdPayload->cc1_payload.sa11;
+    m_cc1_sa12 = pCmdPayload->cc1_payload.sa12;
+    m_cc1_sa13 = pCmdPayload->cc1_payload.sa13;
     // Process data
     #pragma GCC warning "#warning TODO: function to implement"
     return true;
@@ -160,6 +166,9 @@ static bool TestExecuteCC3(test_cmd_payload_t *pCmdPayload) {
     uint8_t *m_cc3_sa9 = NULL;
     bool m_cc3_sa10_isHere = false;
     char *m_cc3_sa10 = NULL;
+    uint64_t m_cc3_sa11 = 0;
+    float m_cc3_sa12 = 0;
+    double m_cc3_sa13 = 0;
     // Retrieve attributes data
     m_cc3_sa1 = pCmdPayload->cc3_payload.sa1;
     m_cc3_sa2 = pCmdPayload->cc3_payload.sa2;
@@ -186,6 +195,9 @@ static bool TestExecuteCC3(test_cmd_payload_t *pCmdPayload) {
         m_cc3_sa10 = pCmdPayload->cc3_payload.p_sa10;
         m_cc3_sa10_isHere = true;
     }
+    m_cc3_sa11 = pCmdPayload->cc3_payload.sa11;
+    m_cc3_sa12 = pCmdPayload->cc3_payload.sa12;
+    m_cc3_sa13 = pCmdPayload->cc3_payload.sa13;
     // Process data
     #pragma GCC warning "#warning TODO: function to implement"
     return true;

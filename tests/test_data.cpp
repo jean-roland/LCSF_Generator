@@ -70,7 +70,10 @@ Attribute CC1_SA7("SA7", 6, true, NS_AttDataType::UINT16, "Optional uint16 simpl
 Attribute CC1_SA8("SA8", 7, true, NS_AttDataType::UINT32, "Optional uint32 simple attribute");
 Attribute CC1_SA9("SA9", 8, true, NS_AttDataType::BYTE_ARRAY, "Optional byte array simple attribute");
 Attribute CC1_SA10("SA10", 9, true, NS_AttDataType::STRING, "Optional string simple attribute");
-QList<Attribute *> CC1_att_array = {&CC1_SA1, &CC1_SA2, &CC1_SA3, &CC1_SA4, &CC1_SA5, &CC1_SA6, &CC1_SA7, &CC1_SA8, &CC1_SA9, &CC1_SA10};
+Attribute CC1_SA11("SA11", 10, false, NS_AttDataType::UINT64, "Non optional uint64 simple attribute");
+Attribute CC1_SA12("SA12", 11, false, NS_AttDataType::FLOAT32, "Non optional float32 simple attribute");
+Attribute CC1_SA13("SA13", 12, false, NS_AttDataType::FLOAT64, "Non optional float64 simple attribute");
+QList<Attribute *> CC1_att_array = {&CC1_SA1, &CC1_SA2, &CC1_SA3, &CC1_SA4, &CC1_SA5, &CC1_SA6, &CC1_SA7, &CC1_SA8, &CC1_SA9, &CC1_SA10, &CC1_SA11, &CC1_SA12, &CC1_SA13};
 Command CC1("CC1", 3, true, NS_DirectionType::A_TO_B, CC1_att_array, "Complex command no sub-attributes A to B");
 
 // CC2
@@ -84,7 +87,10 @@ Attribute CC2_SA7("SA7", 6, true, NS_AttDataType::UINT16, "Optional uint16 simpl
 Attribute CC2_SA8("SA8", 7, true, NS_AttDataType::UINT32, "Optional uint32 simple attribute");
 Attribute CC2_SA9("SA9", 8, true, NS_AttDataType::BYTE_ARRAY, "Optional byte array simple attribute");
 Attribute CC2_SA10("SA10", 9, true, NS_AttDataType::STRING, "Optional string simple attribute");
-QList<Attribute *> CC2_att_array = {&CC2_SA1, &CC2_SA2, &CC2_SA3, &CC2_SA4, &CC2_SA5, &CC2_SA6, &CC2_SA7, &CC2_SA8, &CC2_SA9, &CC2_SA10};
+Attribute CC2_SA11("SA11", 10, false, NS_AttDataType::UINT64, "Non optional uint64 simple attribute");
+Attribute CC2_SA12("SA12", 11, false, NS_AttDataType::FLOAT32, "Non optional float32 simple attribute");
+Attribute CC2_SA13("SA13", 12, false, NS_AttDataType::FLOAT64, "Non optional float64 simple attribute");
+QList<Attribute *> CC2_att_array = {&CC2_SA1, &CC2_SA2, &CC2_SA3, &CC2_SA4, &CC2_SA5, &CC2_SA6, &CC2_SA7, &CC2_SA8, &CC2_SA9, &CC2_SA10, &CC2_SA11, &CC2_SA12, &CC2_SA13};
 Command CC2("CC2", 4, true, NS_DirectionType::B_TO_A, CC2_att_array, "Complex command no sub-attributes B to A");
 
 // CC3
@@ -98,7 +104,10 @@ Attribute CC3_SA7("SA7", 6, true, NS_AttDataType::UINT16, "Optional uint16 simpl
 Attribute CC3_SA8("SA8", 7, true, NS_AttDataType::UINT32, "Optional uint32 simple attribute");
 Attribute CC3_SA9("SA9", 8, true, NS_AttDataType::BYTE_ARRAY, "Optional byte array simple attribute");
 Attribute CC3_SA10("SA10", 9, true, NS_AttDataType::STRING, "Optional string simple attribute");
-QList<Attribute *> CC3_att_array = {&CC3_SA1, &CC3_SA2, &CC3_SA3, &CC3_SA4, &CC3_SA5, &CC3_SA6, &CC3_SA7, &CC3_SA8, &CC3_SA9, &CC3_SA10};
+Attribute CC3_SA11("SA11", 10, false, NS_AttDataType::UINT64, "Non optional uint64 simple attribute");
+Attribute CC3_SA12("SA12", 11, false, NS_AttDataType::FLOAT32, "Non optional float32 simple attribute");
+Attribute CC3_SA13("SA13", 12, false, NS_AttDataType::FLOAT64, "Non optional float64 simple attribute");
+QList<Attribute *> CC3_att_array = {&CC3_SA1, &CC3_SA2, &CC3_SA3, &CC3_SA4, &CC3_SA5, &CC3_SA6, &CC3_SA7, &CC3_SA8, &CC3_SA9, &CC3_SA10, &CC3_SA11, &CC3_SA12, &CC3_SA13};
 Command CC3("CC3", 5, true, NS_DirectionType::BIDIRECTIONAL, CC3_att_array, "Complex command no sub-attributes bidirectional");
 
 // CC4
@@ -229,7 +238,7 @@ static test_info_t TestInfo;
 )";
 
 const QString a_unk_pri_fct = R"(/**
- * \fn static void Test_FillArray(uint8_t *pArray)
+ * \fn static void Test_FillArray(uint8_t *pArray, bool incr)
  * \brief Fill an array with data
  *
  * \param pArray pointer to array
@@ -397,6 +406,9 @@ const QString a_fct_cc2 = R"(static bool TestExecuteCC2(test_cmd_payload_t *pCmd
     uint8_t *m_cc2_sa9 = NULL;
     bool m_cc2_sa10_isHere = false;
     char *m_cc2_sa10 = NULL;
+    uint64_t m_cc2_sa11 = 0;
+    float m_cc2_sa12 = 0.0;
+    double m_cc2_sa13 = 0.0;
     // Retrieve attributes data
     m_cc2_sa1 = pCmdPayload->cc2_payload.sa1;
     m_cc2_sa2 = pCmdPayload->cc2_payload.sa2;
@@ -423,6 +435,9 @@ const QString a_fct_cc2 = R"(static bool TestExecuteCC2(test_cmd_payload_t *pCmd
         m_cc2_sa10 = pCmdPayload->cc2_payload.p_sa10;
         m_cc2_sa10_isHere = true;
     }
+    m_cc2_sa11 = pCmdPayload->cc2_payload.sa11;
+    m_cc2_sa12 = pCmdPayload->cc2_payload.sa12;
+    m_cc2_sa13 = pCmdPayload->cc2_payload.sa13;
     // Init payload optAttFlagsBitfield
     TestInfo.SendCmdPayload.cc1_payload.optAttFlagsBitfield = 0;
     // Process data
@@ -431,6 +446,9 @@ const QString a_fct_cc2 = R"(static bool TestExecuteCC2(test_cmd_payload_t *pCmd
     TestInfo.SendCmdPayload.cc1_payload.sa3 = m_cc2_sa3 + 1;
     TestInfo.SendCmdPayload.cc1_payload.sa4Size = TEST_ARRAY_SIZE;
     TestInfo.SendCmdPayload.cc1_payload.p_sa4 = m_cc2_sa4;
+    TestInfo.SendCmdPayload.cc1_payload.sa11 = m_cc2_sa11 + 1;
+    TestInfo.SendCmdPayload.cc1_payload.sa12 = m_cc2_sa12 + 1.0;
+    TestInfo.SendCmdPayload.cc1_payload.sa13 = m_cc2_sa13 + 1.0;
     Test_FillArray(TestInfo.SendCmdPayload.cc1_payload.p_sa4, true);
     TestInfo.SendCmdPayload.cc1_payload.p_sa5 = m_cc2_sa5;
     for (uint8_t idx = 0; idx < strlen(m_cc2_sa5); idx++) {
@@ -487,6 +505,9 @@ const QString a_fct_cc3 = R"(static bool TestExecuteCC3(test_cmd_payload_t *pCmd
     uint8_t *m_cc3_sa9 = NULL;
     bool m_cc3_sa10_isHere = false;
     char *m_cc3_sa10 = NULL;
+    uint64_t m_cc3_sa11 = 0;
+    float m_cc3_sa12 = 0.0;
+    double m_cc3_sa13 = 0.0;
     // Retrieve attributes data
     m_cc3_sa1 = pCmdPayload->cc3_payload.sa1;
     m_cc3_sa2 = pCmdPayload->cc3_payload.sa2;
@@ -513,6 +534,9 @@ const QString a_fct_cc3 = R"(static bool TestExecuteCC3(test_cmd_payload_t *pCmd
         m_cc3_sa10 = pCmdPayload->cc3_payload.p_sa10;
         m_cc3_sa10_isHere = true;
     }
+    m_cc3_sa11 = pCmdPayload->cc3_payload.sa11;
+    m_cc3_sa12 = pCmdPayload->cc3_payload.sa12;
+    m_cc3_sa13 = pCmdPayload->cc3_payload.sa13;
     // Init payload optAttFlagsBitfield
     TestInfo.SendCmdPayload.cc3_payload.optAttFlagsBitfield = 0;
     // Process data
@@ -521,6 +545,9 @@ const QString a_fct_cc3 = R"(static bool TestExecuteCC3(test_cmd_payload_t *pCmd
     TestInfo.SendCmdPayload.cc3_payload.sa3 = m_cc3_sa3 - 1;
     TestInfo.SendCmdPayload.cc3_payload.sa4Size = TEST_ARRAY_SIZE;
     TestInfo.SendCmdPayload.cc3_payload.p_sa4 = m_cc3_sa4;
+    TestInfo.SendCmdPayload.cc3_payload.sa11 = m_cc3_sa11 + 1;
+    TestInfo.SendCmdPayload.cc3_payload.sa12 = m_cc3_sa12 + 1.0;
+    TestInfo.SendCmdPayload.cc3_payload.sa13 = m_cc3_sa13 + 1.0;
     Test_FillArray(TestInfo.SendCmdPayload.cc3_payload.p_sa4, false);
     TestInfo.SendCmdPayload.cc3_payload.p_sa5 = m_cc3_sa5;
     for (uint8_t idx = 0; idx < strlen(m_cc3_sa5); idx++) {
@@ -754,7 +781,7 @@ static test_info_t TestInfo;
 )";
 
 const QString b_unk_pri_fct = R"(/**
- * \fn static void Test_FillArray(uint8_t *pArray)
+ * \fn static void Test_FillArray(uint8_t *pArray, bool incr)
  * \brief Fill an array with data
  *
  * \param pArray pointer to array
@@ -798,7 +825,7 @@ static bool TestSendCommand(uint_fast16_t cmdName, bool hasPayload) {
     if (msgSize <= 0) {
         return false;
     }
-    // TODO Pass buffer to send function
+    // TODO Pass buffer to send function e.g: return DummySend(ExampleInfo.sendBuffer, (size_t)msgSize);
     return true;
 }
 
@@ -922,6 +949,9 @@ const QString b_fct_cc1 = R"(static bool TestExecuteCC1(test_cmd_payload_t *pCmd
     uint8_t *m_cc1_sa9 = NULL;
     bool m_cc1_sa10_isHere = false;
     char *m_cc1_sa10 = NULL;
+    uint64_t m_cc1_sa11 = 0;
+    float m_cc1_sa12 = 0.0;
+    double m_cc1_sa13 = 0.0;
     // Retrieve attributes data
     m_cc1_sa1 = pCmdPayload->cc1_payload.sa1;
     m_cc1_sa2 = pCmdPayload->cc1_payload.sa2;
@@ -948,6 +978,9 @@ const QString b_fct_cc1 = R"(static bool TestExecuteCC1(test_cmd_payload_t *pCmd
         m_cc1_sa10 = pCmdPayload->cc1_payload.p_sa10;
         m_cc1_sa10_isHere = true;
     }
+    m_cc1_sa11 = pCmdPayload->cc1_payload.sa11;
+    m_cc1_sa12 = pCmdPayload->cc1_payload.sa12;
+    m_cc1_sa13 = pCmdPayload->cc1_payload.sa13;
     // Init payload optAttFlagsBitfield
     TestInfo.SendCmdPayload.cc2_payload.optAttFlagsBitfield = 0;
     // Process data
@@ -956,6 +989,9 @@ const QString b_fct_cc1 = R"(static bool TestExecuteCC1(test_cmd_payload_t *pCmd
     TestInfo.SendCmdPayload.cc2_payload.sa3 = m_cc1_sa3 + 1;
     TestInfo.SendCmdPayload.cc2_payload.sa4Size = TEST_ARRAY_SIZE;
     TestInfo.SendCmdPayload.cc2_payload.p_sa4 = m_cc1_sa4;
+    TestInfo.SendCmdPayload.cc2_payload.sa11 = m_cc1_sa11 + 1;
+    TestInfo.SendCmdPayload.cc2_payload.sa12 = m_cc1_sa12 + 1.0;
+    TestInfo.SendCmdPayload.cc2_payload.sa13 = m_cc1_sa13 + 1.0;
     Test_FillArray(TestInfo.SendCmdPayload.cc2_payload.p_sa4, true);
     TestInfo.SendCmdPayload.cc2_payload.p_sa5 = m_cc1_sa5;
     for (uint8_t idx = 0; idx < strlen(m_cc1_sa5); idx++) {
@@ -1012,6 +1048,9 @@ const QString b_fct_cc3 = R"(static bool TestExecuteCC3(test_cmd_payload_t *pCmd
     uint8_t *m_cc3_sa9 = NULL;
     bool m_cc3_sa10_isHere = false;
     char *m_cc3_sa10 = NULL;
+    uint64_t m_cc3_sa11 = 0;
+    float m_cc3_sa12 = 0.0;
+    double m_cc3_sa13 = 0.0;
     // Retrieve attributes data
     m_cc3_sa1 = pCmdPayload->cc3_payload.sa1;
     m_cc3_sa2 = pCmdPayload->cc3_payload.sa2;
@@ -1038,6 +1077,9 @@ const QString b_fct_cc3 = R"(static bool TestExecuteCC3(test_cmd_payload_t *pCmd
         m_cc3_sa10 = pCmdPayload->cc3_payload.p_sa10;
         m_cc3_sa10_isHere = true;
     }
+    m_cc3_sa11 = pCmdPayload->cc3_payload.sa11;
+    m_cc3_sa12 = pCmdPayload->cc3_payload.sa12;
+    m_cc3_sa13 = pCmdPayload->cc3_payload.sa13;
     // Init payload optAttFlagsBitfield
     TestInfo.SendCmdPayload.cc3_payload.optAttFlagsBitfield = 0;
     // Process data
@@ -1046,6 +1088,9 @@ const QString b_fct_cc3 = R"(static bool TestExecuteCC3(test_cmd_payload_t *pCmd
     TestInfo.SendCmdPayload.cc3_payload.sa3 = m_cc3_sa3 - 1;
     TestInfo.SendCmdPayload.cc3_payload.sa4Size = TEST_ARRAY_SIZE;
     TestInfo.SendCmdPayload.cc3_payload.p_sa4 = m_cc3_sa4;
+    TestInfo.SendCmdPayload.cc3_payload.sa11 = m_cc3_sa11 + 1;
+    TestInfo.SendCmdPayload.cc3_payload.sa12 = m_cc3_sa12 + 1.0;
+    TestInfo.SendCmdPayload.cc3_payload.sa13 = m_cc3_sa13 + 1.0;
     Test_FillArray(TestInfo.SendCmdPayload.cc3_payload.p_sa4, false);
     TestInfo.SendCmdPayload.cc3_payload.p_sa5 = m_cc3_sa5;
     for (uint8_t idx = 0; idx < strlen(m_cc3_sa5); idx++) {

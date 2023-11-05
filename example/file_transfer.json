@@ -11,7 +11,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": "LCSF_UINT32",
+                    "dataType": "LCSF_UINT64",
                     "desc": "File size",
                     "id": 1,
                     "isOptional": false,
@@ -19,7 +19,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": "LCSF_UINT32",
+                    "dataType": "LCSF_UINT64",
                     "desc": "Address to write the file (if writing to memory directly)",
                     "id": 2,
                     "isOptional": true,
@@ -46,7 +46,7 @@
         {
             "attributes": [
                 {
-                    "dataType": "LCSF_UINT32",
+                    "dataType": "LCSF_UINT64",
                     "desc": "File size",
                     "id": 0,
                     "isOptional": false,
@@ -54,7 +54,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": "LCSF_UINT32",
+                    "dataType": "LCSF_UINT64",
                     "desc": "Address to write the file (if writing to memory directly)",
                     "id": 1,
                     "isOptional": true,
@@ -89,7 +89,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": "LCSF_UINT32",
+                    "dataType": "LCSF_UINT64",
                     "desc": "File size",
                     "id": 1,
                     "isOptional": false,
@@ -97,7 +97,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": "LCSF_UINT32",
+                    "dataType": "LCSF_UINT64",
                     "desc": "Address to write the file (if writing to memory directly)",
                     "id": 2,
                     "isOptional": true,
@@ -124,7 +124,7 @@
         {
             "attributes": [
                 {
-                    "dataType": "LCSF_UINT32",
+                    "dataType": "LCSF_UINT64",
                     "desc": "File size",
                     "id": 0,
                     "isOptional": false,
@@ -132,7 +132,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": "LCSF_UINT32",
+                    "dataType": "LCSF_UINT64",
                     "desc": "Address to write the file (if writing to memory directly)",
                     "id": 1,
                     "isOptional": true,
@@ -167,7 +167,7 @@
                     "size": 0
                 },
                 {
-                    "dataType": "LCSF_UINT32",
+                    "dataType": "LCSF_UINT64",
                     "desc": "Fragment size",
                     "id": 1,
                     "isOptional": false,

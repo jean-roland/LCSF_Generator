@@ -16,7 +16,7 @@ Protocol id: 55
 |-
 | SC3 || '''0x02''' || Bidirectional || Simple command bidirectional || || || || || 
 |-
-| rowspan="10" | CC1 || rowspan="10" | '''0x03''' || rowspan="10" | A to B || rowspan="10" | Complex command no sub-attributes A to B || SA1 || '''0x00''' || No || '''(u)int8''' || Non optional uint8 simple attribute
+| rowspan="13" | CC1 || rowspan="13" | '''0x03''' || rowspan="13" | A to B || rowspan="13" | Complex command no sub-attributes A to B || SA1 || '''0x00''' || No || '''(u)int8''' || Non optional uint8 simple attribute
 |-
 | SA2 || '''0x01''' || No || '''(u)int16''' || Non optional uint16 simple attribute
 |-
@@ -36,7 +36,13 @@ Protocol id: 55
 |-
 | SA10 || '''0x09''' || Yes || '''string''' || Optional string simple attribute
 |-
-| rowspan="10" | CC2 || rowspan="10" | '''0x04''' || rowspan="10" | B to A || rowspan="10" | Complex command no sub-attributes B to A || SA1 || '''0x00''' || No || '''(u)int8''' || Non optional uint8 simple attribute
+| SA11 || '''0x0a''' || No || '''(u)int64''' || Non optional uint64 simple attribute
+|-
+| SA12 || '''0x0b''' || No || '''float32''' || Non optional float32 simple attribute
+|-
+| SA13 || '''0x0c''' || No || '''float64''' || Non optional float64 simple attribute
+|-
+| rowspan="13" | CC2 || rowspan="13" | '''0x04''' || rowspan="13" | B to A || rowspan="13" | Complex command no sub-attributes B to A || SA1 || '''0x00''' || No || '''(u)int8''' || Non optional uint8 simple attribute
 |-
 | SA2 || '''0x01''' || No || '''(u)int16''' || Non optional uint16 simple attribute
 |-
@@ -56,7 +62,13 @@ Protocol id: 55
 |-
 | SA10 || '''0x09''' || Yes || '''string''' || Optional string simple attribute
 |-
-| rowspan="10" | CC3 || rowspan="10" | '''0x05''' || rowspan="10" | Bidirectional || rowspan="10" | Complex command no sub-attributes bidirectional || SA1 || '''0x00''' || No || '''(u)int8''' || Non optional uint8 simple attribute
+| SA11 || '''0x0a''' || No || '''(u)int64''' || Non optional uint64 simple attribute
+|-
+| SA12 || '''0x0b''' || No || '''float32''' || Non optional float32 simple attribute
+|-
+| SA13 || '''0x0c''' || No || '''float64''' || Non optional float64 simple attribute
+|-
+| rowspan="13" | CC3 || rowspan="13" | '''0x05''' || rowspan="13" | Bidirectional || rowspan="13" | Complex command no sub-attributes bidirectional || SA1 || '''0x00''' || No || '''(u)int8''' || Non optional uint8 simple attribute
 |-
 | SA2 || '''0x01''' || No || '''(u)int16''' || Non optional uint16 simple attribute
 |-
@@ -75,6 +87,12 @@ Protocol id: 55
 | SA9 || '''0x08''' || Yes || '''byte array''' || Optional byte array simple attribute
 |-
 | SA10 || '''0x09''' || Yes || '''string''' || Optional string simple attribute
+|-
+| SA11 || '''0x0a''' || No || '''(u)int64''' || Non optional uint64 simple attribute
+|-
+| SA12 || '''0x0b''' || No || '''float32''' || Non optional float32 simple attribute
+|-
+| SA13 || '''0x0c''' || No || '''float64''' || Non optional float64 simple attribute
 |-
 | rowspan="3" | CC4 || rowspan="3" | '''0x06''' || rowspan="3" | A to B || rowspan="3" | Complex command with sub-attributes A to B || SA1 || '''0x00''' || No || '''(u)int8''' || Non optional uint8 simple attribute
 |-
