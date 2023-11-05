@@ -186,6 +186,101 @@
         {
             "attributes": [
                 {
+                    "dataType": "LCSF_STRING",
+                    "desc": "Path of the directory to change to",
+                    "id": 0,
+                    "isOptional": false,
+                    "name": "path",
+                    "size": 0
+                }
+            ],
+            "description": "Change directory request",
+            "direction": 2,
+            "hasAtt": true,
+            "id": 5,
+            "name": "cd",
+            "parentName": "NONE",
+            "size": 1
+        },
+        {
+            "attributes": [
+                {
+                    "dataType": "LCSF_STRING",
+                    "desc": "Path to list the elements (default will be current directory)",
+                    "id": 0,
+                    "isOptional": true,
+                    "name": "path",
+                    "size": 0
+                }
+            ],
+            "description": "List element request",
+            "direction": 2,
+            "hasAtt": true,
+            "id": 6,
+            "name": "ls",
+            "parentName": "NONE",
+            "size": 1
+        },
+        {
+            "attributes": [
+                {
+                    "dataType": "LCSF_STRING",
+                    "desc": "List of comma separated file names, can be empty",
+                    "id": 0,
+                    "isOptional": false,
+                    "name": "files",
+                    "size": 0
+                },
+                {
+                    "dataType": "LCSF_STRING",
+                    "desc": "List of comma separated directory names, can be empty ",
+                    "id": 1,
+                    "isOptional": false,
+                    "name": "directories",
+                    "size": 0
+                }
+            ],
+            "description": "List element response",
+            "direction": 2,
+            "hasAtt": true,
+            "id": 7,
+            "name": "ls_resp",
+            "parentName": "NONE",
+            "size": 2
+        },
+        {
+            "attributes": [
+            ],
+            "description": "Current directory request",
+            "direction": 2,
+            "hasAtt": false,
+            "id": 8,
+            "name": "pwd",
+            "parentName": "NONE",
+            "size": 0
+        },
+        {
+            "attributes": [
+                {
+                    "dataType": "LCSF_STRING",
+                    "desc": "Path of the current directory",
+                    "id": 0,
+                    "isOptional": false,
+                    "name": "path",
+                    "size": 0
+                }
+            ],
+            "description": "Current directory response",
+            "direction": 2,
+            "hasAtt": true,
+            "id": 9,
+            "name": "pwd_resp",
+            "parentName": "NONE",
+            "size": 1
+        },
+        {
+            "attributes": [
+                {
                     "dataType": "LCSF_UINT8",
                     "desc": "Error code enum, user defined (e.g: out of memory, missing address/bath, bad address/path...)",
                     "id": 0,
@@ -197,7 +292,7 @@
             "description": "Protocol level error",
             "direction": 2,
             "hasAtt": true,
-            "id": 5,
+            "id": 10,
             "name": "error",
             "parentName": "NONE",
             "size": 1
