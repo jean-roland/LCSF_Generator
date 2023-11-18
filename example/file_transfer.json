@@ -33,6 +33,14 @@
                     "isOptional": true,
                     "name": "path",
                     "size": 0
+                },
+                {
+                    "dataType": "LCSF_BYTE_ARRAY",
+                    "desc": "File digest, to check integrity (type is TBD by the app)",
+                    "id": 4,
+                    "isOptional": true,
+                    "name": "digest",
+                    "size": 0
                 }
             ],
             "description": "Write a file",
@@ -41,7 +49,7 @@
             "id": 0,
             "name": "write",
             "parentName": "NONE",
-            "size": 4
+            "size": 5
         },
         {
             "attributes": [
@@ -68,6 +76,14 @@
                     "isOptional": true,
                     "name": "path",
                     "size": 0
+                },
+                {
+                    "dataType": "LCSF_BYTE_ARRAY",
+                    "desc": "File digest, to check integrity (type is TBD by the app)",
+                    "id": 3,
+                    "isOptional": true,
+                    "name": "digest",
+                    "size": 0
                 }
             ],
             "description": "Anounce a file write (if transfered on a transport without fragmentation)",
@@ -76,13 +92,48 @@
             "id": 1,
             "name": "prep_write",
             "parentName": "NONE",
+            "size": 4
+        },
+        {
+            "attributes": [
+                {
+                    "dataType": "LCSF_UINT64",
+                    "desc": "Address to read (if writing to memory directly)",
+                    "id": 0,
+                    "isOptional": true,
+                    "name": "address",
+                    "size": 0
+                },
+                {
+                    "dataType": "LCSF_STRING",
+                    "desc": "Path to the file (if writing on a file system)",
+                    "id": 1,
+                    "isOptional": true,
+                    "name": "path",
+                    "size": 0
+                },
+                {
+                    "dataType": "LCSF_UINT64",
+                    "desc": "SIze to read (if applicable)",
+                    "id": 2,
+                    "isOptional": true,
+                    "name": "size",
+                    "size": 0
+                }
+            ],
+            "description": "Request to read a file",
+            "direction": 2,
+            "hasAtt": true,
+            "id": 2,
+            "name": "read_req",
+            "parentName": "NONE",
             "size": 3
         },
         {
             "attributes": [
                 {
-                    "dataType": "LCSF_BYTE_ARRAY",
-                    "desc": "File content",
+                    "dataType": "LCSF_UINT64",
+                    "desc": "File data",
                     "id": 0,
                     "isOptional": false,
                     "name": "data",
@@ -97,29 +148,21 @@
                     "size": 0
                 },
                 {
-                    "dataType": "LCSF_UINT64",
-                    "desc": "Address to write the file (if writing to memory directly)",
+                    "dataType": "LCSF_BYTE_ARRAY",
+                    "desc": "File digest, to check integrity (type is TBD by the app)",
                     "id": 2,
                     "isOptional": true,
-                    "name": "address",
-                    "size": 0
-                },
-                {
-                    "dataType": "LCSF_STRING",
-                    "desc": "Path to write the file (if writing on a file system)",
-                    "id": 3,
-                    "isOptional": true,
-                    "name": "path",
+                    "name": "digest",
                     "size": 0
                 }
             ],
-            "description": "Read a file",
+            "description": "Read response",
             "direction": 2,
             "hasAtt": true,
-            "id": 2,
-            "name": "read",
+            "id": 3,
+            "name": "read_resp",
             "parentName": "NONE",
-            "size": 4
+            "size": 3
         },
         {
             "attributes": [
@@ -132,29 +175,21 @@
                     "size": 0
                 },
                 {
-                    "dataType": "LCSF_UINT64",
-                    "desc": "Address to write the file (if writing to memory directly)",
+                    "dataType": "LCSF_BYTE_ARRAY",
+                    "desc": "File digest, to check integrity (type is TBD by the app)",
                     "id": 1,
                     "isOptional": true,
-                    "name": "address",
-                    "size": 0
-                },
-                {
-                    "dataType": "LCSF_STRING",
-                    "desc": "Path to write the file (if writing on a file system)",
-                    "id": 2,
-                    "isOptional": true,
-                    "name": "path",
+                    "name": "digest",
                     "size": 0
                 }
             ],
-            "description": "Anounce a file read (if transfered on a transport without fragmentation)",
+            "description": "Anounce a read response (if transfered on a transport without fragmentation)",
             "direction": 2,
             "hasAtt": true,
-            "id": 3,
-            "name": "prep_read",
+            "id": 4,
+            "name": "prep_read_resp",
             "parentName": "NONE",
-            "size": 3
+            "size": 2
         },
         {
             "attributes": [
@@ -178,10 +213,67 @@
             "description": "A file fragment (if transfered on a transport without fragmentation)",
             "direction": 2,
             "hasAtt": true,
-            "id": 4,
+            "id": 5,
             "name": "fragment",
             "parentName": "NONE",
             "size": 2
+        },
+        {
+            "attributes": [
+                {
+                    "dataType": "LCSF_STRING",
+                    "desc": "Path to the new location",
+                    "id": 0,
+                    "isOptional": false,
+                    "name": "path",
+                    "size": 0
+                }
+            ],
+            "description": "Move a file",
+            "direction": 2,
+            "hasAtt": true,
+            "id": 6,
+            "name": "move",
+            "parentName": "NONE",
+            "size": 1
+        },
+        {
+            "attributes": [
+                {
+                    "dataType": "LCSF_STRING",
+                    "desc": "Path to the new location",
+                    "id": 0,
+                    "isOptional": false,
+                    "name": "path",
+                    "size": 0
+                }
+            ],
+            "description": "Copy a file",
+            "direction": 2,
+            "hasAtt": true,
+            "id": 7,
+            "name": "copy",
+            "parentName": "NONE",
+            "size": 1
+        },
+        {
+            "attributes": [
+                {
+                    "dataType": "LCSF_STRING",
+                    "desc": "Path to the file",
+                    "id": 0,
+                    "isOptional": false,
+                    "name": "path",
+                    "size": 0
+                }
+            ],
+            "description": "Delete a file",
+            "direction": 2,
+            "hasAtt": true,
+            "id": 8,
+            "name": "delete",
+            "parentName": "NONE",
+            "size": 1
         },
         {
             "attributes": [
@@ -197,7 +289,7 @@
             "description": "Change directory request",
             "direction": 2,
             "hasAtt": true,
-            "id": 5,
+            "id": 9,
             "name": "cd",
             "parentName": "NONE",
             "size": 1
@@ -216,8 +308,8 @@
             "description": "List element request",
             "direction": 2,
             "hasAtt": true,
-            "id": 6,
-            "name": "ls",
+            "id": 10,
+            "name": "ls_req",
             "parentName": "NONE",
             "size": 1
         },
@@ -243,7 +335,7 @@
             "description": "List element response",
             "direction": 2,
             "hasAtt": true,
-            "id": 7,
+            "id": 11,
             "name": "ls_resp",
             "parentName": "NONE",
             "size": 2
@@ -254,8 +346,8 @@
             "description": "Current directory request",
             "direction": 2,
             "hasAtt": false,
-            "id": 8,
-            "name": "pwd",
+            "id": 12,
+            "name": "pwd_req",
             "parentName": "NONE",
             "size": 0
         },
@@ -273,7 +365,7 @@
             "description": "Current directory response",
             "direction": 2,
             "hasAtt": true,
-            "id": 9,
+            "id": 13,
             "name": "pwd_resp",
             "parentName": "NONE",
             "size": 1
@@ -282,7 +374,7 @@
             "attributes": [
                 {
                     "dataType": "LCSF_UINT8",
-                    "desc": "Error code enum, user defined (e.g: out of memory, missing address/bath, bad address/path...)",
+                    "desc": "Error code enum, TBD by app (e.g: out of memory, missing address/bath, bad address/path...)",
                     "id": 0,
                     "isOptional": false,
                     "name": "error_code",
@@ -292,7 +384,7 @@
             "description": "Protocol level error",
             "direction": 2,
             "hasAtt": true,
-            "id": 10,
+            "id": 14,
             "name": "error",
             "parentName": "NONE",
             "size": 1
