@@ -1067,7 +1067,7 @@ void CodeGenerator::generateBridgeHeader(QString protocolName, QString protocolI
       out << "// Bridge decoder filo size" << Qt::endl;
       out << "#define LCSF_BRIDGE_" << protocolName.toUpper() << "_FILO_SIZE " << Command::getMaxAttNb(cmdList)  << Qt::endl;
       out << "// Lcsf protocol identifier" << Qt::endl;
-      out << "#define LCSF_" << protocolName.toUpper() << "_PROTOCOL_ID 0x" << protocolId.toInt(nullptr, 10) << Qt::endl;
+      out << "#define LCSF_" << protocolName.toUpper() << "_PROTOCOL_ID 0x" << protocolId << Qt::endl;
       out << "// Command number" << Qt::endl;
       out << "#define LCSF_" << protocolName.toUpper() << "_CMD_NB " << protocolName.toUpper() << "_CMD_COUNT" << Qt::endl;
       if (!attIdxList.isEmpty()) {
