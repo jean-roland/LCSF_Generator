@@ -1020,7 +1020,7 @@ void CodeGenerator::generateBridgeHeader(QString protocolName, QString protocolI
       out << "// Custom lib" << Qt::endl;
       out << "#include \"" << protocolName << "_Main.h\"" << Qt::endl;
       out << "#include <LCSF_Config.h>" << Qt::endl;
-      out << "#include <LCSF_Validator.h>" << Qt::endl;
+      out << "#include <lib/LCSF_Validator.h>" << Qt::endl;
       out << Qt::endl;
       out << "// *** Definitions ***" << Qt::endl;
       out << "// --- Public Types ---" << Qt::endl;
@@ -1154,10 +1154,9 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
       out << "#include <string.h>" << Qt::endl;
       out << "// Custom lib" << Qt::endl;
       out << "#include \"LCSF_Bridge_" << protocolName << ".h\"" << Qt::endl;
-      out << "#include <Filo.h>" << Qt::endl;
       out << "#include <LCSF_Config.h>" << Qt::endl;
-      out << "#include <LCSF_Transcoder.h>" << Qt::endl;
-      out << "#include <LCSF_Validator.h>" << Qt::endl;
+      out << "#include <lib/Filo.h>" << Qt::endl;
+      out << "#include <lib/LCSF_Transcoder.h>" << Qt::endl;
       out << Qt::endl;
       out << "// *** Definitions ***" << Qt::endl;
       out << "// --- Private Types ---" << Qt::endl;
