@@ -1238,7 +1238,7 @@ void MainWindow::on_pbImportDescA_clicked(void) {
     if (!dir.exists()) {
         dir.mkpath(".");
     }
-    QString filterName = protocolName + "_Main.c";
+    QString filterName = protocolName + "_Main_a.c";
     QString fileName = QFileDialog::getOpenFileName(this, "Choose file to load", "./", filterName);
     QFile file(fileName);
 
@@ -1276,7 +1276,7 @@ void MainWindow::on_pbImportDescB_clicked(void) {
     if (!dir.exists()) {
         dir.mkpath(".");
     }
-    QString filterName = protocolName + "_Main.c";
+    QString filterName = protocolName + "_Main_b.c";
     QString fileName = QFileDialog::getOpenFileName(this, "Choose file to load", "./", filterName);
     QFile file(fileName);
 

@@ -739,7 +739,7 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
    if (!dir.exists()) {
        dir.mkpath(".");
    }
-   QString fileName = dirPath + "/" + protocolName + "_Main.c";
+   QString fileName = dirPath + "/" + protocolName + "_Main_" + ((isA) ? "a" : "b") + ".c";
    QFile file(fileName);
 
    if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
@@ -751,7 +751,7 @@ void CodeGenerator::generateMain(QString protocolName, QList<Command *> cmdList 
          out << test;
       } else {
           out << "/**" << Qt::endl;
-          out << " * \\file " << protocolName << "_Main.c" << Qt::endl;
+          out << " * \\file " << protocolName << "_Main_" << ((isA) ? "a" : "b") <<".c" << Qt::endl;
           out << " * \\brief " << protocolName << " protocol module (" << ((isA) ? "A":"B") << ")" << Qt::endl;
           out << " * \\author LCSF Generator v" << APP_VERSION << Qt::endl;
           out << " *" << Qt::endl;
@@ -1134,7 +1134,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
    if (!dir.exists()) {
        dir.mkpath(".");
    }
-   QString fileName = dirPath + "/LCSF_Bridge_" + protocolName + ".c";
+   QString fileName = dirPath + "/LCSF_Bridge_" + protocolName + "_" + ((isA) ? "a" : "b") + ".c";
    QFile file(fileName);
 
    if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
@@ -1143,7 +1143,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
 
       QFileInfo fileInfo(file);
       out << "/**" << Qt::endl;
-      out << " * \\file LCSF_Bridge_" << protocolName << ".c" << Qt::endl;
+      out << " * \\file LCSF_Bridge_" << protocolName << "_" << ((isA) ? "a" : "b") << ".c" << Qt::endl;
       out << " * \\brief " << protocolName << " LCSF bridge module (" << ((isA) ? "A":"B") << ")" << Qt::endl;
       out << " * \\author LCSF Generator v" << APP_VERSION << Qt::endl;
       out << " *" << Qt::endl;

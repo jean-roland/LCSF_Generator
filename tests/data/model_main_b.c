@@ -1,5 +1,5 @@
 /**
- * \file Test_Main.c
+ * \file Test_Main_b.c
  * \brief Test protocol module (B)
  * \author LCSF Generator v1.4
  *

@@ -44,7 +44,7 @@ TEST(test_generator, gen_A_output) {
 
     // Check Main
     ASSERT_TRUE(openFile(&model_file, MODEL_DIR_PATH, "model_raw_main_a.c"));
-    ASSERT_TRUE(openFile(&output_file, outputDir, "Test_Main.c"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "Test_Main_a.c"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     EXPECT_EQ(output_content.count(), model_content.count());
@@ -68,7 +68,7 @@ TEST(test_generator, gen_A_output) {
 
     // Check Bridge
     ASSERT_TRUE(openFile(&model_file, MODEL_DIR_PATH, "model_bridge_a.c"));
-    ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Bridge_Test.c"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Bridge_Test_a.c"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     EXPECT_EQ(output_content.count(), model_content.count());
@@ -115,7 +115,7 @@ TEST(test_generator, gen_A_output) {
 
     // Check Main
     ASSERT_TRUE(openFile(&model_file, MODEL_DIR_PATH, "model_main_a.c"));
-    ASSERT_TRUE(openFile(&output_file, outputDir, "Test_Main.c"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "Test_Main_a.c"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     EXPECT_EQ(output_content.count(), model_content.count());
@@ -139,7 +139,7 @@ TEST(test_generator, gen_A_output) {
 
     // Check Bridge
     ASSERT_TRUE(openFile(&model_file, MODEL_DIR_PATH, "model_bridge_a.c"));
-    ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Bridge_Test.c"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Bridge_Test_a.c"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     EXPECT_EQ(output_content.count(), model_content.count());
@@ -190,7 +190,7 @@ TEST(test_generator, gen_B_output) {
 
     // Check Main
     ASSERT_TRUE(openFile(&model_file, MODEL_DIR_PATH, "model_raw_main_b.c"));
-    ASSERT_TRUE(openFile(&output_file, outputDir, "Test_Main.c"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "Test_Main_b.c"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     EXPECT_EQ(output_content.count(), model_content.count());
@@ -202,7 +202,7 @@ TEST(test_generator, gen_B_output) {
 
     // Check Bridge
     ASSERT_TRUE(openFile(&model_file, MODEL_DIR_PATH, "model_bridge_b.c"));
-    ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Bridge_Test.c"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "LCSF_Bridge_Test_b.c"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     EXPECT_EQ(output_content.count(), model_content.count());
@@ -222,7 +222,7 @@ TEST(test_generator, gen_B_output) {
 
     // Check Main
     ASSERT_TRUE(openFile(&model_file, MODEL_DIR_PATH, "model_main_b.c"));
-    ASSERT_TRUE(openFile(&output_file, outputDir, "Test_Main.c"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "Test_Main_b.c"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     EXPECT_EQ(output_content.count(), model_content.count());

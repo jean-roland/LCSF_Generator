@@ -190,7 +190,7 @@ const QList<Command *> cmd_list = {&SC1, &SC2, &SC3, &CC1, &CC2, &CC3, &CC4, &CC
 
 // Extractor A data
 const QString a_unk_inc = R"(/**
- * \file Test_Main.c
+ * \file Test_Main_a.c
  * \brief Test protocol module (A)
  * \author LCSF Generator v1.4
  *
@@ -733,7 +733,7 @@ const QStringList a_cmd_fct = {"", a_fct_sc2, a_fct_sc3, "", a_fct_cc2, a_fct_cc
 // Ectractor B data
 
 const QString b_unk_inc = R"(/**
- * \file Test_Main.c
+ * \file Test_Main_b.c
  * \brief Test protocol module (B)
  * \author LCSF Generator v1.4
  *

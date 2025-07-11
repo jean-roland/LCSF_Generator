@@ -64,8 +64,8 @@ set(CORE_LIB_NAME "lcsf_generator_lib")
 # Cross-testing vars - set LCSF_C_STACK_ROOT_DIR accordingly
 set(LCSF_C_STACK_ROOT_DIR "../lcsf_c_stack")
 set(CROSS_TEST_JSON "${PROJECT_SOURCE_DIR}/example/Test.json")
-set(CROSS_TEST_A_IMPORT "${LCSF_C_STACK_ROOT_DIR}/src/protocols_a/Test_Main.c")
-set(CROSS_TEST_B_IMPORT "${LCSF_C_STACK_ROOT_DIR}/src/protocols_b/Test_Main.c")
+set(CROSS_TEST_A_IMPORT "${LCSF_C_STACK_ROOT_DIR}/src/protocols_a/Test_Main_a.c")
+set(CROSS_TEST_B_IMPORT "${LCSF_C_STACK_ROOT_DIR}/src/protocols_b/Test_Main_b.c")
 
 # Project subdirs
 add_subdirectory(src)
