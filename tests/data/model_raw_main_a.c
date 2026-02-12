@@ -90,15 +90,14 @@ static bool TestExecuteSC3(void) {
 }
 
 static bool TestExecuteCC2(test_cmd_payload_t *pCmdPayload) {
-    if (pCmdPayload == NULL) {
-        return false;
-    }
     // Declare attributes
     uint8_t m_cc2_sa1 = 0;
     uint16_t m_cc2_sa2 = 0;
     uint32_t m_cc2_sa3 = 0;
     uint8_t *m_cc2_sa4 = NULL;
+    uint32_t m_cc2_sa4Size = 0;
     char *m_cc2_sa5 = NULL;
+    uint32_t m_cc2_sa5Size = 0;
     bool m_cc2_sa6_isHere = false;
     uint8_t m_cc2_sa6 = 0;
     bool m_cc2_sa7_isHere = false;
@@ -107,8 +106,10 @@ static bool TestExecuteCC2(test_cmd_payload_t *pCmdPayload) {
     uint32_t m_cc2_sa8 = 0;
     bool m_cc2_sa9_isHere = false;
     uint8_t *m_cc2_sa9 = NULL;
+    uint32_t m_cc2_sa9Size = 0;
     bool m_cc2_sa10_isHere = false;
     char *m_cc2_sa10 = NULL;
+    uint32_t m_cc2_sa10Size = 0;
     uint64_t m_cc2_sa11 = 0;
     float m_cc2_sa12 = 0;
     double m_cc2_sa13 = 0;
@@ -117,7 +118,9 @@ static bool TestExecuteCC2(test_cmd_payload_t *pCmdPayload) {
     m_cc2_sa2 = pCmdPayload->cc2_payload.sa2;
     m_cc2_sa3 = pCmdPayload->cc2_payload.sa3;
     m_cc2_sa4 = pCmdPayload->cc2_payload.p_sa4;
+    m_cc2_sa4Size = pCmdPayload->cc2_payload.sa4Size;
     m_cc2_sa5 = pCmdPayload->cc2_payload.p_sa5;
+    m_cc2_sa5Size = pCmdPayload->cc2_payload.sa5Size;
     if ((pCmdPayload->cc2_payload.optAttFlagsBitfield & TEST_CC2_ATT_SA6_FLAG) != 0) {
         m_cc2_sa6 = pCmdPayload->cc2_payload.sa6;
         m_cc2_sa6_isHere = true;
@@ -132,30 +135,31 @@ static bool TestExecuteCC2(test_cmd_payload_t *pCmdPayload) {
     }
     if ((pCmdPayload->cc2_payload.optAttFlagsBitfield & TEST_CC2_ATT_SA9_FLAG) != 0) {
         m_cc2_sa9 = pCmdPayload->cc2_payload.p_sa9;
+        m_cc2_sa9Size = pCmdPayload->cc2_payload.sa9Size;
         m_cc2_sa9_isHere = true;
     }
     if ((pCmdPayload->cc2_payload.optAttFlagsBitfield & TEST_CC2_ATT_SA10_FLAG) != 0) {
         m_cc2_sa10 = pCmdPayload->cc2_payload.p_sa10;
+        m_cc2_sa10Size = pCmdPayload->cc2_payload.sa10Size;
         m_cc2_sa10_isHere = true;
     }
     m_cc2_sa11 = pCmdPayload->cc2_payload.sa11;
     m_cc2_sa12 = pCmdPayload->cc2_payload.sa12;
     m_cc2_sa13 = pCmdPayload->cc2_payload.sa13;
-// Process data
+    // Process data
 #pragma GCC warning "#warning TODO: function to implement"
     return true;
 }
 
 static bool TestExecuteCC3(test_cmd_payload_t *pCmdPayload) {
-    if (pCmdPayload == NULL) {
-        return false;
-    }
     // Declare attributes
     uint8_t m_cc3_sa1 = 0;
     uint16_t m_cc3_sa2 = 0;
     uint32_t m_cc3_sa3 = 0;
     uint8_t *m_cc3_sa4 = NULL;
+    uint32_t m_cc3_sa4Size = 0;
     char *m_cc3_sa5 = NULL;
+    uint32_t m_cc3_sa5Size = 0;
     bool m_cc3_sa6_isHere = false;
     uint8_t m_cc3_sa6 = 0;
     bool m_cc3_sa7_isHere = false;
@@ -164,8 +168,10 @@ static bool TestExecuteCC3(test_cmd_payload_t *pCmdPayload) {
     uint32_t m_cc3_sa8 = 0;
     bool m_cc3_sa9_isHere = false;
     uint8_t *m_cc3_sa9 = NULL;
+    uint32_t m_cc3_sa9Size = 0;
     bool m_cc3_sa10_isHere = false;
     char *m_cc3_sa10 = NULL;
+    uint32_t m_cc3_sa10Size = 0;
     uint64_t m_cc3_sa11 = 0;
     float m_cc3_sa12 = 0;
     double m_cc3_sa13 = 0;
@@ -174,7 +180,9 @@ static bool TestExecuteCC3(test_cmd_payload_t *pCmdPayload) {
     m_cc3_sa2 = pCmdPayload->cc3_payload.sa2;
     m_cc3_sa3 = pCmdPayload->cc3_payload.sa3;
     m_cc3_sa4 = pCmdPayload->cc3_payload.p_sa4;
+    m_cc3_sa4Size = pCmdPayload->cc3_payload.sa4Size;
     m_cc3_sa5 = pCmdPayload->cc3_payload.p_sa5;
+    m_cc3_sa5Size = pCmdPayload->cc3_payload.sa5Size;
     if ((pCmdPayload->cc3_payload.optAttFlagsBitfield & TEST_CC3_ATT_SA6_FLAG) != 0) {
         m_cc3_sa6 = pCmdPayload->cc3_payload.sa6;
         m_cc3_sa6_isHere = true;
@@ -189,24 +197,23 @@ static bool TestExecuteCC3(test_cmd_payload_t *pCmdPayload) {
     }
     if ((pCmdPayload->cc3_payload.optAttFlagsBitfield & TEST_CC3_ATT_SA9_FLAG) != 0) {
         m_cc3_sa9 = pCmdPayload->cc3_payload.p_sa9;
+        m_cc3_sa9Size = pCmdPayload->cc3_payload.sa9Size;
         m_cc3_sa9_isHere = true;
     }
     if ((pCmdPayload->cc3_payload.optAttFlagsBitfield & TEST_CC3_ATT_SA10_FLAG) != 0) {
         m_cc3_sa10 = pCmdPayload->cc3_payload.p_sa10;
+        m_cc3_sa10Size = pCmdPayload->cc3_payload.sa10Size;
         m_cc3_sa10_isHere = true;
     }
     m_cc3_sa11 = pCmdPayload->cc3_payload.sa11;
     m_cc3_sa12 = pCmdPayload->cc3_payload.sa12;
     m_cc3_sa13 = pCmdPayload->cc3_payload.sa13;
-// Process data
+    // Process data
 #pragma GCC warning "#warning TODO: function to implement"
     return true;
 }
 
 static bool TestExecuteCC5(test_cmd_payload_t *pCmdPayload) {
-    if (pCmdPayload == NULL) {
-        return false;
-    }
     // Declare attributes
     uint16_t m_cc5_sa2 = 0;
     uint8_t m_ca5_sa1 = 0;
@@ -219,6 +226,7 @@ static bool TestExecuteCC5(test_cmd_payload_t *pCmdPayload) {
     bool m_ca7_sa1_isHere = false;
     uint8_t m_ca7_sa1 = 0;
     uint8_t *m_ca8_sa4 = NULL;
+    uint32_t m_ca8_sa4Size = 0;
     // Retrieve attributes data
     m_cc5_sa2 = pCmdPayload->cc5_payload.sa2;
     m_ca5_sa1 = pCmdPayload->cc5_payload.ca5_payload.sa1;
@@ -238,18 +246,17 @@ static bool TestExecuteCC5(test_cmd_payload_t *pCmdPayload) {
             m_ca7_sa1_isHere = true;
         }
         m_ca8_sa4 = pCmdPayload->cc5_payload.ca6_payload.ca7_payload.ca8_payload.p_sa4;
+        m_ca8_sa4Size = pCmdPayload->cc5_payload.ca6_payload.ca7_payload.ca8_payload.PayloadSize;
     }
-// Process data
+    // Process data
 #pragma GCC warning "#warning TODO: function to implement"
     return true;
 }
 
 static bool TestExecuteCC6(test_cmd_payload_t *pCmdPayload) {
-    if (pCmdPayload == NULL) {
-        return false;
-    }
     // Declare attributes
     uint8_t *m_cc6_sa4 = NULL;
+    uint32_t m_cc6_sa4Size = 0;
     uint8_t m_ca9_sa1 = 0;
     uint16_t m_ca9_sa2 = 0;
     bool m_ca9_sa3_isHere = false;
@@ -260,8 +267,10 @@ static bool TestExecuteCC6(test_cmd_payload_t *pCmdPayload) {
     bool m_ca11_sa1_isHere = false;
     uint8_t m_ca11_sa1 = 0;
     uint8_t *m_ca12_sa4 = NULL;
+    uint32_t m_ca12_sa4Size = 0;
     // Retrieve attributes data
     m_cc6_sa4 = pCmdPayload->cc6_payload.p_sa4;
+    m_cc6_sa4Size = pCmdPayload->cc6_payload.sa4Size;
     m_ca9_sa1 = pCmdPayload->cc6_payload.ca9_payload.sa1;
     m_ca9_sa2 = pCmdPayload->cc6_payload.ca9_payload.sa2;
     if ((pCmdPayload->cc6_payload.ca9_payload.optAttFlagsBitfield & TEST_CA9_ATT_SA3_FLAG) != 0) {
@@ -279,8 +288,9 @@ static bool TestExecuteCC6(test_cmd_payload_t *pCmdPayload) {
             m_ca11_sa1_isHere = true;
         }
         m_ca12_sa4 = pCmdPayload->cc6_payload.ca10_payload.ca11_payload.ca12_payload.p_sa4;
+        m_ca12_sa4Size = pCmdPayload->cc6_payload.ca10_payload.ca11_payload.ca12_payload.PayloadSize;
     }
-// Process data
+    // Process data
 #pragma GCC warning "#warning TODO: function to implement"
     return true;
 }
