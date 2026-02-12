@@ -140,3 +140,7 @@ test_attribute
 
 #other
 Export/*
+COutputA/*
+COutputB/*
+RustOutputA/*
+RustOutputB/*
