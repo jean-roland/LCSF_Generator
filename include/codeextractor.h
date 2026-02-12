@@ -22,21 +22,21 @@
 #ifndef CODEEXTRACTOR_H
 #define CODEEXTRACTOR_H
 
-#include <QString>
-#include <QList>
-#include <QTextStream>
-#include <QDebug>
 #include "command.h"
+#include <QDebug>
+#include <QList>
+#include <QString>
+#include <QTextStream>
 
 class CodeExtractor {
-private:
+  private:
     typedef enum {
         EXTRACT_INCLUDES,
         EXTRACT_DEFINITIONS,
         EXTRACT_PRIVATE_FUNCTIONS,
         EXTRACT_PUBLIC_FUNCTIONS,
         EXTRACT_END,
-    }T_CodeExtractorStates;
+    } T_CodeExtractorStates;
 
     bool m_extractionComplete;
     T_CodeExtractorStates m_state;
@@ -50,15 +50,15 @@ private:
 
     void extractIncludes(QTextStream *pInStream);
     void extractDefinitions(QTextStream *pInStream);
-    void extractPrivateFunctions(QString protocolName, QTextStream *pInStream , QList<Command *> cmdList);
+    void extractPrivateFunctions(QString protocolName, QTextStream *pInStream, QList<Command *> cmdList);
     void extractPublicFunctionHeader(QString functionBuffer);
     void extractDefaultCommandHandler(QTextStream *pInStream);
     void extractPublicFunctions(QString protocolName, QTextStream *pInStream);
     bool isHeader(QString text);
 
-public:
+  public:
     CodeExtractor();
-    bool extractFromSourceFile(QString protocolName, QTextStream *pInStream , QList<Command *> cmdList);
+    bool extractFromSourceFile(QString protocolName, QTextStream *pInStream, QList<Command *> cmdList);
     bool getExtractionComplete();
     QString getUnknownIncludes();
     QString getUnknownDefinitions();

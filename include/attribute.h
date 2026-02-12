@@ -21,12 +21,12 @@
 
 #ifndef ATTRIBUTE_H
 #define ATTRIBUTE_H
-#include <QString>
-#include <QList>
 #include "enumtype.h"
+#include <QList>
+#include <QString>
 
 class Attribute {
-private:
+  private:
     QString m_name;
     short m_id;
     bool m_isOptional;
@@ -35,11 +35,11 @@ private:
     QString m_desc;
     void *pObj;
 
-public:
+  public:
     typedef struct _attInfos {
         QString parentName;
         QString attName;
-        NS_AttDataType::T_AttDataType  dataType;
+        NS_AttDataType::T_AttDataType dataType;
         Attribute *attPointer;
         bool isOptional;
         short attId;
@@ -49,7 +49,8 @@ public:
 
     Attribute(void);
     Attribute(QString attName, short attId, bool attIsOptional, NS_AttDataType::T_AttDataType attDataType, QString attDesc);
-    Attribute(QString attName, short attId, bool attIsOptional, NS_AttDataType::T_AttDataType attDataType, QList<Attribute *> attSubAttArray, QString attDesc);
+    Attribute(QString attName, short attId, bool attIsOptional, NS_AttDataType::T_AttDataType attDataType,
+        QList<Attribute *> attSubAttArray, QString attDesc);
     void setName(QString attName);
     QString getName(void);
     void setId(short attId);
@@ -75,14 +76,15 @@ public:
 
     QStringList getSubAttNamesList(void);
     void sortArrayById(void);
-    void editParams(QString attName, short attCode, bool attIsOptional, NS_AttDataType::T_AttDataType attDataType, QString attDesc);
+    void editParams(
+        QString attName, short attCode, bool attIsOptional, NS_AttDataType::T_AttDataType attDataType, QString attDesc);
     void clearArray_rec(void);
     void removeAtt(QString attName);
     Attribute *getSubAttPointer(QString subAttName);
 
-    static bool compareRefAttList(QList<Attribute *> a_list, QList<Attribute *> b_list, int& err_idx);
+    static bool compareRefAttList(QList<Attribute *> a_list, QList<Attribute *> b_list, int &err_idx);
 
-    friend bool operator==(const Attribute& lhs, const Attribute& rhs) {
+    friend bool operator==(const Attribute &lhs, const Attribute &rhs) {
         if (lhs.m_name != rhs.m_name) {
             return false;
         }
@@ -103,17 +105,16 @@ public:
         }
         if (lhs.m_subAttArray.count() > 0) {
             int err_val;
-            if(!Attribute::compareRefAttList(lhs.m_subAttArray, rhs.m_subAttArray, err_val)) {
+            if (!Attribute::compareRefAttList(lhs.m_subAttArray, rhs.m_subAttArray, err_val)) {
                 return false;
             }
         }
         return true;
     }
 
-    friend bool operator!=(const Attribute& lhs, const Attribute& rhs) {
+    friend bool operator!=(const Attribute &lhs, const Attribute &rhs) {
         return !(lhs == rhs);
     }
-
 };
 
 #endif // ATTRIBUTE_H

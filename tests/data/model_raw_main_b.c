@@ -80,12 +80,12 @@ static bool TestSendCommand(uint_fast16_t cmdName, bool hasPayload) {
  */
 
 static bool TestExecuteSC1(void) {
-    #pragma GCC warning "#warning TODO: function to implement"
+#pragma GCC warning "#warning TODO: function to implement"
     return true;
 }
 
 static bool TestExecuteSC3(void) {
-    #pragma GCC warning "#warning TODO: function to implement"
+#pragma GCC warning "#warning TODO: function to implement"
     return true;
 }
 
@@ -141,8 +141,8 @@ static bool TestExecuteCC1(test_cmd_payload_t *pCmdPayload) {
     m_cc1_sa11 = pCmdPayload->cc1_payload.sa11;
     m_cc1_sa12 = pCmdPayload->cc1_payload.sa12;
     m_cc1_sa13 = pCmdPayload->cc1_payload.sa13;
-    // Process data
-    #pragma GCC warning "#warning TODO: function to implement"
+// Process data
+#pragma GCC warning "#warning TODO: function to implement"
     return true;
 }
 
@@ -198,8 +198,8 @@ static bool TestExecuteCC3(test_cmd_payload_t *pCmdPayload) {
     m_cc3_sa11 = pCmdPayload->cc3_payload.sa11;
     m_cc3_sa12 = pCmdPayload->cc3_payload.sa12;
     m_cc3_sa13 = pCmdPayload->cc3_payload.sa13;
-    // Process data
-    #pragma GCC warning "#warning TODO: function to implement"
+// Process data
+#pragma GCC warning "#warning TODO: function to implement"
     return true;
 }
 
@@ -239,8 +239,8 @@ static bool TestExecuteCC4(test_cmd_payload_t *pCmdPayload) {
         }
         m_ca4_sa4 = pCmdPayload->cc4_payload.ca2_payload.ca3_payload.ca4_payload.p_sa4;
     }
-    // Process data
-    #pragma GCC warning "#warning TODO: function to implement"
+// Process data
+#pragma GCC warning "#warning TODO: function to implement"
     return true;
 }
 
@@ -280,8 +280,8 @@ static bool TestExecuteCC6(test_cmd_payload_t *pCmdPayload) {
         }
         m_ca12_sa4 = pCmdPayload->cc6_payload.ca10_payload.ca11_payload.ca12_payload.p_sa4;
     }
-    // Process data
-    #pragma GCC warning "#warning TODO: function to implement"
+// Process data
+#pragma GCC warning "#warning TODO: function to implement"
     return true;
 }
 

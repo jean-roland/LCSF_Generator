@@ -21,11 +21,11 @@
 
 #ifndef COMMAND_H
 #define COMMAND_H
-#include <QString>
 #include "attribute.h"
+#include <QString>
 
 class Command {
-private:
+  private:
     QString m_name;
     short m_id;
     bool m_hasAttributes;
@@ -33,10 +33,12 @@ private:
     QList<Attribute *> m_attArray;
     QString m_desc;
 
-public:
+  public:
     Command(void);
-    Command(QString cmdName, short cmdCode, bool cmdHasAtt, NS_DirectionType::T_DirectionType cmdDirection, QString commandDesc);
-    Command(QString cmdName, short cmdCode, bool cmdHasAtt, NS_DirectionType::T_DirectionType cmdDirection, QList<Attribute *> attArray, QString commandDesc);
+    Command(
+        QString cmdName, short cmdCode, bool cmdHasAtt, NS_DirectionType::T_DirectionType cmdDirection, QString commandDesc);
+    Command(QString cmdName, short cmdCode, bool cmdHasAtt, NS_DirectionType::T_DirectionType cmdDirection,
+        QList<Attribute *> attArray, QString commandDesc);
     void setName(QString cmdName);
     QString getName(void);
     void setId(short cmdCode);
@@ -63,7 +65,8 @@ public:
 
     QStringList getAttNamesList(void);
     void sortAttArrayById(void);
-    void editParameters(QString cmdName, short cmdCode, bool cmdHasAtt, NS_DirectionType::T_DirectionType cmdDirection , QString cmdDesc);
+    void editParameters(
+        QString cmdName, short cmdCode, bool cmdHasAtt, NS_DirectionType::T_DirectionType cmdDirection, QString cmdDesc);
     void clearAttArray(void);
     void removeAttByName(QString attName);
     Attribute *getAttByName(QString cmdAttName);
@@ -72,10 +75,10 @@ public:
     static QList<Command *> sortListById(QList<Command *> cmdList);
     static int findCmdIdx(QString cmdName, QList<Command *> cmdList);
     static QStringList getListCmdNames(QList<Command *> cmdList);
-    static bool compareRefCmdList(QList<Command *> a_list, QList<Command *> b_list, int& err_idx);
+    static bool compareRefCmdList(QList<Command *> a_list, QList<Command *> b_list, int &err_idx);
     static int getMaxAttNb(QList<Command *> cmdList);
 
-    friend bool operator==(const Command& lhs, const Command& rhs) {
+    friend bool operator==(const Command &lhs, const Command &rhs) {
         if (lhs.m_name != rhs.m_name) {
             return false;
         }
@@ -96,14 +99,14 @@ public:
         }
         if (lhs.m_attArray.count() > 0) {
             int err_val;
-            if(!Attribute::compareRefAttList(lhs.m_attArray, rhs.m_attArray, err_val)) {
+            if (!Attribute::compareRefAttList(lhs.m_attArray, rhs.m_attArray, err_val)) {
                 return false;
             }
         }
         return true;
     }
 
-    friend bool operator!=(const Command& lhs, const Command& rhs) {
+    friend bool operator!=(const Command &lhs, const Command &rhs) {
         return !(lhs == rhs);
     }
 };

@@ -21,9 +21,9 @@
 
 #pragma once
 
+#include "command.h"
 #include <QList>
 #include <QString>
-#include "command.h"
 
 // Paths, tests should be run from build/bin/ for these paths to work
 #define MODEL_MAIN_A_PATH "../../tests/data/model_main_a.c"

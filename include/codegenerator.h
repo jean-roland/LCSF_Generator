@@ -22,21 +22,20 @@
 #ifndef CODEGENERATOR_H
 #define CODEGENERATOR_H
 
+#include "attribute.h"
+#include "codeextractor.h"
+#include "command.h"
+#include "enumtype.h"
+#include <QDate>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QString>
 #include <QTextStream>
 #include <QUrl>
-#include <QDate>
-#include "enumtype.h"
-#include "attribute.h"
-#include "command.h"
-#include "codeextractor.h"
 
 class CodeGenerator {
-
-private:
+  private:
     bool protocolHasSubAtt;
 
     QString getAttDataRxPath(QString protocolName, QStringList parentNames, QString attName);
@@ -52,15 +51,19 @@ private:
     QList<Attribute::T_attInfos> insertSortAttInfosListByParentName(QList<Attribute::T_attInfos> attInfosList);
     bool findAttInfoId(short attId, QList<Attribute::T_attInfos> attInfosList);
     QList<Attribute::T_attInfos> removeAttInfosDuplicate(QList<Attribute::T_attInfos> attInfosList);
-    void fillSubAttData_Rec(QString protocolName, QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut , int indentNb);
-    void fillSubAttPayload_Rec(QString protocolName, QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, int indentNb);
+    void fillSubAttData_Rec(
+        QString protocolName, QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, int indentNb);
+    void fillSubAttPayload_Rec(
+        QString protocolName, QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, int indentNb);
     void declareAtt_REC(QString parentName, QList<Attribute *> attList, QTextStream *pOut);
-    void grabAttValues_REC(QString protocolName, QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, int indentNb);
-    QString toCamelCase(const QString& s);
-    QString toFirstLetterUpperCase(const QString& s);
-    QList<Attribute::T_attInfos> removeCommandAttributes(QList<Attribute::T_attInfos> attInfosList, QList<Command *> cmdList);
+    void grabAttValues_REC(
+        QString protocolName, QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, int indentNb);
+    QString toCamelCase(const QString &s);
+    QString toFirstLetterUpperCase(const QString &s);
+    QList<Attribute::T_attInfos> removeCommandAttributes(
+        QList<Attribute::T_attInfos> attInfosList, QList<Command *> cmdList);
 
-public:
+  public:
     CodeGenerator();
     void generateMainHeader(QString protocolName, QList<Command *> cmdList, CodeExtractor codeExtract, QString dirPath);
     void generateMain(QString protocolName, QList<Command *> cmdList, CodeExtractor codeExtract, bool isA, QString dirPath);

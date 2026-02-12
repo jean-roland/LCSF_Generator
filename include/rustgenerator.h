@@ -22,20 +22,19 @@
 #ifndef RUSTGENERATOR_H
 #define RUSTGENERATOR_H
 
+#include "attribute.h"
+#include "command.h"
+#include "enumtype.h"
+#include <QDate>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QString>
 #include <QTextStream>
 #include <QUrl>
-#include <QDate>
-#include "enumtype.h"
-#include "attribute.h"
-#include "command.h"
 
 class RustGenerator {
-
-private:
+  private:
     bool protocolHasSubAtt;
 
     bool is_CString_needed(QList<Attribute::T_attInfos> attInfosList);
@@ -46,7 +45,8 @@ private:
     QList<Attribute::T_attInfos> getAttInfos_Rec(QString parentName, QList<Attribute *> attList);
     QList<Attribute::T_attInfos> getAttInfos(QList<Command *> cmdList);
     void declareAtt_REC(QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, bool parentIsOpt);
-    void grabAttValues_REC(QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, int indentNb, bool parentIsOpt);
+    void grabAttValues_REC(
+        QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, int indentNb, bool parentIsOpt);
     void printInclude_Rec(QString protocolName, QString parentName, QList<Attribute *> attList, QTextStream *pOut);
     void printInitstruct_Rec(QString parentName, QList<Attribute *> attList, QTextStream *pOut, int indentNb);
     void getSubAttData_Rec(QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, int indentNb);
@@ -54,7 +54,7 @@ private:
     QString getAttDescString(bool isOptional, NS_AttDataType::T_AttDataType data_type);
     void printAttDesc_Rec(QString parentName, QList<Attribute *> attList, QTextStream *pOut, int indentNb);
 
-public:
+  public:
     RustGenerator();
     void generateMain(QString protocolName, QList<Command *> cmdList, bool isA, QString dirPath);
     void generateBridge(QString protocolName, QString protocolId, QList<Command *> cmdList, bool isA, QString dirPath);

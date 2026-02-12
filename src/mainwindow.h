@@ -23,34 +23,34 @@
 #define MAINWINDOW_H
 
 // Qt include
-#include <QMainWindow>
-#include <QTreeWidget>
-#include <QMessageBox>
 #include <QCloseEvent>
 #include <QComboBox>
 #include <QDebug>
-#include <QFile>
-#include <QFileInfo>
-#include <QFileDialog>
 #include <QDir>
-#include <QTableWidgetItem>
+#include <QFile>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QMainWindow>
+#include <QMessageBox>
 #include <QSet>
+#include <QTableWidgetItem>
+#include <QTreeWidget>
 // Custom include
-#include "command.h"
-#include "enumtype.h"
-#include "docgenerator.h"
-#include "codegenerator.h"
-#include "rustgenerator.h"
 #include "codeextractor.h"
+#include "codegenerator.h"
+#include "command.h"
+#include "docgenerator.h"
+#include "enumtype.h"
+#include "rustgenerator.h"
 
 namespace Ui {
-    class MainWindow;
+class MainWindow;
 }
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
 
-private:
+  private:
     Ui::MainWindow *ui;
     QList<Command *> m_cmdArray;
     DocGenerator m_docgen;
@@ -72,7 +72,7 @@ private:
     const QString exportDirPath = "./Export";
     const QString baseTableLabel = "Current table - ";
 
-    QString CheckAttNameDuplicate_Rec(QSet<QString> *pSet, QList<Attribute *>attArray);
+    QString CheckAttNameDuplicate_Rec(QSet<QString> *pSet, QList<Attribute *> attArray);
     QString CheckAttNameDuplicate(void);
     bool CheckInputString(QString input);
     QString CorrectInputString(QString input);
@@ -89,7 +89,8 @@ private:
     void fillCellWidgets(int rowIdx);
     QList<QTreeWidgetItem *> getTreeItemChildren(QTreeWidgetItem *parentTreeItem);
     QTreeWidgetItem *getTreeItemChild(QList<QTreeWidgetItem *> parentTreeItemChildren, QString childName);
-    void deleteNoLongerExistingTreeItemChildren(QTreeWidgetItem *parentTreeItem, QList<QTreeWidgetItem *> noLongerExistingChildren);
+    void deleteNoLongerExistingTreeItemChildren(
+        QTreeWidgetItem *parentTreeItem, QList<QTreeWidgetItem *> noLongerExistingChildren);
     void updateDescTreeCmd(void);
     void updateDescTreeCmdAtt(QString cmdName);
     void updateDescTreeAtt(QTreeWidgetItem *parentTreeItem);
@@ -114,7 +115,7 @@ private:
     void clearData(void);
     void clearTree(void);
 
-private slots:
+  private slots:
     void on_actionNew_protocol_triggered(void);
     void on_actionSave_protocol_triggered(void);
     void on_actionLoad_protocol_triggered(void);
@@ -134,7 +135,7 @@ private slots:
     void on_twDescTableView_itemChanged(QTableWidgetItem *item);
     void closeEvent(QCloseEvent *event);
 
-public:
+  public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 };

@@ -22,31 +22,34 @@
 #ifndef DocGenerator_H
 #define DocGenerator_H
 
+#include "attribute.h"
+#include "codeextractor.h"
+#include "command.h"
+#include "enumtype.h"
+#include <QDate>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QString>
 #include <QTextStream>
 #include <QUrl>
-#include <QDate>
-#include "enumtype.h"
-#include "attribute.h"
-#include "command.h"
-#include "codeextractor.h"
 
 class DocGenerator {
-
-private:
+  private:
     QList<Attribute::T_attInfos> getAttInfos_Rec(QString parentName, QList<Attribute *> attList);
     QList<Attribute::T_attInfos> getAttInfos(QList<Command *> cmdList);
     QList<Attribute::T_attInfos> insertSortAttInfosListByParentName(QList<Attribute::T_attInfos> attInfosList);
-    QList<Attribute::T_attInfos> removeCommandAttributes(QList<Attribute::T_attInfos> attInfosList, QList<Command *> cmdList);
+    QList<Attribute::T_attInfos> removeCommandAttributes(
+        QList<Attribute::T_attInfos> attInfosList, QList<Command *> cmdList);
 
-public:
+  public:
     DocGenerator();
-    void generateWikiTable(QString protocolName, QString protocolId, QString protocolDesc, QList<Command *> cmdList, QString dirPath);
-    void generateDokuWikiTable(QString protocolName, QString protocolId, QString protocolDesc, QList<Command *> cmdList, QString dirPath);
-    void generateMkdownTable(QString protocolName, QString protocolId, QString protocolDesc, QList<Command *> cmdList, QString dirPath);
+    void generateWikiTable(
+        QString protocolName, QString protocolId, QString protocolDesc, QList<Command *> cmdList, QString dirPath);
+    void generateDokuWikiTable(
+        QString protocolName, QString protocolId, QString protocolDesc, QList<Command *> cmdList, QString dirPath);
+    void generateMkdownTable(
+        QString protocolName, QString protocolId, QString protocolDesc, QList<Command *> cmdList, QString dirPath);
 };
 
 #endif // DocGenerator_H
