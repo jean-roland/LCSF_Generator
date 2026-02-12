@@ -20,22 +20,22 @@
  */
 
 // Qt include
-#include <QCoreApplication>
 #include <QCommandLineParser>
-#include <QTextStream>
+#include <QCoreApplication>
 #include <QFile>
 #include <QList>
 #include <QSet>
+#include <QTextStream>
 
 // Custom include
-#include "command.h"
 #include "attribute.h"
-#include "enumtype.h"
-#include "docgenerator.h"
-#include "codegenerator.h"
-#include "rustgenerator.h"
 #include "codeextractor.h"
+#include "codegenerator.h"
+#include "command.h"
 #include "deschandler.h"
+#include "docgenerator.h"
+#include "enumtype.h"
+#include "rustgenerator.h"
 
 // Private variables
 static QString protocolName;
@@ -55,9 +55,9 @@ static CodeExtractor codeextractA;
 static CodeExtractor codeextractB;
 
 // Private functions
-static QString checkAttNameDuplicate_Rec(QSet<QString> *pSet, QList<Attribute *>attArray) {
+static QString checkAttNameDuplicate_Rec(QSet<QString> *pSet, QList<Attribute *> attArray) {
     // Parse the attribute table
-    for (Attribute *pAtt: attArray) {
+    for (Attribute *pAtt : attArray) {
         // Only check duplicate name in complex attributes
         if (pAtt->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
             QString attName = pAtt->getName();
@@ -82,7 +82,7 @@ static QString checkAttNameDuplicate_Rec(QSet<QString> *pSet, QList<Attribute *>
 static QString checkAttNameDuplicate(QList<Command *> cmdList) {
     QSet<QString> set;
     // Parse the command table for attributes
-    for (Command *pCmd: cmdList) {
+    for (Command *pCmd : cmdList) {
         if (pCmd->getHasAtt()) {
             QString dupName = checkAttNameDuplicate_Rec(&set, pCmd->getAttArray());
             if (dupName.size() > 0) {
@@ -108,22 +108,22 @@ int main(int argc, char *argv[]) {
     // Add specific options
 
     QCommandLineOption loadDescOption(QStringList() << "l" << "load",
-            QCoreApplication::translate("main", "(REQUIRED) Load a protocol description file"),
-            QCoreApplication::translate("main", "path/to/file"));
+        QCoreApplication::translate("main", "(REQUIRED) Load a protocol description file"),
+        QCoreApplication::translate("main", "path/to/file"));
     parser.addOption(loadDescOption);
 
-    QCommandLineOption docGenOption(QStringList() << "d" << "doc",
-            QCoreApplication::translate("main", "Activate doc generation"));
+    QCommandLineOption docGenOption(
+        QStringList() << "d" << "doc", QCoreApplication::translate("main", "Activate doc generation"));
     parser.addOption(docGenOption);
 
     QCommandLineOption importAOption(QStringList() << "a" << "import-a",
-            QCoreApplication::translate("main", "Import specific protocol C code, A point of view"),
-            QCoreApplication::translate("main", "path/to/file"));
+        QCoreApplication::translate("main", "Import specific protocol C code, A point of view"),
+        QCoreApplication::translate("main", "path/to/file"));
     parser.addOption(importAOption);
 
     QCommandLineOption importBOption(QStringList() << "b" << "import-b",
-            QCoreApplication::translate("main", "Import specific protocol C code, B point of view"),
-            QCoreApplication::translate("main", "path/to/file"));
+        QCoreApplication::translate("main", "Import specific protocol C code, B point of view"),
+        QCoreApplication::translate("main", "path/to/file"));
     parser.addOption(importBOption);
 
     // Parse arguments
@@ -195,7 +195,7 @@ int main(int argc, char *argv[]) {
     }
     QString dupName = checkAttNameDuplicate(cmdArray);
     if (dupName.size() > 0) {
-        out << "Error, duplicate complex attribute name: '"+ dupName +"'." << Qt::endl;
+        out << "Error, duplicate complex attribute name: '" + dupName + "'." << Qt::endl;
         exit(EXIT_FAILURE);
     }
     // Generate "A" C files

@@ -33,7 +33,6 @@ CodeExtractor::CodeExtractor() {
 }
 
 void CodeExtractor::extractIncludes(QTextStream *pInStream) {
-
     while (!pInStream->atEnd()) {
         QString currentLine = pInStream->readLine();
         this->m_unknownIncludes.append(currentLine + "\n");
@@ -46,7 +45,6 @@ void CodeExtractor::extractIncludes(QTextStream *pInStream) {
 }
 
 void CodeExtractor::extractDefinitions(QTextStream *pInStream) {
-
     while (!pInStream->atEnd()) {
         QString currentLine = pInStream->readLine();
         this->m_unknownDefinitions.append(currentLine + "\n");
@@ -59,7 +57,6 @@ void CodeExtractor::extractDefinitions(QTextStream *pInStream) {
 }
 
 void CodeExtractor::extractPrivateFunctions(QString protocolName, QTextStream *pInStream, QList<Command *> cmdList) {
-
     for (int idx = 0; idx < cmdList.size(); idx++) {
         this->m_commandFunctions.append("");
     }
@@ -107,7 +104,7 @@ void CodeExtractor::extractPrivateFunctions(QString protocolName, QTextStream *p
             if ((bracketCounter == 0) && functionBegan) {
                 functionFinished = true;
                 break;
-            } else if(bracketCounter < 0) {
+            } else if (bracketCounter < 0) {
                 qDebug() << "Error: Negative bracket number!";
                 functionBuffer = "";
                 return;
@@ -125,7 +122,6 @@ void CodeExtractor::extractPrivateFunctions(QString protocolName, QTextStream *p
 }
 
 void CodeExtractor::extractDefaultCommandHandler(QTextStream *pInStream) {
-
     this->m_defaultCommandHandler = "";
     int bracketCounter = 1;
     bool functionBegan = false;
@@ -142,7 +138,7 @@ void CodeExtractor::extractDefaultCommandHandler(QTextStream *pInStream) {
         if (currentLine.contains("}")) {
             bracketCounter--;
         }
-        if((bracketCounter <= 0) && functionBegan) {
+        if ((bracketCounter <= 0) && functionBegan) {
             return;
         }
         if (currentLine.contains("default:")) {
@@ -160,7 +156,6 @@ void CodeExtractor::extractDefaultCommandHandler(QTextStream *pInStream) {
 }
 
 void CodeExtractor::extractPublicFunctions(QString protocolName, QTextStream *pInStream) {
-
     while (!pInStream->atEnd()) {
         QString currentLine = pInStream->readLine();
         bool functionFinished = false;
@@ -192,7 +187,7 @@ void CodeExtractor::extractPublicFunctions(QString protocolName, QTextStream *pI
             if ((bracketCounter == 0) && functionBegan) {
                 functionFinished = true;
                 break;
-            } else if(bracketCounter < 0) {
+            } else if (bracketCounter < 0) {
                 qDebug() << "Error: Negative bracket number!";
                 functionBuffer = "";
                 return;
@@ -209,7 +204,7 @@ void CodeExtractor::extractPublicFunctions(QString protocolName, QTextStream *pI
 
 bool CodeExtractor::isHeader(QString text) {
     QString trText = text.trimmed();
-    if(trText.size() <= 2) {
+    if (trText.size() <= 2) {
         return true;
     }
     QChar firstCh = trText.at(0);
@@ -229,7 +224,7 @@ void CodeExtractor::extractPublicFunctionHeader(QString functionBuffer) {
             isHeaderStarted = false;
             isHeaderFinished = false;
             QRegExp re(R"([\{])");
-            functionHeaderBuffer.append(currentLine.replace(re,"").trimmed() + ";\n\n");
+            functionHeaderBuffer.append(currentLine.replace(re, "").trimmed() + ";\n\n");
             this->m_unknownPublicFunctionsHeaders.append(functionHeaderBuffer);
             break;
         } else if (currentLine.contains("/*")) {
@@ -243,7 +238,6 @@ void CodeExtractor::extractPublicFunctionHeader(QString functionBuffer) {
 }
 
 bool CodeExtractor::extractFromSourceFile(QString protocolName, QTextStream *pInStream, QList<Command *> cmdList) {
-
     if (pInStream == nullptr) {
         return false;
     }
@@ -251,22 +245,22 @@ bool CodeExtractor::extractFromSourceFile(QString protocolName, QTextStream *pIn
         switch (this->m_state) {
             case EXTRACT_INCLUDES:
                 this->extractIncludes(pInStream);
-            break;
+                break;
 
             case EXTRACT_DEFINITIONS:
                 this->extractDefinitions(pInStream);
-            break;
+                break;
 
             case EXTRACT_PRIVATE_FUNCTIONS:
                 this->extractPrivateFunctions(protocolName, pInStream, cmdList);
-            break;
+                break;
 
             case EXTRACT_PUBLIC_FUNCTIONS:
                 this->extractPublicFunctions(protocolName, pInStream);
-            break;
+                break;
 
             case EXTRACT_END:
-            break;
+                break;
         }
     }
     this->m_extractionComplete = true;

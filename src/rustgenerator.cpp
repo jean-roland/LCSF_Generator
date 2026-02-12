@@ -24,103 +24,103 @@
 #include "rustgenerator.h"
 
 RustGenerator::RustGenerator() {
-
 }
 
 // Set all chars of a string to lower then the first to upper
 bool RustGenerator::is_CString_needed(QList<Attribute::T_attInfos> attInfosList) {
-   for (Attribute::T_attInfos attInfo : attInfosList) {
-    if (attInfo.dataType == NS_AttDataType::STRING) {
-        return true;
+    for (Attribute::T_attInfos attInfo : attInfosList) {
+        if (attInfo.dataType == NS_AttDataType::STRING) {
+            return true;
+        }
     }
-   }
-   return false;
+    return false;
 }
 
 // Set all chars of a string to lower then the first to upper
 QString RustGenerator::capitalize(const QString &str) {
-   QString tmp = str;
-   tmp = tmp.toLower();
-   tmp[0] = str[0].toUpper();
-   return tmp;
+    QString tmp = str;
+    tmp = tmp.toLower();
+    tmp[0] = str[0].toUpper();
+    return tmp;
 }
 
 // Retrieve the path of an attribute in a payload struct
 QString RustGenerator::getPayloadPath(QStringList parentNames) {
-   QString payloadPath = "";
-   for (int idx = 0; idx < parentNames.size(); idx++) {
-      payloadPath.append(parentNames.at(idx).toLower() + "_payload.");
-   }
-   return payloadPath;
+    QString payloadPath = "";
+    for (int idx = 0; idx < parentNames.size(); idx++) {
+        payloadPath.append(parentNames.at(idx).toLower() + "_payload.");
+    }
+    return payloadPath;
 }
 
 // Convert indentation level number into string of spaces
 QString RustGenerator::getIndent(int indentNb) {
-   QString indentString = "";
-   if (indentNb > 0) {
-      for (int idx = 0; idx < indentNb; idx++) {
-         indentString.append("    ");
-      }
-   }
-   return indentString;
+    QString indentString = "";
+    if (indentNb > 0) {
+        for (int idx = 0; idx < indentNb; idx++) {
+            indentString.append("    ");
+        }
+    }
+    return indentString;
 }
 
 // Recursively flatten an attribute list
 QList<Attribute::T_attInfos> RustGenerator::getAttInfos_Rec(QString parentName, QList<Attribute *> attList) {
-   QList<Attribute::T_attInfos> resultList = QList<Attribute::T_attInfos>();
-   Attribute::T_attInfos localAttInfos;
-   for (Attribute *attribute : attList) {
-      localAttInfos.parentName = parentName;
-      localAttInfos.attName = attribute->getName();
-      localAttInfos.attId = attribute->getId();
-      localAttInfos.attPointer = attribute;
-      localAttInfos.dataType = attribute->getDataType();
-      localAttInfos.isOptional = attribute->getIsOptional();
-      localAttInfos.subAttNb = attribute->getSubAttArray().size();
-      localAttInfos.attDesc = attribute->getDesc();
-      resultList.append(localAttInfos);
-      if ((attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) && (localAttInfos.subAttNb > 0)) {
-         if (!this->protocolHasSubAtt) {
-             this->protocolHasSubAtt = true;
-         }
-         resultList.append(this->getAttInfos_Rec(localAttInfos.attName, attribute->getSubAttArray()));
-      }
-   }
-   return resultList;
+    QList<Attribute::T_attInfos> resultList = QList<Attribute::T_attInfos>();
+    Attribute::T_attInfos localAttInfos;
+    for (Attribute *attribute : attList) {
+        localAttInfos.parentName = parentName;
+        localAttInfos.attName = attribute->getName();
+        localAttInfos.attId = attribute->getId();
+        localAttInfos.attPointer = attribute;
+        localAttInfos.dataType = attribute->getDataType();
+        localAttInfos.isOptional = attribute->getIsOptional();
+        localAttInfos.subAttNb = attribute->getSubAttArray().size();
+        localAttInfos.attDesc = attribute->getDesc();
+        resultList.append(localAttInfos);
+        if ((attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) && (localAttInfos.subAttNb > 0)) {
+            if (!this->protocolHasSubAtt) {
+                this->protocolHasSubAtt = true;
+            }
+            resultList.append(this->getAttInfos_Rec(localAttInfos.attName, attribute->getSubAttArray()));
+        }
+    }
+    return resultList;
 }
 
 // Header function for getAttInfos_Rec
 QList<Attribute::T_attInfos> RustGenerator::getAttInfos(QList<Command *> cmdList) {
-   QList<Attribute::T_attInfos> resultList = QList<Attribute::T_attInfos>();
-   this->protocolHasSubAtt = false;
-   for (Command *command : cmdList) {
-      QString cmdName = command->getName();
-      if ((command->getHasAtt()) && (command->getAttArray().size() > 0)) {
-         resultList.append(this->getAttInfos_Rec(cmdName, command->getAttArray()));
-      }
-   }
-   return resultList;
+    QList<Attribute::T_attInfos> resultList = QList<Attribute::T_attInfos>();
+    this->protocolHasSubAtt = false;
+    for (Command *command : cmdList) {
+        QString cmdName = command->getName();
+        if ((command->getHasAtt()) && (command->getAttArray().size() > 0)) {
+            resultList.append(this->getAttInfos_Rec(cmdName, command->getAttArray()));
+        }
+    }
+    return resultList;
 }
 
 QList<Attribute::T_attInfos> RustGenerator::insertSortAttInfosListByParentName(QList<Attribute::T_attInfos> attInfosList) {
-   QList<Attribute::T_attInfos> sortedList = attInfosList;
-   Attribute::T_attInfos bufferAttInfos;
-   int j = 0;
-   int listSize = sortedList.size();
-   for (int i = 0; i < listSize; i++) {
-      j = i;
-      while ((j > 0) && (sortedList.at(j-1).parentName.compare(sortedList.at(j).parentName) > 0)) {
-         bufferAttInfos = sortedList.at(j);
-         sortedList.replace(j, sortedList.at(j-1));
-         sortedList.replace(j-1, bufferAttInfos);
-         j = j - 1;
-      }
-   }
-   return sortedList;
+    QList<Attribute::T_attInfos> sortedList = attInfosList;
+    Attribute::T_attInfos bufferAttInfos;
+    int j = 0;
+    int listSize = sortedList.size();
+    for (int i = 0; i < listSize; i++) {
+        j = i;
+        while ((j > 0) && (sortedList.at(j - 1).parentName.compare(sortedList.at(j).parentName) > 0)) {
+            bufferAttInfos = sortedList.at(j);
+            sortedList.replace(j, sortedList.at(j - 1));
+            sortedList.replace(j - 1, bufferAttInfos);
+            j = j - 1;
+        }
+    }
+    return sortedList;
 }
 
 // Recursively print attribute declaration code
-void RustGenerator::declareAtt_REC(QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, bool parentIsOpt) {
+void RustGenerator::declareAtt_REC(
+    QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, bool parentIsOpt) {
     QStringList nextParentNames = QStringList();
 
     for (Attribute *attribute : attList) {
@@ -129,23 +129,33 @@ void RustGenerator::declareAtt_REC(QStringList parentNames, QList<Attribute *> a
 
         if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
             nextParentNames.append(attribute->getName());
-            this->declareAtt_REC(nextParentNames, attribute->getSubAttArray(), pOut, (parentIsOpt || attribute->getIsOptional()));
+            this->declareAtt_REC(
+                nextParentNames, attribute->getSubAttArray(), pOut, (parentIsOpt || attribute->getIsOptional()));
         } else {
             if (parentIsOpt || attribute->getIsOptional()) {
                 if (attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) {
-                    *pOut << "    let mut " << parentNames.last().toLower().toLower() << "_" << attribute->getName().toLower() << " = &Vec::new();" << Qt::endl;
+                    *pOut << "    let mut " << parentNames.last().toLower().toLower() << "_"
+                          << attribute->getName().toLower() << " = &Vec::new();" << Qt::endl;
                 } else if (attribute->getDataType() == NS_AttDataType::STRING) {
-                    *pOut << "    let mut " << parentNames.last().toLower().toLower() << "_" << attribute->getName().toLower() << " = &CString::new("").unwrap();" << Qt::endl;
+                    *pOut << "    let mut " << parentNames.last().toLower().toLower() << "_"
+                          << attribute->getName().toLower()
+                          << " = &CString::new("
+                             ").unwrap();"
+                          << Qt::endl;
                 } else {
-                    *pOut << "    let mut " << parentNames.last().toLower().toLower() << "_" << attribute->getName().toLower() << " = 0;" << Qt::endl;
+                    *pOut << "    let mut " << parentNames.last().toLower().toLower() << "_"
+                          << attribute->getName().toLower() << " = 0;" << Qt::endl;
                 }
             } else {
-                if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) || (attribute->getDataType() == NS_AttDataType::STRING)) {
-                *pOut << "    let " << parentNames.last().toLower().toLower() << "_" << attribute->getName().toLower() << " = &payload."
-                    << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";" << Qt::endl;
+                if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) ||
+                    (attribute->getDataType() == NS_AttDataType::STRING)) {
+                    *pOut << "    let " << parentNames.last().toLower().toLower() << "_" << attribute->getName().toLower()
+                          << " = &payload." << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";"
+                          << Qt::endl;
                 } else {
-                *pOut << "    let " << parentNames.last().toLower().toLower() << "_" << attribute->getName().toLower() << " = payload."
-                    << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";" << Qt::endl;
+                    *pOut << "    let " << parentNames.last().toLower().toLower() << "_" << attribute->getName().toLower()
+                          << " = payload." << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";"
+                          << Qt::endl;
                 }
             }
         }
@@ -153,55 +163,64 @@ void RustGenerator::declareAtt_REC(QStringList parentNames, QList<Attribute *> a
 }
 
 // Recursively print retrieve sub-attributes data code
-void RustGenerator::grabAttValues_REC(QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, int indentNb, bool parentIsOpt) {
+void RustGenerator::grabAttValues_REC(
+    QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, int indentNb, bool parentIsOpt) {
     QStringList nextParentNames = QStringList();
     QString indent = this->getIndent(indentNb);
 
     for (Attribute *attribute : attList) {
-       // Clear sub-attribute list between attributes
-       nextParentNames = parentNames;
+        // Clear sub-attribute list between attributes
+        nextParentNames = parentNames;
 
-       if (attribute->getIsOptional()) {
-          *pOut << indent << "if payload." << this->getPayloadPath(parentNames) << "is_" << attribute->getName().toLower() << "_here {" << Qt::endl;
-          indent = this->getIndent(indentNb + 1);
+        if (attribute->getIsOptional()) {
+            *pOut << indent << "if payload." << this->getPayloadPath(parentNames) << "is_" << attribute->getName().toLower()
+                  << "_here {" << Qt::endl;
+            indent = this->getIndent(indentNb + 1);
 
-          if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
-             nextParentNames.append(attribute->getName());
-             this->grabAttValues_REC(nextParentNames, attribute->getSubAttArray(), pOut, indentNb + 1, attribute->getIsOptional() || parentIsOpt);
-          } else {
-             if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) || (attribute->getDataType() == NS_AttDataType::STRING)) {
-                 *pOut << indent << parentNames.last().toLower() << "_" << attribute->getName().toLower() << " = &payload."
-                        << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";" << Qt::endl;
-             } else {
-                 *pOut << indent << parentNames.last().toLower() << "_" << attribute->getName().toLower() << " = payload."
-                        << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";" << Qt::endl;
-             }
-          }
-          indent = this->getIndent(indentNb);
-          *pOut << indent << "}" << Qt::endl;
-       } else {
-          if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
-             nextParentNames.append(attribute->getName());
-             this->grabAttValues_REC(nextParentNames, attribute->getSubAttArray(), pOut, indentNb, attribute->getIsOptional() || parentIsOpt);
-          } else if (attribute->getIsOptional() || parentIsOpt) {
-              if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) || (attribute->getDataType() == NS_AttDataType::STRING)) {
-                 *pOut << indent << parentNames.last().toLower() << "_" << attribute->getName().toLower() << " = &payload."
-                         << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";" << Qt::endl;
-              } else {
-                 *pOut << indent << parentNames.last().toLower() << "_" << attribute->getName().toLower() << " = payload."
-                         << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";" << Qt::endl;
-              }
-          }
-       }
+            if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
+                nextParentNames.append(attribute->getName());
+                this->grabAttValues_REC(nextParentNames, attribute->getSubAttArray(), pOut, indentNb + 1,
+                    attribute->getIsOptional() || parentIsOpt);
+            } else {
+                if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) ||
+                    (attribute->getDataType() == NS_AttDataType::STRING)) {
+                    *pOut << indent << parentNames.last().toLower() << "_" << attribute->getName().toLower()
+                          << " = &payload." << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";"
+                          << Qt::endl;
+                } else {
+                    *pOut << indent << parentNames.last().toLower() << "_" << attribute->getName().toLower() << " = payload."
+                          << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";" << Qt::endl;
+                }
+            }
+            indent = this->getIndent(indentNb);
+            *pOut << indent << "}" << Qt::endl;
+        } else {
+            if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
+                nextParentNames.append(attribute->getName());
+                this->grabAttValues_REC(
+                    nextParentNames, attribute->getSubAttArray(), pOut, indentNb, attribute->getIsOptional() || parentIsOpt);
+            } else if (attribute->getIsOptional() || parentIsOpt) {
+                if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) ||
+                    (attribute->getDataType() == NS_AttDataType::STRING)) {
+                    *pOut << indent << parentNames.last().toLower() << "_" << attribute->getName().toLower()
+                          << " = &payload." << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";"
+                          << Qt::endl;
+                } else {
+                    *pOut << indent << parentNames.last().toLower() << "_" << attribute->getName().toLower() << " = payload."
+                          << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";" << Qt::endl;
+                }
+            }
+        }
     }
 }
 
 // Recursively print include type of attributes
-void RustGenerator::printInclude_Rec(QString protocolName, QString parentName, QList<Attribute *> attList, QTextStream *pOut) {
+void RustGenerator::printInclude_Rec(
+    QString protocolName, QString parentName, QList<Attribute *> attList, QTextStream *pOut) {
     for (Attribute *attribute : attList) {
         if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
             *pOut << "use protocol_" << protocolName.toLower() << "::" << this->capitalize(parentName) << "Att"
-                << this->capitalize(attribute->getName()) << "Payload;" << Qt::endl;
+                  << this->capitalize(attribute->getName()) << "Payload;" << Qt::endl;
             printInclude_Rec(protocolName, attribute->getName(), attribute->getSubAttArray(), pOut);
         }
     }
@@ -216,28 +235,28 @@ void RustGenerator::printInitstruct_Rec(QString parentName, QList<Attribute *> a
         }
         switch (attribute->getDataType()) {
             case NS_AttDataType::SUB_ATTRIBUTES:
-                *pOut << indent << attribute->getName().toLower() << "_payload: " << this->capitalize(parentName)
-                    << "Att" << this->capitalize(attribute->getName()) << "Payload {" << Qt::endl;
+                *pOut << indent << attribute->getName().toLower() << "_payload: " << this->capitalize(parentName) << "Att"
+                      << this->capitalize(attribute->getName()) << "Payload {" << Qt::endl;
                 printInitstruct_Rec(attribute->getName(), attribute->getSubAttArray(), pOut, indentNb + 1);
                 *pOut << indent << "}," << Qt::endl;
-            break;
+                break;
             default:
             case NS_AttDataType::UINT8:
             case NS_AttDataType::UINT16:
             case NS_AttDataType::UINT32:
             case NS_AttDataType::UINT64:
                 *pOut << indent << attribute->getName().toLower() << ": 0," << Qt::endl;
-            break;
+                break;
             case NS_AttDataType::FLOAT32:
             case NS_AttDataType::FLOAT64:
                 *pOut << indent << attribute->getName().toLower() << ": 0.0," << Qt::endl;
-            break;
+                break;
             case NS_AttDataType::BYTE_ARRAY:
                 *pOut << indent << attribute->getName().toLower() << ": Vec::new()," << Qt::endl;
-            break;
+                break;
             case NS_AttDataType::STRING:
                 *pOut << indent << attribute->getName().toLower() << ": CString::new(\"\").unwrap()," << Qt::endl;
-            break;
+                break;
         }
     }
 }
@@ -250,16 +269,17 @@ void RustGenerator::getSubAttData_Rec(QStringList parentNames, QList<Attribute *
 
     for (Attribute *attribute : attList) {
         // Clear sub-attribute list between attributes
-       nextParentNames = parentNames;
-       attDataPath = this->getPayloadPath(parentNames);
-       *pOut << indent << "// Retrieve data of sub-attribute " << attribute->getName().toLower() << Qt::endl;
+        nextParentNames = parentNames;
+        attDataPath = this->getPayloadPath(parentNames);
+        *pOut << indent << "// Retrieve data of sub-attribute " << attribute->getName().toLower() << Qt::endl;
         if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
             nextParentNames.append(attribute->getName());
-            *pOut << indent << "if let LcsfValidAttPayload::SubattArr(subatt_arr) = &subatt_iter.next().unwrap().payload {" << Qt::endl;
+            *pOut << indent << "if let LcsfValidAttPayload::SubattArr(subatt_arr) = &subatt_iter.next().unwrap().payload {"
+                  << Qt::endl;
             if (attribute->getIsOptional()) {
                 *pOut << indent << "    if *subatt_arr != Vec::new() {" << Qt::endl;
-                *pOut << indent << "        " << attDataPath << "is_"
-                    << attribute->getName().toLower() << "_here = true;" << Qt::endl;
+                *pOut << indent << "        " << attDataPath << "is_" << attribute->getName().toLower() << "_here = true;"
+                      << Qt::endl;
                 *pOut << indent << "        // Get iterator" << Qt::endl;
                 *pOut << indent << "        let subatt_iter = &mut subatt_arr.iter();" << Qt::endl;
                 this->getSubAttData_Rec(nextParentNames, attribute->getSubAttArray(), pOut, indentNb + 2);
@@ -274,76 +294,76 @@ void RustGenerator::getSubAttData_Rec(QStringList parentNames, QList<Attribute *
             *pOut << indent << "if let LcsfValidAttPayload::Data(data) = &subatt_iter.next().unwrap().payload {" << Qt::endl;
             if (attribute->getIsOptional()) {
                 *pOut << indent << "    if *data != Vec::new() {" << Qt::endl;
-                *pOut << indent << "        " << attDataPath << "is_"
-                    << attribute->getName().toLower() << "_here = true;" << Qt::endl;
-                switch(attribute->getDataType()) {
+                *pOut << indent << "        " << attDataPath << "is_" << attribute->getName().toLower() << "_here = true;"
+                      << Qt::endl;
+                switch (attribute->getDataType()) {
                     case NS_AttDataType::UINT8:
                         *pOut << indent << "        " << attDataPath << attribute->getName().toLower()
-                            << " = u8::from_le_bytes(data.as_slice().try_into().unwrap());" << Qt::endl;
+                              << " = u8::from_le_bytes(data.as_slice().try_into().unwrap());" << Qt::endl;
                         break;
                     case NS_AttDataType::UINT16:
                         *pOut << indent << "        " << attDataPath << attribute->getName().toLower()
-                            << " = lcsf_validator::vle_decode(data) as u16;" << Qt::endl;
+                              << " = lcsf_validator::vle_decode(data) as u16;" << Qt::endl;
                         break;
                     case NS_AttDataType::UINT32:
                         *pOut << indent << "        " << attDataPath << attribute->getName().toLower()
-                            << " = lcsf_validator::vle_decode(data) as u32;" << Qt::endl;
+                              << " = lcsf_validator::vle_decode(data) as u32;" << Qt::endl;
                         break;
                     case NS_AttDataType::UINT64:
                         *pOut << indent << "        " << attDataPath << attribute->getName().toLower()
-                            << " = lcsf_validator::vle_decode(data);" << Qt::endl;
+                              << " = lcsf_validator::vle_decode(data);" << Qt::endl;
                         break;
                     case NS_AttDataType::FLOAT32:
                         *pOut << indent << "        " << attDataPath << attribute->getName().toLower()
-                            << " = f32::from_le_bytes(data.as_slice().try_into().unwrap());" << Qt::endl;
+                              << " = f32::from_le_bytes(data.as_slice().try_into().unwrap());" << Qt::endl;
                         break;
                     case NS_AttDataType::FLOAT64:
                         *pOut << indent << "        " << attDataPath << attribute->getName().toLower()
-                            << " = f64::from_le_bytes(data.as_slice().try_into().unwrap());" << Qt::endl;
+                              << " = f64::from_le_bytes(data.as_slice().try_into().unwrap());" << Qt::endl;
                         break;
                     case NS_AttDataType::BYTE_ARRAY:
-                        *pOut << indent << "        " << attDataPath << attribute->getName().toLower()
-                            << " = data.clone();" << Qt::endl;
+                        *pOut << indent << "        " << attDataPath << attribute->getName().toLower() << " = data.clone();"
+                              << Qt::endl;
                         break;
                     case NS_AttDataType::STRING:
                         *pOut << indent << "        " << attDataPath << attribute->getName().toLower()
-                            << " = CString::from_vec_with_nul(data.clone()).unwrap();" << Qt::endl;
+                              << " = CString::from_vec_with_nul(data.clone()).unwrap();" << Qt::endl;
                         break;
                 }
                 *pOut << indent << "    }" << Qt::endl;
             } else {
-                switch(attribute->getDataType()) {
+                switch (attribute->getDataType()) {
                     case NS_AttDataType::UINT8:
                         *pOut << indent << "    " << attDataPath << attribute->getName().toLower()
-                            << " = u8::from_le_bytes(data.as_slice().try_into().unwrap());" << Qt::endl;
+                              << " = u8::from_le_bytes(data.as_slice().try_into().unwrap());" << Qt::endl;
                         break;
                     case NS_AttDataType::UINT16:
                         *pOut << indent << "    " << attDataPath << attribute->getName().toLower()
-                            << " = lcsf_validator::vle_decode(data) as u16;" << Qt::endl;
+                              << " = lcsf_validator::vle_decode(data) as u16;" << Qt::endl;
                         break;
                     case NS_AttDataType::UINT32:
                         *pOut << indent << "    " << attDataPath << attribute->getName().toLower()
-                            << " = lcsf_validator::vle_decode(data) as u32;" << Qt::endl;
+                              << " = lcsf_validator::vle_decode(data) as u32;" << Qt::endl;
                         break;
                     case NS_AttDataType::UINT64:
                         *pOut << indent << "        " << attDataPath << attribute->getName().toLower()
-                            << " = lcsf_validator::vle_decode(data);" << Qt::endl;
+                              << " = lcsf_validator::vle_decode(data);" << Qt::endl;
                         break;
                     case NS_AttDataType::FLOAT32:
                         *pOut << indent << "        " << attDataPath << attribute->getName().toLower()
-                            << " = f32::from_le_bytes(data.as_slice().try_into().unwrap());" << Qt::endl;
+                              << " = f32::from_le_bytes(data.as_slice().try_into().unwrap());" << Qt::endl;
                         break;
                     case NS_AttDataType::FLOAT64:
                         *pOut << indent << "        " << attDataPath << attribute->getName().toLower()
-                            << " = f64::from_le_bytes(data.as_slice().try_into().unwrap());" << Qt::endl;
+                              << " = f64::from_le_bytes(data.as_slice().try_into().unwrap());" << Qt::endl;
                         break;
                     case NS_AttDataType::BYTE_ARRAY:
-                        *pOut << indent << "    " << attDataPath << attribute->getName().toLower()
-                            << " = data.clone();" << Qt::endl;
+                        *pOut << indent << "    " << attDataPath << attribute->getName().toLower() << " = data.clone();"
+                              << Qt::endl;
                         break;
                     case NS_AttDataType::STRING:
                         *pOut << indent << "    " << attDataPath << attribute->getName().toLower()
-                            << " = CString::from_vec_with_nul(data.clone()).unwrap();" << Qt::endl;
+                              << " = CString::from_vec_with_nul(data.clone()).unwrap();" << Qt::endl;
                         break;
                 }
             }
@@ -353,16 +373,17 @@ void RustGenerator::getSubAttData_Rec(QStringList parentNames, QList<Attribute *
 }
 
 // Recursively print code to fill sub attribute data
-void RustGenerator::fillSubAttData_Rec(QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, int indentNb) {
+void RustGenerator::fillSubAttData_Rec(
+    QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, int indentNb) {
     QString indent = this->getIndent(indentNb);
     QStringList nextParentNames = QStringList();
     QString attDataPath;
 
     for (Attribute *attribute : attList) {
         // Clear sub-attribute list between attributes
-       nextParentNames = parentNames;
-       attDataPath = this->getPayloadPath(parentNames);
-       *pOut << indent << "// Fill data of sub-attribute " << attribute->getName().toLower() << Qt::endl;
+        nextParentNames = parentNames;
+        attDataPath = this->getPayloadPath(parentNames);
+        *pOut << indent << "// Fill data of sub-attribute " << attribute->getName().toLower() << Qt::endl;
         if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
             nextParentNames.append(attribute->getName());
             *pOut << indent << "LcsfValidAtt { payload: ";
@@ -383,58 +404,58 @@ void RustGenerator::fillSubAttData_Rec(QStringList parentNames, QList<Attribute 
             *pOut << indent << "LcsfValidAtt { payload: ";
             if (attribute->getIsOptional()) {
                 *pOut << "if payload." << attDataPath << "is_" << attribute->getName().toLower() << "_here {" << Qt::endl;
-                switch(attribute->getDataType()) {
+                switch (attribute->getDataType()) {
                     case NS_AttDataType::UINT8:
                     case NS_AttDataType::UINT16:
                     case NS_AttDataType::UINT32:
                         *pOut << indent << "    LcsfValidAttPayload::Data(lcsf_validator::vle_encode(payload." << attDataPath
-                            << attribute->getName().toLower() << " as u64))" << Qt::endl;
+                              << attribute->getName().toLower() << " as u64))" << Qt::endl;
                         break;
                     case NS_AttDataType::UINT64:
                         *pOut << indent << "    LcsfValidAttPayload::Data(lcsf_validator::vle_encode(payload." << attDataPath
-                            << attribute->getName().toLower() << "))" << Qt::endl;
+                              << attribute->getName().toLower() << "))" << Qt::endl;
                         break;
                     case NS_AttDataType::FLOAT32:
                     case NS_AttDataType::FLOAT64:
                         *pOut << indent << "    LcsfValidAttPayload::Data(payload." << attDataPath
-                            << attribute->getName().toLower() << ".to_le_bytes().to_vec())" << Qt::endl;
+                              << attribute->getName().toLower() << ".to_le_bytes().to_vec())" << Qt::endl;
                         break;
                     case NS_AttDataType::BYTE_ARRAY:
                         *pOut << indent << "    LcsfValidAttPayload::Data(payload." << attDataPath
-                            << attribute->getName().toLower() << ".clone())" << Qt::endl;
+                              << attribute->getName().toLower() << ".clone())" << Qt::endl;
                         break;
                     case NS_AttDataType::STRING:
                         *pOut << indent << "    LcsfValidAttPayload::Data(payload." << attDataPath
-                            << attribute->getName().toLower() << ".clone().into_bytes_with_nul())" << Qt::endl;
+                              << attribute->getName().toLower() << ".clone().into_bytes_with_nul())" << Qt::endl;
                         break;
                 }
                 *pOut << indent << "} else {" << Qt::endl;
                 *pOut << indent << "    LcsfValidAttPayload::Data(Vec::new())" << Qt::endl;
                 *pOut << indent << "}}," << Qt::endl;
             } else {
-                switch(attribute->getDataType()) {
+                switch (attribute->getDataType()) {
                     case NS_AttDataType::UINT8:
                     case NS_AttDataType::UINT16:
                     case NS_AttDataType::UINT32:
                         *pOut << "LcsfValidAttPayload::Data(lcsf_validator::vle_encode(payload." << attDataPath
-                            << attribute->getName().toLower() << " as u64))";
+                              << attribute->getName().toLower() << " as u64))";
                         break;
                     case NS_AttDataType::UINT64:
                         *pOut << "LcsfValidAttPayload::Data(lcsf_validator::vle_encode(payload." << attDataPath
-                            << attribute->getName().toLower() << "))";
+                              << attribute->getName().toLower() << "))";
                         break;
                     case NS_AttDataType::FLOAT32:
                     case NS_AttDataType::FLOAT64:
-                        *pOut << "LcsfValidAttPayload::Data(payload." << attDataPath
-                            << attribute->getName().toLower() << ".to_le_bytes().to_vec())" << Qt::endl;
+                        *pOut << "LcsfValidAttPayload::Data(payload." << attDataPath << attribute->getName().toLower()
+                              << ".to_le_bytes().to_vec())" << Qt::endl;
                         break;
                     case NS_AttDataType::BYTE_ARRAY:
-                        *pOut << "LcsfValidAttPayload::Data(payload." << attDataPath
-                            << attribute->getName().toLower() << ".clone())";
+                        *pOut << "LcsfValidAttPayload::Data(payload." << attDataPath << attribute->getName().toLower()
+                              << ".clone())";
                         break;
                     case NS_AttDataType::STRING:
-                        *pOut << "LcsfValidAttPayload::Data(payload." << attDataPath
-                            << attribute->getName().toLower() << ".clone().into_bytes_with_nul())";
+                        *pOut << "LcsfValidAttPayload::Data(payload." << attDataPath << attribute->getName().toLower()
+                              << ".clone().into_bytes_with_nul())";
                         break;
                 }
                 *pOut << "}," << Qt::endl;
@@ -519,7 +540,7 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
         QFileInfo fileInfo(file);
 
         // Header/Import
-        out << "//! Main file (" << ((isA) ? "A":"B") << ") for protocol: " << this->capitalize(protocolName) << Qt::endl;
+        out << "//! Main file (" << ((isA) ? "A" : "B") << ") for protocol: " << this->capitalize(protocolName) << Qt::endl;
         out << "//!" << Qt::endl;
         out << "//! This file has been auto-generated by LCSF Generator v" << APP_VERSION << Qt::endl;
         out << "//! Feel free to customize as needed" << Qt::endl;
@@ -552,8 +573,8 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
         out << "    Empty," << Qt::endl;
         for (Command *command : cmdList) {
             if (command->getAttArray().size() > 0) {
-                out << "    " << this->capitalize(command->getName()) << "Payload("
-                    << this->capitalize(command->getName()) << "AttPayload)," << Qt::endl;
+                out << "    " << this->capitalize(command->getName()) << "Payload(" << this->capitalize(command->getName())
+                    << "AttPayload)," << Qt::endl;
             }
         }
         out << "}" << Qt::endl;
@@ -571,10 +592,11 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
                         out << "    pub is_" << attribute->getName().toLower() << "_here: bool," << Qt::endl;
                     }
                     // Note attribute field
-                    switch(attribute->getDataType()) {
+                    switch (attribute->getDataType()) {
                         case NS_AttDataType::SUB_ATTRIBUTES:
-                            out << "    pub " << attribute->getName().toLower() << "_payload: "
-                                << this->capitalize(command->getName()) << "Att" << this->capitalize(attribute->getName()) << "Payload," << Qt::endl;
+                            out << "    pub " << attribute->getName().toLower()
+                                << "_payload: " << this->capitalize(command->getName()) << "Att"
+                                << this->capitalize(attribute->getName()) << "Payload," << Qt::endl;
                             break;
                         case NS_AttDataType::BYTE_ARRAY:
                             out << "    pub " << attribute->getName().toLower() << ": Vec<u8>," << Qt::endl;
@@ -616,7 +638,8 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
                 currentAttInfo = attInfosList.at(idx);
                 if (currentAttInfo.dataType == NS_AttDataType::SUB_ATTRIBUTES) {
                     out << "#[derive(Debug, PartialEq)]" << Qt::endl;
-                    out << "pub struct " << this->capitalize(currentAttInfo.parentName) << "Att" << this->capitalize(currentAttInfo.attName) << "Payload {" << Qt::endl;
+                    out << "pub struct " << this->capitalize(currentAttInfo.parentName) << "Att"
+                        << this->capitalize(currentAttInfo.attName) << "Payload {" << Qt::endl;
                     int subIdx = idx + 1;
                     int subAttCpt = 0;
                     while ((subIdx < attInfosList.size()) || (subAttCpt < currentAttInfo.subAttNb)) {
@@ -628,10 +651,11 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
                                 out << "    pub is_" << currentSubAttInfo.attName.toLower() << "_here: bool," << Qt::endl;
                             }
                             // Note the sub-attribute field
-                            switch(currentSubAttInfo.dataType) {
+                            switch (currentSubAttInfo.dataType) {
                                 case NS_AttDataType::SUB_ATTRIBUTES:
-                                    out << "    pub " << currentSubAttInfo.attName.toLower() << "_payload: "
-                                        << this->capitalize(currentSubAttInfo.parentName) << "Att" << this->capitalize(currentSubAttInfo.attName) << "Payload," << Qt::endl;
+                                    out << "    pub " << currentSubAttInfo.attName.toLower()
+                                        << "_payload: " << this->capitalize(currentSubAttInfo.parentName) << "Att"
+                                        << this->capitalize(currentSubAttInfo.attName) << "Payload," << Qt::endl;
                                     break;
                                 case NS_AttDataType::BYTE_ARRAY:
                                     out << "    pub " << currentSubAttInfo.attName.toLower() << ": Vec<u8>," << Qt::endl;
@@ -686,17 +710,21 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
                         } else {
                             if (attribute->getIsOptional()) {
                                 if (attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) {
-                                   out << "    let mut " << attribute->getName().toLower() << " = &Vec::new();" << Qt::endl;
+                                    out << "    let mut " << attribute->getName().toLower() << " = &Vec::new();" << Qt::endl;
                                 } else if (attribute->getDataType() == NS_AttDataType::STRING) {
-                                   out << "    let mut " << attribute->getName().toLower() << " = &CString::new(\"\").unwrap();" << Qt::endl;
+                                    out << "    let mut " << attribute->getName().toLower()
+                                        << " = &CString::new(\"\").unwrap();" << Qt::endl;
                                 } else {
-                                   out << "    let mut " << attribute->getName().toLower() << " = 0;" << Qt::endl;
+                                    out << "    let mut " << attribute->getName().toLower() << " = 0;" << Qt::endl;
                                 }
                             } else {
-                                if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) || (attribute->getDataType() == NS_AttDataType::STRING)) {
-                                   out << "    let " << attribute->getName().toLower() << " = &payload." << attribute->getName().toLower() << ";" << Qt::endl;
+                                if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) ||
+                                    (attribute->getDataType() == NS_AttDataType::STRING)) {
+                                    out << "    let " << attribute->getName().toLower() << " = &payload."
+                                        << attribute->getName().toLower() << ";" << Qt::endl;
                                 } else {
-                                   out << "    let " << attribute->getName().toLower() << " = payload." << attribute->getName().toLower() << ";" << Qt::endl;
+                                    out << "    let " << attribute->getName().toLower() << " = payload."
+                                        << attribute->getName().toLower() << ";" << Qt::endl;
                                 }
                             }
                         }
@@ -707,17 +735,22 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
                             out << "    if payload.is_" << attribute->getName().toLower() << "_here {" << Qt::endl;
                             if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
                                 QStringList parentNames = {attribute->getName()};
-                                this->grabAttValues_REC(parentNames, attribute->getSubAttArray(), &out, 2, attribute->getIsOptional());
-                            } else if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) || (attribute->getDataType() == NS_AttDataType::STRING)) {
-                                out << "        " << attribute->getName().toLower() << " = &payload." << attribute->getName().toLower() << ";" << Qt::endl;
+                                this->grabAttValues_REC(
+                                    parentNames, attribute->getSubAttArray(), &out, 2, attribute->getIsOptional());
+                            } else if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) ||
+                                (attribute->getDataType() == NS_AttDataType::STRING)) {
+                                out << "        " << attribute->getName().toLower() << " = &payload."
+                                    << attribute->getName().toLower() << ";" << Qt::endl;
                             } else {
-                                out << "        " << attribute->getName().toLower() << " = payload." << attribute->getName().toLower() << ";" << Qt::endl;
+                                out << "        " << attribute->getName().toLower() << " = payload."
+                                    << attribute->getName().toLower() << ";" << Qt::endl;
                             }
                             out << "    }" << Qt::endl;
-                        } else  {
+                        } else {
                             if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
                                 QStringList parentNames = {attribute->getName()};
-                                this->grabAttValues_REC(parentNames, attribute->getSubAttArray(), &out, 1, attribute->getIsOptional());
+                                this->grabAttValues_REC(
+                                    parentNames, attribute->getSubAttArray(), &out, 1, attribute->getIsOptional());
                             }
                         }
                     }
@@ -748,7 +781,8 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
                     out << "execute_" << command->getName().toLower() << "()," << Qt::endl;
                 } else {
                     out << "{" << Qt::endl;
-                    out << "            if let CmdPayload::" << this->capitalize(command->getName()) << "Payload(payload) = cmd_payload {" << Qt::endl;
+                    out << "            if let CmdPayload::" << this->capitalize(command->getName())
+                        << "Payload(payload) = cmd_payload {" << Qt::endl;
                     out << "                execute_" << command->getName().toLower() << "(payload);" << Qt::endl;
                     out << "            }" << Qt::endl;
                     out << "        }" << Qt::endl;
@@ -781,7 +815,8 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
         out << "/// valid_cmd: received valid command" << Qt::endl;
         out << "fn process_cmd(core: &LcsfCore, valid_cmd: &LcsfValidCmd) {" << Qt::endl;
         out << "    // Process received command" << Qt::endl;
-        out << "    let (cmd_name, cmd_payload) = lcsf_protocol_" << low_prot_name << "::receive_cmd(valid_cmd);" << Qt::endl;
+        out << "    let (cmd_name, cmd_payload) = lcsf_protocol_" << low_prot_name << "::receive_cmd(valid_cmd);"
+            << Qt::endl;
         out << "    execute_cmd(cmd_name, &cmd_payload);" << Qt::endl;
         out << "    // Here the function will send back received commands like an echo" << Qt::endl;
         out << "    // Customize as needed" << Qt::endl;
@@ -794,7 +829,8 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
     }
 }
 
-void RustGenerator::generateBridge(QString protocolName, QString protocolId, QList<Command *> cmdList, bool isA, QString dirPath) {
+void RustGenerator::generateBridge(
+    QString protocolName, QString protocolId, QList<Command *> cmdList, bool isA, QString dirPath) {
     QString low_prot_name = protocolName.toLower();
     QDir dir(dirPath);
     if (!dir.exists()) {
@@ -810,7 +846,8 @@ void RustGenerator::generateBridge(QString protocolName, QString protocolId, QLi
         QFileInfo fileInfo(file);
 
         // Header/Import
-        out << "//! Lcsf abstraction layer (" << ((isA) ? "A":"B") << ") for protocol: " << this->capitalize(protocolName) << Qt::endl;
+        out << "//! Lcsf abstraction layer (" << ((isA) ? "A" : "B") << ") for protocol: " << this->capitalize(protocolName)
+            << Qt::endl;
         out << "//!" << Qt::endl;
         out << "//! This file has been auto-generated by LCSF Generator v" << APP_VERSION << Qt::endl;
         out << "//! It shouldn't be edited manually" << Qt::endl;
@@ -835,7 +872,8 @@ void RustGenerator::generateBridge(QString protocolName, QString protocolId, QLi
         for (Command *command : cmdList) {
             if (command->isReceivable(isA)) {
                 if (command->getAttArray().size() > 0) {
-                    out << "use protocol_" << low_prot_name << "::" << this->capitalize(command->getName()) << "AttPayload;" << Qt::endl;
+                    out << "use protocol_" << low_prot_name << "::" << this->capitalize(command->getName()) << "AttPayload;"
+                        << Qt::endl;
                     printInclude_Rec(protocolName, command->getName(), command->getAttArray(), &out);
                 }
             }
@@ -849,7 +887,8 @@ void RustGenerator::generateBridge(QString protocolName, QString protocolId, QLi
         out << "fn cmd_name_to_id(cmd_name: CmdEnum) -> u16 {" << Qt::endl;
         out << "    match cmd_name {" << Qt::endl;
         for (Command *command : cmdList) {
-            out << "        CmdEnum::" << this->capitalize(command->getName()) << " => CMD_ID_" << command->getName().toUpper() << "," << Qt::endl;
+            out << "        CmdEnum::" << this->capitalize(command->getName()) << " => CMD_ID_"
+                << command->getName().toUpper() << "," << Qt::endl;
         }
         out << "    }" << Qt::endl;
         out << "}" << Qt::endl;
@@ -858,7 +897,8 @@ void RustGenerator::generateBridge(QString protocolName, QString protocolId, QLi
         out << "fn cmd_id_to_name(cmd_id: u16) -> CmdEnum {" << Qt::endl;
         out << "    match cmd_id {" << Qt::endl;
         for (Command *command : cmdList) {
-            out << "        CMD_ID_" << command->getName().toUpper() << " => CmdEnum::" << this->capitalize(command->getName()) << "," << Qt::endl;
+            out << "        CMD_ID_" << command->getName().toUpper()
+                << " => CmdEnum::" << this->capitalize(command->getName()) << "," << Qt::endl;
         }
         out << "        _ => panic!(\"Unreachable values\")," << Qt::endl;
         out << "    }" << Qt::endl;
@@ -871,18 +911,20 @@ void RustGenerator::generateBridge(QString protocolName, QString protocolId, QLi
         out << "/// att_arr command valid attribute array reference" << Qt::endl;
         for (Command *command : cmdList) {
             if ((command->getAttArray().size() > 0) && (command->isReceivable(isA))) {
-                out << "fn " << command->getName().toLower() << "_get_data(att_arr: &[LcsfValidAtt]) -> CmdPayload {" << Qt::endl;
+                out << "fn " << command->getName().toLower() << "_get_data(att_arr: &[LcsfValidAtt]) -> CmdPayload {"
+                    << Qt::endl;
                 // Init return packet
-                out << "    let mut " << command->getName().toLower() << "_payload = "
-                    << this->capitalize(command->getName()) << "AttPayload {" << Qt::endl;
+                out << "    let mut " << command->getName().toLower()
+                    << "_payload = " << this->capitalize(command->getName()) << "AttPayload {" << Qt::endl;
                 for (Attribute *attribute : command->getAttArray()) {
                     if (attribute->getIsOptional()) {
                         out << "        is_" << attribute->getName().toLower() << "_here: false," << Qt::endl;
                     }
                     switch (attribute->getDataType()) {
                         case NS_AttDataType::SUB_ATTRIBUTES:
-                            out << "        " << attribute->getName().toLower() << "_payload: " << this->capitalize(command->getName())
-                                << "Att" << this->capitalize(attribute->getName()) << "Payload {" << Qt::endl;
+                            out << "        " << attribute->getName().toLower()
+                                << "_payload: " << this->capitalize(command->getName()) << "Att"
+                                << this->capitalize(attribute->getName()) << "Payload {" << Qt::endl;
                             printInitstruct_Rec(attribute->getName(), attribute->getSubAttArray(), &out, 3);
                             out << "        }," << Qt::endl;
                             break;
@@ -901,7 +943,8 @@ void RustGenerator::generateBridge(QString protocolName, QString protocolId, QLi
                             out << "        " << attribute->getName().toLower() << ": Vec::new()," << Qt::endl;
                             break;
                         case NS_AttDataType::STRING:
-                            out << "        " << attribute->getName().toLower() << ": CString::new(\"\").unwrap()," << Qt::endl;
+                            out << "        " << attribute->getName().toLower() << ": CString::new(\"\").unwrap(),"
+                                << Qt::endl;
                             break;
                     }
                 }
@@ -912,7 +955,8 @@ void RustGenerator::generateBridge(QString protocolName, QString protocolId, QLi
                 for (Attribute *attribute : command->getAttArray()) {
                     out << "    // Retrieve data of attribute " << attribute->getName().toLower() << Qt::endl;
                     if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
-                        out << "    if let LcsfValidAttPayload::SubattArr(subatt_arr) = &att_iter.next().unwrap().payload {" << Qt::endl;
+                        out << "    if let LcsfValidAttPayload::SubattArr(subatt_arr) = &att_iter.next().unwrap().payload {"
+                            << Qt::endl;
                         QStringList parentNames = {command->getName(), attribute->getName()};
                         if (attribute->getIsOptional()) {
                             out << "        if *subatt_arr != Vec::new() {" << Qt::endl;
@@ -929,82 +973,97 @@ void RustGenerator::generateBridge(QString protocolName, QString protocolId, QLi
                         }
                         out << "    }" << Qt::endl;
                     } else {
-                        out << "    if let LcsfValidAttPayload::Data(data) = &att_iter.next().unwrap().payload {" << Qt::endl;
-                            if (attribute->getIsOptional()) {
-                                out << "        if *data != Vec::new() {" << Qt::endl;
-                                out << "            " << command->getName().toLower() << "_payload.is_"
-                                    << attribute->getName().toLower() << "_here = true;" << Qt::endl;
-                                switch(attribute->getDataType()) {
-                                    case NS_AttDataType::UINT8:
-                                        out << "            " << command->getName().toLower() << "_payload."
-                                            << attribute->getName().toLower() << " = u8::from_le_bytes(data.as_slice().try_into().unwrap());" << Qt::endl;
-                                        break;
-                                    case NS_AttDataType::UINT16:
-                                        out << "            " << command->getName().toLower() << "_payload."
-                                            << attribute->getName().toLower() << " = lcsf_validator::vle_decode(data) as u16;" << Qt::endl;
-                                        break;
-                                    case NS_AttDataType::UINT32:
-                                        out << "            " << command->getName().toLower() << "_payload."
-                                            << attribute->getName().toLower() << " = lcsf_validator::vle_decode(data) as u32;" << Qt::endl;
-                                        break;
-                                    case NS_AttDataType::UINT64:
-                                        out << "            " << command->getName().toLower() << "_payload."
-                                            << attribute->getName().toLower() << " = lcsf_validator::vle_decode(data);" << Qt::endl;
-                                        break;
-                                    case NS_AttDataType::FLOAT32:
-                                        out << "            " << command->getName().toLower() << "_payload."
-                                            << attribute->getName().toLower() << " = f32::from_le_bytes(data.as_slice().try_into().unwrap());" << Qt::endl;
-                                        break;
-                                    case NS_AttDataType::FLOAT64:
-                                        out << "            " << command->getName().toLower() << "_payload."
-                                            << attribute->getName().toLower() << " = f64::from_le_bytes(data.as_slice().try_into().unwrap());" << Qt::endl;
-                                        break;
-                                    case NS_AttDataType::BYTE_ARRAY:
-                                        out << "            " << command->getName().toLower() << "_payload."
-                                            << attribute->getName().toLower() << " = data.clone();" << Qt::endl;
-                                        break;
-                                    case NS_AttDataType::STRING:
-                                        out << "            " << command->getName().toLower() << "_payload."
-                                            << attribute->getName().toLower() << " = CString::from_vec_with_nul(data.clone()).unwrap();" << Qt::endl;
-                                        break;
-                                }
-                                out << "        }" << Qt::endl;
-                            } else {
-                                switch(attribute->getDataType()) {
-                                    case NS_AttDataType::UINT8:
-                                        out << "        " << command->getName().toLower() << "_payload."
-                                            << attribute->getName().toLower() << " = u8::from_le_bytes(data.as_slice().try_into().unwrap());" << Qt::endl;
-                                        break;
-                                    case NS_AttDataType::UINT16:
-                                        out << "        " << command->getName().toLower() << "_payload."
-                                            << attribute->getName().toLower() << " = lcsf_validator::vle_decode(data) as u16;" << Qt::endl;
-                                        break;
-                                    case NS_AttDataType::UINT32:
-                                        out << "        " << command->getName().toLower() << "_payload."
-                                            << attribute->getName().toLower() << " = lcsf_validator::vle_decode(data) as u32;" << Qt::endl;
-                                        break;
-                                    case NS_AttDataType::UINT64:
-                                        out << "        " << command->getName().toLower() << "_payload."
-                                            << attribute->getName().toLower() << " = lcsf_validator::vle_decode(data);" << Qt::endl;
-                                        break;
-                                    case NS_AttDataType::FLOAT32:
-                                        out << "        " << command->getName().toLower() << "_payload."
-                                            << attribute->getName().toLower() << " = f32::from_le_bytes(data.as_slice().try_into().unwrap());" << Qt::endl;
-                                        break;
-                                    case NS_AttDataType::FLOAT64:
-                                        out << "        " << command->getName().toLower() << "_payload."
-                                            << attribute->getName().toLower() << " = f64::from_le_bytes(data.as_slice().try_into().unwrap());" << Qt::endl;
-                                        break;
-                                    case NS_AttDataType::BYTE_ARRAY:
-                                        out << "        " << command->getName().toLower() << "_payload."
-                                            << attribute->getName().toLower() << " = data.clone();" << Qt::endl;
-                                        break;
-                                    case NS_AttDataType::STRING:
-                                        out << "        " << command->getName().toLower() << "_payload."
-                                            << attribute->getName().toLower() << " = CString::from_vec_with_nul(data.clone()).unwrap();" << Qt::endl;
-                                        break;
-                                }
+                        out << "    if let LcsfValidAttPayload::Data(data) = &att_iter.next().unwrap().payload {"
+                            << Qt::endl;
+                        if (attribute->getIsOptional()) {
+                            out << "        if *data != Vec::new() {" << Qt::endl;
+                            out << "            " << command->getName().toLower() << "_payload.is_"
+                                << attribute->getName().toLower() << "_here = true;" << Qt::endl;
+                            switch (attribute->getDataType()) {
+                                case NS_AttDataType::UINT8:
+                                    out << "            " << command->getName().toLower() << "_payload."
+                                        << attribute->getName().toLower()
+                                        << " = u8::from_le_bytes(data.as_slice().try_into().unwrap());" << Qt::endl;
+                                    break;
+                                case NS_AttDataType::UINT16:
+                                    out << "            " << command->getName().toLower() << "_payload."
+                                        << attribute->getName().toLower() << " = lcsf_validator::vle_decode(data) as u16;"
+                                        << Qt::endl;
+                                    break;
+                                case NS_AttDataType::UINT32:
+                                    out << "            " << command->getName().toLower() << "_payload."
+                                        << attribute->getName().toLower() << " = lcsf_validator::vle_decode(data) as u32;"
+                                        << Qt::endl;
+                                    break;
+                                case NS_AttDataType::UINT64:
+                                    out << "            " << command->getName().toLower() << "_payload."
+                                        << attribute->getName().toLower() << " = lcsf_validator::vle_decode(data);"
+                                        << Qt::endl;
+                                    break;
+                                case NS_AttDataType::FLOAT32:
+                                    out << "            " << command->getName().toLower() << "_payload."
+                                        << attribute->getName().toLower()
+                                        << " = f32::from_le_bytes(data.as_slice().try_into().unwrap());" << Qt::endl;
+                                    break;
+                                case NS_AttDataType::FLOAT64:
+                                    out << "            " << command->getName().toLower() << "_payload."
+                                        << attribute->getName().toLower()
+                                        << " = f64::from_le_bytes(data.as_slice().try_into().unwrap());" << Qt::endl;
+                                    break;
+                                case NS_AttDataType::BYTE_ARRAY:
+                                    out << "            " << command->getName().toLower() << "_payload."
+                                        << attribute->getName().toLower() << " = data.clone();" << Qt::endl;
+                                    break;
+                                case NS_AttDataType::STRING:
+                                    out << "            " << command->getName().toLower() << "_payload."
+                                        << attribute->getName().toLower()
+                                        << " = CString::from_vec_with_nul(data.clone()).unwrap();" << Qt::endl;
+                                    break;
                             }
+                            out << "        }" << Qt::endl;
+                        } else {
+                            switch (attribute->getDataType()) {
+                                case NS_AttDataType::UINT8:
+                                    out << "        " << command->getName().toLower() << "_payload."
+                                        << attribute->getName().toLower()
+                                        << " = u8::from_le_bytes(data.as_slice().try_into().unwrap());" << Qt::endl;
+                                    break;
+                                case NS_AttDataType::UINT16:
+                                    out << "        " << command->getName().toLower() << "_payload."
+                                        << attribute->getName().toLower() << " = lcsf_validator::vle_decode(data) as u16;"
+                                        << Qt::endl;
+                                    break;
+                                case NS_AttDataType::UINT32:
+                                    out << "        " << command->getName().toLower() << "_payload."
+                                        << attribute->getName().toLower() << " = lcsf_validator::vle_decode(data) as u32;"
+                                        << Qt::endl;
+                                    break;
+                                case NS_AttDataType::UINT64:
+                                    out << "        " << command->getName().toLower() << "_payload."
+                                        << attribute->getName().toLower() << " = lcsf_validator::vle_decode(data);"
+                                        << Qt::endl;
+                                    break;
+                                case NS_AttDataType::FLOAT32:
+                                    out << "        " << command->getName().toLower() << "_payload."
+                                        << attribute->getName().toLower()
+                                        << " = f32::from_le_bytes(data.as_slice().try_into().unwrap());" << Qt::endl;
+                                    break;
+                                case NS_AttDataType::FLOAT64:
+                                    out << "        " << command->getName().toLower() << "_payload."
+                                        << attribute->getName().toLower()
+                                        << " = f64::from_le_bytes(data.as_slice().try_into().unwrap());" << Qt::endl;
+                                    break;
+                                case NS_AttDataType::BYTE_ARRAY:
+                                    out << "        " << command->getName().toLower() << "_payload."
+                                        << attribute->getName().toLower() << " = data.clone();" << Qt::endl;
+                                    break;
+                                case NS_AttDataType::STRING:
+                                    out << "        " << command->getName().toLower() << "_payload."
+                                        << attribute->getName().toLower()
+                                        << " = CString::from_vec_with_nul(data.clone()).unwrap();" << Qt::endl;
+                                    break;
+                            }
+                        }
                         out << "    }" << Qt::endl;
                     }
                 }
@@ -1041,81 +1100,91 @@ void RustGenerator::generateBridge(QString protocolName, QString protocolId, QLi
         out << "/// cmd_payload pointer to the command payload" << Qt::endl;
         for (Command *command : cmdList) {
             if ((command->getAttArray().size() > 0) && (command->isTransmittable(isA))) {
-                out << "fn " << command->getName().toLower() << "_fill_att(cmd_payload: &CmdPayload) -> Vec<LcsfValidAtt> {" << Qt::endl;
+                out << "fn " << command->getName().toLower() << "_fill_att(cmd_payload: &CmdPayload) -> Vec<LcsfValidAtt> {"
+                    << Qt::endl;
                 out << "    let mut att_arr: Vec<LcsfValidAtt> = Vec::new();" << Qt::endl;
-                out << "    if let CmdPayload::" << this->capitalize(command->getName()) << "Payload(payload) = &cmd_payload {" << Qt::endl;
-                for (Attribute *attribute: command->getAttArray()) {
+                out << "    if let CmdPayload::" << this->capitalize(command->getName())
+                    << "Payload(payload) = &cmd_payload {" << Qt::endl;
+                for (Attribute *attribute : command->getAttArray()) {
                     out << "        // Fill data of attribute " << attribute->getName().toLower() << Qt::endl;
                     if (attribute->getIsOptional()) {
                         out << "        if payload.is_" << attribute->getName().toLower() << "_here {" << Qt::endl;
-                            switch (attribute->getDataType()) {
-                                case NS_AttDataType::SUB_ATTRIBUTES: {
-                                    out << "            att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::SubattArr(vec![" << Qt::endl;
+                        switch (attribute->getDataType()) {
+                            case NS_AttDataType::SUB_ATTRIBUTES:
+                                {
+                                    out << "            att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::SubattArr(vec!["
+                                        << Qt::endl;
                                     QStringList parentNames = {attribute->getName()};
                                     this->fillSubAttData_Rec(parentNames, attribute->getSubAttArray(), &out, 4);
                                     out << "            ]),});" << Qt::endl;
-                                    } break;
-                                case NS_AttDataType::UINT8:
-                                case NS_AttDataType::UINT16:
-                                case NS_AttDataType::UINT32:
-                                    out << "            att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data(lcsf_validator::vle_encode(payload."
+                                }
+                                break;
+                            case NS_AttDataType::UINT8:
+                            case NS_AttDataType::UINT16:
+                            case NS_AttDataType::UINT32:
+                                out << "            att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data(lcsf_validator::vle_encode(payload."
                                     << attribute->getName().toLower() << " as u64)),});" << Qt::endl;
-                                    break;
-                                case NS_AttDataType::UINT64:
-                                    out << "            att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data(lcsf_validator::vle_encode(payload."
+                                break;
+                            case NS_AttDataType::UINT64:
+                                out << "            att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data(lcsf_validator::vle_encode(payload."
                                     << attribute->getName().toLower() << ")),});" << Qt::endl;
-                                    break;
-                                case NS_AttDataType::FLOAT32:
-                                case NS_AttDataType::FLOAT64:
-                                    out << "            att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data(payload."
+                                break;
+                            case NS_AttDataType::FLOAT32:
+                            case NS_AttDataType::FLOAT64:
+                                out << "            att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data(payload."
                                     << attribute->getName().toLower() << ".to_le_bytes().to_vec()),});" << Qt::endl;
-                                    break;
-                                case NS_AttDataType::BYTE_ARRAY:
-                                    out << "            att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data(payload."
+                                break;
+                            case NS_AttDataType::BYTE_ARRAY:
+                                out << "            att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data(payload."
                                     << attribute->getName().toLower() << ".clone()),});" << Qt::endl;
-                                    break;
-                                case NS_AttDataType::STRING:
-                                    out << "            att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data(payload."
+                                break;
+                            case NS_AttDataType::STRING:
+                                out << "            att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data(payload."
                                     << attribute->getName().toLower() << ".clone().into_bytes_with_nul()),});" << Qt::endl;
-                                    break;
-                            }
+                                break;
+                        }
                         out << "        } else {" << Qt::endl;
                         if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
-                            out << "            att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::SubattArr(Vec::new()),});" << Qt::endl;
+                            out << "            att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::SubattArr(Vec::new()),});"
+                                << Qt::endl;
                         } else {
-                            out << "            att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data(Vec::new()),});" << Qt::endl;
+                            out << "            att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data(Vec::new()),});"
+                                << Qt::endl;
                         }
                         out << "        }" << Qt::endl;
                     } else {
                         switch (attribute->getDataType()) {
-                            case NS_AttDataType::SUB_ATTRIBUTES: {
-                                out << "        att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::SubattArr(vec![" << Qt::endl;
-                                QStringList parentNames = {attribute->getName()};
-                                this->fillSubAttData_Rec(parentNames, attribute->getSubAttArray(), &out, 3);
-                                out << "        ]),});" << Qt::endl;
-                                } break;
+                            case NS_AttDataType::SUB_ATTRIBUTES:
+                                {
+                                    out << "        att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::SubattArr(vec!["
+                                        << Qt::endl;
+                                    QStringList parentNames = {attribute->getName()};
+                                    this->fillSubAttData_Rec(parentNames, attribute->getSubAttArray(), &out, 3);
+                                    out << "        ]),});" << Qt::endl;
+                                }
+                                break;
                             case NS_AttDataType::UINT8:
                             case NS_AttDataType::UINT16:
                             case NS_AttDataType::UINT32:
                                 out << "        att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data(lcsf_validator::vle_encode(payload."
-                                << attribute->getName().toLower() << " as u64)),});" << Qt::endl;
+                                    << attribute->getName().toLower() << " as u64)),});" << Qt::endl;
                                 break;
                             case NS_AttDataType::UINT64:
                                 out << "        att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data(lcsf_validator::vle_encode(payload."
-                                << attribute->getName().toLower() << ")),});" << Qt::endl;
+                                    << attribute->getName().toLower() << ")),});" << Qt::endl;
                                 break;
                             case NS_AttDataType::FLOAT32:
                             case NS_AttDataType::FLOAT64:
                                 out << "        att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data(payload."
-                                << attribute->getName().toLower() << ".to_le_bytes().to_vec()),});" << Qt::endl;
+                                    << attribute->getName().toLower() << ".to_le_bytes().to_vec()),});" << Qt::endl;
                                 break;
                             case NS_AttDataType::BYTE_ARRAY:
                                 out << "        att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data(payload."
-                                << attribute->getName().toLower() << ".clone()),});" << Qt::endl;
+                                    << attribute->getName().toLower() << ".clone()),});" << Qt::endl;
                                 break;
                             case NS_AttDataType::STRING:
                                 out << "        att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data(payload."
-                                << attribute->getName().toLower() << ".clone().into_bytes_with_nul()),});" << Qt::endl;
+                                    << attribute->getName().toLower() << ".clone().into_bytes_with_nul()),});" << Qt::endl;
                                 break;
                         }
                     }
@@ -1141,8 +1210,8 @@ void RustGenerator::generateBridge(QString protocolName, QString protocolId, QLi
         out << "    match cmd_name {" << Qt::endl;
         for (Command *command : cmdList) {
             if ((command->getAttArray().size() > 0) && (command->isTransmittable(isA))) {
-                out << "        CmdEnum::" << this->capitalize(command->getName()) << " => send_cmd.att_arr = "
-                    << command->getName().toLower() << "_fill_att(cmd_payload)," << Qt::endl;
+                out << "        CmdEnum::" << this->capitalize(command->getName())
+                    << " => send_cmd.att_arr = " << command->getName().toLower() << "_fill_att(cmd_payload)," << Qt::endl;
             } else {
                 out << "        CmdEnum::" << this->capitalize(command->getName()) << " => {}," << Qt::endl;
             }
@@ -1162,8 +1231,8 @@ void RustGenerator::generateBridge(QString protocolName, QString protocolId, QLi
         // Commands Ids enum
         out << "/// Commands ids" << Qt::endl;
         for (Command *command : cmdList) {
-            out << "const CMD_ID_" << command->getName().toUpper() << ": u16 = 0x"
-                << QString::number(command->getId(), 16) << ";" << Qt::endl;
+            out << "const CMD_ID_" << command->getName().toUpper() << ": u16 = 0x" << QString::number(command->getId(), 16)
+                << ";" << Qt::endl;
         }
         out << Qt::endl;
 
@@ -1173,17 +1242,18 @@ void RustGenerator::generateBridge(QString protocolName, QString protocolId, QLi
                 Attribute::T_attInfos currentAttInfo = sortedAttInfosList.at(idx);
                 out << "// " << this->capitalize(currentAttInfo.parentName) << " attribute ids" << Qt::endl;
                 QString previousParentName = currentAttInfo.parentName;
-                out << "const " << currentAttInfo.parentName.toUpper() << "_ATT_ID_" << currentAttInfo.attName.toUpper() << ": u16 = 0x"
-                    << QString::number(currentAttInfo.attId, 16) << ";" << Qt::endl;
+                out << "const " << currentAttInfo.parentName.toUpper() << "_ATT_ID_" << currentAttInfo.attName.toUpper()
+                    << ": u16 = 0x" << QString::number(currentAttInfo.attId, 16) << ";" << Qt::endl;
                 if (idx < sortedAttInfosList.size() - 1) {
-                    currentAttInfo = sortedAttInfosList.at(idx+1);
+                    currentAttInfo = sortedAttInfosList.at(idx + 1);
                     while (currentAttInfo.parentName.compare(previousParentName) == 0) {
-                        out << "const " << currentAttInfo.parentName.toUpper() << "_ATT_ID_" << currentAttInfo.attName.toUpper() << ": u16 = 0x"
-                        << QString::number(currentAttInfo.attId, 16) << ";" << Qt::endl;
+                        out << "const " << currentAttInfo.parentName.toUpper() << "_ATT_ID_"
+                            << currentAttInfo.attName.toUpper() << ": u16 = 0x" << QString::number(currentAttInfo.attId, 16)
+                            << ";" << Qt::endl;
                         previousParentName = currentAttInfo.parentName;
                         idx++;
                         if (idx < sortedAttInfosList.size() - 1) {
-                            currentAttInfo = sortedAttInfosList.at(idx+1);
+                            currentAttInfo = sortedAttInfosList.at(idx + 1);
                         } else {
                             break;
                         }
@@ -1205,14 +1275,14 @@ void RustGenerator::generateBridge(QString protocolName, QString protocolId, QLi
                 out << "vec![" << Qt::endl;
                 for (Attribute *attribute : command->getAttArray()) {
                     QString desc_str = this->getAttDescString(attribute->getIsOptional(), attribute->getDataType());
-                    out << "            (" << command->getName().toUpper() << "_ATT_ID_"
-                        << attribute->getName().toUpper() << desc_str;
+                    out << "            (" << command->getName().toUpper() << "_ATT_ID_" << attribute->getName().toUpper()
+                        << desc_str;
                     if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
                         out << "vec![" << Qt::endl;
                         this->printAttDesc_Rec(attribute->getName(), attribute->getSubAttArray(), &out, 4);
                         out << "            ]})," << Qt::endl;
                     } else {
-                        out <<"Vec::new()})," << Qt::endl;
+                        out << "Vec::new()})," << Qt::endl;
                     }
                 }
                 out << "        ]})," << Qt::endl;

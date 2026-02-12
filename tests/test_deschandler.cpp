@@ -19,11 +19,11 @@
     along with this project. If not, see <https://www.gnu.org/licenses/>
  */
 
+#include <QFile>
+#include <QTextStream>
 #include <gtest/gtest.h>
 #include <iostream>
 #include <string>
-#include <QFile>
-#include <QTextStream>
 
 #include "deschandler.h"
 #include "test_data.h"
@@ -41,7 +41,7 @@ static bool compare_cmd_list(QList<Command *> model_list, QList<Command *> out_l
 
     if (!val) {
         if (err_val < 0) {
-             std::cout << "Command lists sizes are different" << Qt::endl;
+            std::cout << "Command lists sizes are different" << Qt::endl;
         } else {
             std::cout << "Commands are different at index: " << std::to_string(err_val) << "\n" << Qt::endl;
         }
@@ -79,7 +79,7 @@ TEST(test_deschandler, save_desc) {
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     ASSERT_EQ(output_content.count(), model_content.count());
-    for(int idx = 0; idx < output_content.count(); idx++) {
+    for (int idx = 0; idx < output_content.count(); idx++) {
         ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
     }
     model_file.close();

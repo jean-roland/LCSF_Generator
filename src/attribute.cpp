@@ -30,7 +30,8 @@ Attribute::Attribute(void) {
     this->m_desc = QString();
 }
 
-Attribute::Attribute(QString attName, short attId, bool attIsOptional, NS_AttDataType::T_AttDataType attDataType , QString attDesc) {
+Attribute::Attribute(
+    QString attName, short attId, bool attIsOptional, NS_AttDataType::T_AttDataType attDataType, QString attDesc) {
     this->m_name = attName;
     this->m_id = attId;
     this->m_isOptional = attIsOptional;
@@ -39,7 +40,8 @@ Attribute::Attribute(QString attName, short attId, bool attIsOptional, NS_AttDat
     this->m_desc = attDesc;
 }
 
-Attribute::Attribute(QString attName, short attId, bool attIsOptional, NS_AttDataType::T_AttDataType attDataType, QList<Attribute *> attSubAttArray, QString attDesc) {
+Attribute::Attribute(QString attName, short attId, bool attIsOptional, NS_AttDataType::T_AttDataType attDataType,
+    QList<Attribute *> attSubAttArray, QString attDesc) {
     this->m_name = attName;
     this->m_id = attId;
     this->m_isOptional = attIsOptional;
@@ -49,7 +51,7 @@ Attribute::Attribute(QString attName, short attId, bool attIsOptional, NS_AttDat
 }
 
 void Attribute::setName(QString attName) {
-     this->m_name = attName;
+    this->m_name = attName;
 }
 
 QString Attribute::getName(void) {
@@ -81,7 +83,7 @@ NS_AttDataType::T_AttDataType Attribute::getDataType(void) {
 }
 
 void Attribute::setDesc(QString attDesc) {
-     this->m_desc = attDesc;
+    this->m_desc = attDesc;
 }
 
 QString Attribute::getDesc(void) {
@@ -135,17 +137,18 @@ void Attribute::sortArrayById(void) {
 
     for (int i = 0; i < size; i++) {
         j = i;
-        while ((j > 0) && (sortedAttArray.at(j-1)->getId() > sortedAttArray.at(j)->getId())) {
-          bufferAttribute = sortedAttArray.at(j);
-          sortedAttArray.replace(j, sortedAttArray.at(j-1));
-          sortedAttArray.replace(j-1, bufferAttribute);
-          j = j - 1;
+        while ((j > 0) && (sortedAttArray.at(j - 1)->getId() > sortedAttArray.at(j)->getId())) {
+            bufferAttribute = sortedAttArray.at(j);
+            sortedAttArray.replace(j, sortedAttArray.at(j - 1));
+            sortedAttArray.replace(j - 1, bufferAttribute);
+            j = j - 1;
         }
     }
     this->m_subAttArray = sortedAttArray;
 }
 
-void Attribute::editParams(QString attName, short attCode, bool attIsOptional, NS_AttDataType::T_AttDataType attDataType, QString attDesc) {
+void Attribute::editParams(
+    QString attName, short attCode, bool attIsOptional, NS_AttDataType::T_AttDataType attDataType, QString attDesc) {
     this->m_name = attName;
     this->m_id = attCode;
     this->m_isOptional = attIsOptional;
@@ -185,7 +188,7 @@ Attribute *Attribute::getSubAttPointer(QString subAttName) {
     return subAttPointer;
 }
 
-bool Attribute::compareRefAttList(QList<Attribute *> a_list, QList<Attribute *> b_list, int& err_idx) {
+bool Attribute::compareRefAttList(QList<Attribute *> a_list, QList<Attribute *> b_list, int &err_idx) {
     if (a_list.count() != b_list.count()) {
         err_idx = -1;
         return false;

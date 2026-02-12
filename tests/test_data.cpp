@@ -19,19 +19,19 @@
     along with this project. If not, see <https://www.gnu.org/licenses/>
  */
 
-#include <iostream>
 #include <QFile>
 #include <QTextStream>
+#include <iostream>
 
-#include "enumtype.h"
 #include "attribute.h"
+#include "enumtype.h"
 #include "test_data.h"
 
 // File test functions
 bool openFile(QFile *pFile, QString filedir, QString fileName) {
     pFile->setFileName(filedir + fileName);
 
-    if(!pFile->open(QIODevice::ReadOnly)) {
+    if (!pFile->open(QIODevice::ReadOnly)) {
         std::cout << " Couldn't open " + fileName.toStdString() + ": " + pFile->errorString().toStdString();
         return false;
     }
@@ -73,7 +73,8 @@ Attribute CC1_SA10("SA10", 9, true, NS_AttDataType::STRING, "Optional string sim
 Attribute CC1_SA11("SA11", 10, false, NS_AttDataType::UINT64, "Non optional uint64 simple attribute");
 Attribute CC1_SA12("SA12", 11, false, NS_AttDataType::FLOAT32, "Non optional float32 simple attribute");
 Attribute CC1_SA13("SA13", 12, false, NS_AttDataType::FLOAT64, "Non optional float64 simple attribute");
-QList<Attribute *> CC1_att_array = {&CC1_SA1, &CC1_SA2, &CC1_SA3, &CC1_SA4, &CC1_SA5, &CC1_SA6, &CC1_SA7, &CC1_SA8, &CC1_SA9, &CC1_SA10, &CC1_SA11, &CC1_SA12, &CC1_SA13};
+QList<Attribute *> CC1_att_array = {&CC1_SA1, &CC1_SA2, &CC1_SA3, &CC1_SA4, &CC1_SA5, &CC1_SA6, &CC1_SA7, &CC1_SA8, &CC1_SA9,
+    &CC1_SA10, &CC1_SA11, &CC1_SA12, &CC1_SA13};
 Command CC1("CC1", 3, true, NS_DirectionType::A_TO_B, CC1_att_array, "Complex command no sub-attributes A to B");
 
 // CC2
@@ -90,7 +91,8 @@ Attribute CC2_SA10("SA10", 9, true, NS_AttDataType::STRING, "Optional string sim
 Attribute CC2_SA11("SA11", 10, false, NS_AttDataType::UINT64, "Non optional uint64 simple attribute");
 Attribute CC2_SA12("SA12", 11, false, NS_AttDataType::FLOAT32, "Non optional float32 simple attribute");
 Attribute CC2_SA13("SA13", 12, false, NS_AttDataType::FLOAT64, "Non optional float64 simple attribute");
-QList<Attribute *> CC2_att_array = {&CC2_SA1, &CC2_SA2, &CC2_SA3, &CC2_SA4, &CC2_SA5, &CC2_SA6, &CC2_SA7, &CC2_SA8, &CC2_SA9, &CC2_SA10, &CC2_SA11, &CC2_SA12, &CC2_SA13};
+QList<Attribute *> CC2_att_array = {&CC2_SA1, &CC2_SA2, &CC2_SA3, &CC2_SA4, &CC2_SA5, &CC2_SA6, &CC2_SA7, &CC2_SA8, &CC2_SA9,
+    &CC2_SA10, &CC2_SA11, &CC2_SA12, &CC2_SA13};
 Command CC2("CC2", 4, true, NS_DirectionType::B_TO_A, CC2_att_array, "Complex command no sub-attributes B to A");
 
 // CC3
@@ -107,8 +109,10 @@ Attribute CC3_SA10("SA10", 9, true, NS_AttDataType::STRING, "Optional string sim
 Attribute CC3_SA11("SA11", 10, false, NS_AttDataType::UINT64, "Non optional uint64 simple attribute");
 Attribute CC3_SA12("SA12", 11, false, NS_AttDataType::FLOAT32, "Non optional float32 simple attribute");
 Attribute CC3_SA13("SA13", 12, false, NS_AttDataType::FLOAT64, "Non optional float64 simple attribute");
-QList<Attribute *> CC3_att_array = {&CC3_SA1, &CC3_SA2, &CC3_SA3, &CC3_SA4, &CC3_SA5, &CC3_SA6, &CC3_SA7, &CC3_SA8, &CC3_SA9, &CC3_SA10, &CC3_SA11, &CC3_SA12, &CC3_SA13};
-Command CC3("CC3", 5, true, NS_DirectionType::BIDIRECTIONAL, CC3_att_array, "Complex command no sub-attributes bidirectional");
+QList<Attribute *> CC3_att_array = {&CC3_SA1, &CC3_SA2, &CC3_SA3, &CC3_SA4, &CC3_SA5, &CC3_SA6, &CC3_SA7, &CC3_SA8, &CC3_SA9,
+    &CC3_SA10, &CC3_SA11, &CC3_SA12, &CC3_SA13};
+Command CC3(
+    "CC3", 5, true, NS_DirectionType::BIDIRECTIONAL, CC3_att_array, "Complex command no sub-attributes bidirectional");
 
 // CC4
 Attribute CC4_SA1("SA1", 0, false, NS_AttDataType::UINT8, "Non optional uint8 simple attribute");
@@ -183,7 +187,8 @@ QList<Attribute *> CA10_subatt_array = {&CA10_SA1, &CA10_CA11};
 Attribute CC6_CA10("CA10", 11, true, NS_AttDataType::SUB_ATTRIBUTES, CA10_subatt_array, "Optional complex attribute");
 
 QList<Attribute *> CC6_att_array = {&CC6_SA4, &CC6_CA9, &CC6_CA10};
-Command CC6("CC6", 8, true, NS_DirectionType::BIDIRECTIONAL, CC6_att_array, "Complex command with sub-attributes bidirectional");
+Command CC6(
+    "CC6", 8, true, NS_DirectionType::BIDIRECTIONAL, CC6_att_array, "Complex command with sub-attributes bidirectional");
 
 // Command list
 const QList<Command *> cmd_list = {&SC1, &SC2, &SC3, &CC1, &CC2, &CC3, &CC4, &CC5, &CC6};
@@ -900,7 +905,8 @@ void Test_MainClearPattern(void);
 
 )";
 
-const QString b_def_cmd_hdl = "            // Custom default handler\n            return TestSendCommand(TEST_CMD_SC2, false);\n";
+const QString b_def_cmd_hdl =
+    "            // Custom default handler\n            return TestSendCommand(TEST_CMD_SC2, false);\n";
 
 const QString b_fct_sc1 = R"(/**
  * \fn static bool TestExecuteX(void)

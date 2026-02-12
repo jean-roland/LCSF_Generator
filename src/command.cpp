@@ -29,7 +29,8 @@ Command::Command(void) {
     this->m_desc = QString();
 }
 
-Command::Command(QString cmdName, short cmdCode, bool cmdHasAtt , NS_DirectionType::T_DirectionType cmdDirection, QString commandDesc) {
+Command::Command(
+    QString cmdName, short cmdCode, bool cmdHasAtt, NS_DirectionType::T_DirectionType cmdDirection, QString commandDesc) {
     this->m_name = cmdName;
     this->m_id = cmdCode;
     this->m_hasAttributes = cmdHasAtt;
@@ -38,7 +39,8 @@ Command::Command(QString cmdName, short cmdCode, bool cmdHasAtt , NS_DirectionTy
     this->m_desc = commandDesc;
 }
 
-Command::Command(QString cmdName, short cmdCode, bool cmdHasAtt, NS_DirectionType::T_DirectionType cmdDirection, QList<Attribute *> attArray, QString commandDesc) {
+Command::Command(QString cmdName, short cmdCode, bool cmdHasAtt, NS_DirectionType::T_DirectionType cmdDirection,
+    QList<Attribute *> attArray, QString commandDesc) {
     this->m_name = cmdName;
     this->m_id = cmdCode;
     this->m_hasAttributes = cmdHasAtt;
@@ -55,8 +57,6 @@ QString Command::getName(void) {
     return this->m_name;
 }
 
-
-
 void Command::setId(short cmdCode) {
     this->m_id = cmdCode;
 }
@@ -65,14 +65,12 @@ short Command::getId(void) {
     return this->m_id;
 }
 
-
-
 void Command::setHasAtt(bool cmdHasAtt) {
     this->m_hasAttributes = cmdHasAtt;
 }
 
 bool Command::getHasAtt(void) {
-   return this->m_hasAttributes;
+    return this->m_hasAttributes;
 }
 
 bool Command::hasSubAtt(void) {
@@ -84,9 +82,6 @@ bool Command::hasSubAtt(void) {
     return false;
 }
 
-
-
-
 void Command::setDesc(QString cmdDesc) {
     this->m_desc = cmdDesc;
 }
@@ -95,22 +90,20 @@ QString Command::getDesc(void) {
     return this->m_desc;
 }
 
-
-
 void Command::setDirection(NS_DirectionType::T_DirectionType cmdDirection) {
     this->m_direction = cmdDirection;
 }
 
 NS_DirectionType::T_DirectionType Command::getDirection(void) {
-   return this->m_direction;
+    return this->m_direction;
 }
 
 bool Command::isTransmittable(bool isA) {
     if (this->m_direction == NS_DirectionType::BIDIRECTIONAL) {
         return true;
-    } else if(isA && (this->m_direction == NS_DirectionType::A_TO_B)) {
+    } else if (isA && (this->m_direction == NS_DirectionType::A_TO_B)) {
         return true;
-    } else if(!isA && (this->m_direction == NS_DirectionType::B_TO_A)) {
+    } else if (!isA && (this->m_direction == NS_DirectionType::B_TO_A)) {
         return true;
     }
     return false;
@@ -119,20 +112,19 @@ bool Command::isTransmittable(bool isA) {
 bool Command::isReceivable(bool isA) {
     if (this->m_direction == NS_DirectionType::BIDIRECTIONAL) {
         return true;
-    } else if(isA && (this->m_direction == NS_DirectionType::B_TO_A)) {
+    } else if (isA && (this->m_direction == NS_DirectionType::B_TO_A)) {
         return true;
-    } else if(!isA && (this->m_direction == NS_DirectionType::A_TO_B)) {
+    } else if (!isA && (this->m_direction == NS_DirectionType::A_TO_B)) {
         return true;
     }
     return false;
 }
 
-
 void Command::setAttArray(QList<Attribute *> attArray) {
-   this->m_attArray = attArray;
+    this->m_attArray = attArray;
 }
 
-void Command::addAttribute(Attribute  *newAtt) {
+void Command::addAttribute(Attribute *newAtt) {
     this->m_attArray.append(newAtt);
 }
 
@@ -144,7 +136,7 @@ int Command::getTotalAttNb(void) {
     // Note attribute nb
     int attNb = this->getAttArray().size();
     // Parse attribute array for sub-attributes
-    for (Attribute  *attribute : this->getAttArray()) {
+    for (Attribute *attribute : this->getAttArray()) {
         attNb += attribute->getTotalAttNb_rec();
     }
     return attNb;
@@ -153,7 +145,7 @@ int Command::getTotalAttNb(void) {
 QStringList Command::getAttNamesList(void) {
     QStringList attNames = QStringList();
 
-    for (Attribute  *attribute : this->getAttArray()) {
+    for (Attribute *attribute : this->getAttArray()) {
         attNames.append(attribute->getName());
     }
     return attNames;
@@ -167,19 +159,18 @@ void Command::sortAttArrayById(void) {
 
     for (int i = 0; i < size; i++) {
         j = i;
-        while((j > 0) && (sortedAttArray.at(j-1)->getId() > sortedAttArray.at(j)->getId())) {
-          bufferAttribute = sortedAttArray.at(j);
-          sortedAttArray.replace(j, sortedAttArray.at(j-1));
-          sortedAttArray.replace(j-1, bufferAttribute);
-          j = j - 1;
+        while ((j > 0) && (sortedAttArray.at(j - 1)->getId() > sortedAttArray.at(j)->getId())) {
+            bufferAttribute = sortedAttArray.at(j);
+            sortedAttArray.replace(j, sortedAttArray.at(j - 1));
+            sortedAttArray.replace(j - 1, bufferAttribute);
+            j = j - 1;
         }
     }
     this->m_attArray = sortedAttArray;
 }
 
-
-
-void Command::editParameters(QString cmdName, short cmdCode, bool cmdHasAtt , NS_DirectionType::T_DirectionType cmdDirection, QString cmdDesc) {
+void Command::editParameters(
+    QString cmdName, short cmdCode, bool cmdHasAtt, NS_DirectionType::T_DirectionType cmdDirection, QString cmdDesc) {
     this->m_name = cmdName;
     this->m_id = cmdCode;
     this->m_hasAttributes = cmdHasAtt;
@@ -210,7 +201,7 @@ void Command::clearAttArray(void) {
 Attribute *Command::getAttByName(QString cmdAttName) {
     Attribute *cmdAttPointer = nullptr;
 
-    for (Attribute  *attribute : this->m_attArray) {
+    for (Attribute *attribute : this->m_attArray) {
         if ((attribute != nullptr) && (attribute->getName().compare(cmdAttName) == 0)) {
             cmdAttPointer = attribute;
             break;
@@ -220,57 +211,57 @@ Attribute *Command::getAttByName(QString cmdAttName) {
 }
 
 Command *Command::findCmdAddr(QString cmdName, QList<Command *> cmdList) {
-   Command *cmdStorage = nullptr;
+    Command *cmdStorage = nullptr;
 
-   for (Command  *command : cmdList) {
-      if (command->getName().compare(cmdName) == 0) {
-         cmdStorage = command;
-         break;
-      }
-   }
-   return cmdStorage;
+    for (Command *command : cmdList) {
+        if (command->getName().compare(cmdName) == 0) {
+            cmdStorage = command;
+            break;
+        }
+    }
+    return cmdStorage;
 }
 
 QList<Command *> Command::sortListById(QList<Command *> cmdList) {
-   QList<Command *> sortedArray = cmdList;
-   Command *bufferCmd;
-   int j;
-   int size = sortedArray.size();
+    QList<Command *> sortedArray = cmdList;
+    Command *bufferCmd;
+    int j;
+    int size = sortedArray.size();
 
-   for (int i = 0; i < size; i++) {
-      j = i;
-      while ((j > 0) && (sortedArray.at(j-1)->getId() > sortedArray.at(j)->getId())) {
-         bufferCmd = sortedArray.at(j);
-         sortedArray.replace(j, sortedArray.at(j-1));
-         sortedArray.replace(j-1, bufferCmd);
-         j = j - 1;
-      }
-   }
-   return sortedArray;
+    for (int i = 0; i < size; i++) {
+        j = i;
+        while ((j > 0) && (sortedArray.at(j - 1)->getId() > sortedArray.at(j)->getId())) {
+            bufferCmd = sortedArray.at(j);
+            sortedArray.replace(j, sortedArray.at(j - 1));
+            sortedArray.replace(j - 1, bufferCmd);
+            j = j - 1;
+        }
+    }
+    return sortedArray;
 }
 
 int Command::findCmdIdx(QString cmdName, QList<Command *> cmdList) {
-   int cmdIdx = -1;
+    int cmdIdx = -1;
 
-   for (int idx = 0; idx < cmdList.size(); idx++) {
-      if (cmdList.at(idx)->getName().compare(cmdName) == 0) {
-         cmdIdx = idx;
-         break;
-      }
-   }
-   return cmdIdx;
+    for (int idx = 0; idx < cmdList.size(); idx++) {
+        if (cmdList.at(idx)->getName().compare(cmdName) == 0) {
+            cmdIdx = idx;
+            break;
+        }
+    }
+    return cmdIdx;
 }
 
 QStringList Command::getListCmdNames(QList<Command *> cmdList) {
-   QStringList cmdNames = QStringList();
+    QStringList cmdNames = QStringList();
 
-   for (Command *command : cmdList) {
-      cmdNames.append(command->getName());
-   }
-   return cmdNames;
+    for (Command *command : cmdList) {
+        cmdNames.append(command->getName());
+    }
+    return cmdNames;
 }
 
-bool Command::compareRefCmdList(QList<Command *> a_list, QList<Command *> b_list, int& err_idx) {
+bool Command::compareRefCmdList(QList<Command *> a_list, QList<Command *> b_list, int &err_idx) {
     if (a_list.count() != b_list.count()) {
         err_idx = -1;
         return false;
@@ -289,11 +280,11 @@ int Command::getMaxAttNb(QList<Command *> cmdList) {
 
     // Parse command list to find the max total attribute
     for (Command *command : cmdList) {
-      int attNb = command->getTotalAttNb();
-      // Max comparison
-      if (attNb > max) {
-        max = attNb;
-      }
+        int attNb = command->getTotalAttNb();
+        // Max comparison
+        if (attNb > max) {
+            max = attNb;
+        }
     }
     return max;
 }

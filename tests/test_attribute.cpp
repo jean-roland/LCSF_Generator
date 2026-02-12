@@ -19,8 +19,8 @@
     along with this project. If not, see <https://www.gnu.org/licenses/>
  */
 
-#include <gtest/gtest.h>
 #include "attribute.h"
+#include <gtest/gtest.h>
 
 TEST(test_attribute, setget) {
     Attribute test_att;
@@ -102,8 +102,7 @@ TEST(test_attribute, subatt) {
     ASSERT_EQ(test_att.getTotalAttNb_rec(), 4);
 
     // Check getSubAttNamesList
-    QStringList subAttNames = {sub_att0->getName(), sub_att1->getName(),
-     sub_att2->getName(), sub_att3->getName()};
+    QStringList subAttNames = {sub_att0->getName(), sub_att1->getName(), sub_att2->getName(), sub_att3->getName()};
     ASSERT_EQ(test_att.getSubAttNamesList(), subAttNames);
 
     // Check getSubAttPointer

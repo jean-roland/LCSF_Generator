@@ -19,8 +19,8 @@
     along with this project. If not, see <https://www.gnu.org/licenses/>
  */
 
-#include <gtest/gtest.h>
 #include "command.h"
+#include <gtest/gtest.h>
 
 TEST(test_command, setget) {
     Command test_cmd;
@@ -119,8 +119,7 @@ TEST(test_command, cmd_att) {
     ASSERT_EQ(test_cmd.getAttArray(), att_array);
 
     // Check getAttNamesList
-    QStringList att_names = {test_att1->getName(), test_att0->getName(),
-     test_att3->getName(), test_att2->getName()};
+    QStringList att_names = {test_att1->getName(), test_att0->getName(), test_att3->getName(), test_att2->getName()};
     ASSERT_EQ(test_cmd.getAttNamesList(), att_names);
 
     // Check sortAttArrayById
@@ -159,8 +158,8 @@ TEST(test_command, cmd_static) {
     ASSERT_EQ(Command::findCmdIdx(test_cmd2.getName(), cmd_array), cmd_array.indexOf(&test_cmd2));
 
     // Check getListCmdNames
-    QStringList cmd_names = {test_cmd1.getName(), test_cmd3.getName(),
-     test_cmd0.getName(), test_cmd4.getName(), test_cmd2.getName()};
+    QStringList cmd_names = {
+        test_cmd1.getName(), test_cmd3.getName(), test_cmd0.getName(), test_cmd4.getName(), test_cmd2.getName()};
     ASSERT_EQ(Command::getListCmdNames(cmd_array), cmd_names);
 
     // Check sortListById

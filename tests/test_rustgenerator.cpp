@@ -19,8 +19,8 @@
     along with this project. If not, see <https://www.gnu.org/licenses/>
  */
 
-#include <gtest/gtest.h>
 #include <QFile>
+#include <gtest/gtest.h>
 
 #include "rustgenerator.h"
 #include "test_data.h"
@@ -43,7 +43,7 @@ TEST(test_rustgen, gen_A_output) {
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     EXPECT_EQ(output_content.count(), model_content.count());
-    for(int idx = 0; idx < output_content.count(); idx++) {
+    for (int idx = 0; idx < output_content.count(); idx++) {
         ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
     }
     model_file.close();
@@ -55,7 +55,7 @@ TEST(test_rustgen, gen_A_output) {
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     EXPECT_EQ(output_content.count(), model_content.count());
-    for(int idx = 0; idx < output_content.count(); idx++) {
+    for (int idx = 0; idx < output_content.count(); idx++) {
         ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
     }
     model_file.close();
@@ -78,7 +78,7 @@ TEST(test_rustgen, gen_B_output) {
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     EXPECT_EQ(output_content.count(), model_content.count());
-    for(int idx = 0; idx < output_content.count(); idx++) {
+    for (int idx = 0; idx < output_content.count(); idx++) {
         ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
     }
     model_file.close();
@@ -90,7 +90,7 @@ TEST(test_rustgen, gen_B_output) {
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     EXPECT_EQ(output_content.count(), model_content.count());
-    for(int idx = 0; idx < output_content.count(); idx++) {
+    for (int idx = 0; idx < output_content.count(); idx++) {
         ASSERT_EQ(model_content.at(idx).toStdString(), output_content.at(idx).toStdString()) << idx;
     }
     model_file.close();
