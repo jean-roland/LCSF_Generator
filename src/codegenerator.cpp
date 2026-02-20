@@ -351,7 +351,7 @@ void CodeGenerator::fillSubAttPayload_Rec(
                         *pOut << indent << "// Intermediary variable" << Qt::endl;
                         *pOut << indent << "pSubAttArray = &(" << attDataPath << "Payload.pSubAttArray);" << Qt::endl;
                         *pOut << indent << "// Allocate sub-attribute array" << Qt::endl;
-                        *pOut << indent << "if (!FiloGet(&LcsfBridge" << protocolName << "Info.Filo, LCSF_"
+                        *pOut << indent << "if (!LifoGet(&LcsfBridge" << protocolName << "Info.Lifo, LCSF_"
                               << protocolName.toUpper() << "_ATT_" << attribute->getName().toUpper()
                               << "_SUBATT_NB, (void *)pSubAttArray)) {" << Qt::endl;
                         *pOut << indent << "    return false;" << Qt::endl;
@@ -399,7 +399,7 @@ void CodeGenerator::fillSubAttPayload_Rec(
                         *pOut << indent << "// Intermediary variable" << Qt::endl;
                         *pOut << indent << "pSubAttArray = &(" << attDataPath << "Payload.pSubAttArray);" << Qt::endl;
                         *pOut << indent << "// Allocate sub-attribute array" << Qt::endl;
-                        *pOut << indent << "if (!FiloGet(&LcsfBridge" << protocolName << "Info.Filo, LCSF_"
+                        *pOut << indent << "if (!LifoGet(&LcsfBridge" << protocolName << "Info.Lifo, LCSF_"
                               << protocolName.toUpper() << "_ATT_" << attribute->getName().toUpper()
                               << "_SUBATT_NB, (void *)pSubAttArray)) {" << Qt::endl;
                         *pOut << indent << "    return false;" << Qt::endl;
@@ -1147,8 +1147,8 @@ void CodeGenerator::generateBridgeHeader(
         }
         out << "// --- Public Constants ---" << Qt::endl;
         out << Qt::endl;
-        out << "// Bridge decoder filo size" << Qt::endl;
-        out << "#define LCSF_BRIDGE_" << protocolName.toUpper() << "_FILO_SIZE " << Command::getMaxAttNb(cmdList)
+        out << "// Bridge decoder lifo size" << Qt::endl;
+        out << "#define LCSF_BRIDGE_" << protocolName.toUpper() << "_LIFO_SIZE " << Command::getMaxAttNb(cmdList)
             << Qt::endl;
         out << "// Lcsf protocol identifier" << Qt::endl;
         out << "#define LCSF_" << protocolName.toUpper() << "_PROTOCOL_ID 0x" << protocolId << Qt::endl;
@@ -1244,17 +1244,17 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
         out << "// Custom lib" << Qt::endl;
         out << "#include \"LCSF_Bridge_" << protocolName << ".h\"" << Qt::endl;
         out << "#include <LCSF_Config.h>" << Qt::endl;
-        out << "#include <lib/Filo.h>" << Qt::endl;
         out << "#include <lib/LCSF_Transcoder.h>" << Qt::endl;
+        out << "#include <lib/Lifo.h>" << Qt::endl;
         out << Qt::endl;
         out << "// *** Definitions ***" << Qt::endl;
         out << "// --- Private Types ---" << Qt::endl;
         out << Qt::endl;
         out << "// Module information structure" << Qt::endl;
         out << "typedef struct _lcsf_bridge_" << protocolName.toLower() << "_info {" << Qt::endl;
-        out << "    uint8_t FiloData[LCSF_BRIDGE_" << protocolName.toUpper() << "_FILO_SIZE * sizeof(lcsf_valid_att_t)];"
+        out << "    uint8_t LifoData[LCSF_BRIDGE_" << protocolName.toUpper() << "_LIFO_SIZE * sizeof(lcsf_valid_att_t)];"
             << Qt::endl;
-        out << "    filo_desc_t Filo;" << Qt::endl;
+        out << "    lifo_desc_t Lifo;" << Qt::endl;
         out << "    " << protocolName.toLower() << "_cmd_payload_t CmdPayload;" << Qt::endl;
         out << "} lcsf_bridge_" << protocolName.toLower() << "_info_t;" << Qt::endl;
         out << Qt::endl;
@@ -1456,7 +1456,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
                 out << "        return false;" << Qt::endl;
                 out << "    }" << Qt::endl;
                 out << "    // Allocate attribute array" << Qt::endl;
-                out << "    if (!FiloGet(&LcsfBridge" << protocolName << "Info.Filo, LCSF_" << protocolName.toUpper()
+                out << "    if (!LifoGet(&LcsfBridge" << protocolName << "Info.Lifo, LCSF_" << protocolName.toUpper()
                     << "_CMD_" << command->getName().toUpper() << "_ATT_NB, (void *)pAttArrayAddr)) {" << Qt::endl;
                 out << "        return false;" << Qt::endl;
                 out << "    }" << Qt::endl;
@@ -1479,7 +1479,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
                                         << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
                                         << "].Payload.pSubAttArray);" << Qt::endl;
                                     out << "        // Allocate sub-attribute array" << Qt::endl;
-                                    out << "        if (!FiloGet(&LcsfBridge" << protocolName << "Info.Filo, LCSF_"
+                                    out << "        if (!LifoGet(&LcsfBridge" << protocolName << "Info.Lifo, LCSF_"
                                         << protocolName.toUpper() << "_ATT_" << attribute->getName().toUpper()
                                         << "_SUBATT_NB, (void *)pSubAttArray)) {" << Qt::endl;
                                     out << "            return false;" << Qt::endl;
@@ -1542,7 +1542,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
                                         << command->getName().toUpper() << "_ATT_" << attribute->getName().toUpper()
                                         << "].Payload.pSubAttArray);" << Qt::endl;
                                     out << "    // Allocate sub-attribute array" << Qt::endl;
-                                    out << "    if (!FiloGet(&LcsfBridge" << protocolName << "Info.Filo, LCSF_"
+                                    out << "    if (!LifoGet(&LcsfBridge" << protocolName << "Info.Lifo, LCSF_"
                                         << protocolName.toUpper() << "_ATT_" << attribute->getName().toUpper()
                                         << "_SUBATT_NB, (void *)pSubAttArray)) {" << Qt::endl;
                                     out << "        return false;" << Qt::endl;
@@ -1638,8 +1638,8 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
         out << Qt::endl;
 
         out << "bool LCSF_Bridge_" << protocolName << "Init(void) {" << Qt::endl;
-        out << "    return FiloInit(&LcsfBridge" << protocolName << "Info.Filo, LcsfBridge" << protocolName
-            << "Info.FiloData, LCSF_BRIDGE_" << protocolName.toUpper() << "_FILO_SIZE, sizeof(lcsf_valid_att_t));"
+        out << "    return LifoInit(&LcsfBridge" << protocolName << "Info.Lifo, LcsfBridge" << protocolName
+            << "Info.LifoData, LCSF_BRIDGE_" << protocolName.toUpper() << "_LIFO_SIZE, sizeof(lcsf_valid_att_t));"
             << Qt::endl;
         out << "}" << Qt::endl;
         out << Qt::endl;
@@ -1658,7 +1658,7 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
             << "_cmd_payload_t *pCmdPayload, uint8_t *pBuffer, size_t buffSize) {" << Qt::endl;
         out << "    lcsf_valid_cmd_t sendCmd;" << Qt::endl;
         out << "    sendCmd.CmdId = LCSF_Bridge_" << protocolName << "_CMDNAME2CMDID[cmdName];" << Qt::endl;
-        out << "    FiloFreeAll(&LcsfBridge" << protocolName << "Info.Filo);" << Qt::endl;
+        out << "    LifoFreeAll(&LcsfBridge" << protocolName << "Info.Lifo);" << Qt::endl;
         out << Qt::endl;
         out << "    if (!LCSF_Bridge_" << protocolName << "FillCmdAtt(cmdName, &(sendCmd.pAttArray), pCmdPayload)) {"
             << Qt::endl;
