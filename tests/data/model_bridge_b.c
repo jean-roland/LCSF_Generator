@@ -11,8 +11,8 @@
 // Custom lib
 #include "LCSF_Bridge_Test.h"
 #include <LCSF_Config.h>
-#include <lib/Lifo.h>
 #include <lib/LCSF_Transcoder.h>
+#include <lib/Lifo.h>
 
 // *** Definitions ***
 // --- Private Types ---
