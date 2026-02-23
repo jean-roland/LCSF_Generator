@@ -38,10 +38,22 @@ bool RustGenerator::is_CString_needed(QList<Attribute::T_attInfos> attInfosList)
 
 // Set all chars of a string to lower then the first to upper
 QString RustGenerator::capitalize(const QString &str) {
-    QString tmp = str;
-    tmp = tmp.toLower();
-    tmp[0] = str[0].toUpper();
-    return tmp;
+    QString result;
+    bool capitalizeNext = true;
+    for (int i = 0; i < str.length(); ++i) {
+        QChar ch = str[i];
+        if (ch == '_') {
+            capitalizeNext = true;
+        } else {
+            if (capitalizeNext) {
+                result += ch.toUpper();
+                capitalizeNext = false;
+            } else {
+                result += ch.toLower();
+            }
+        }
+    }
+    return result;
 }
 
 // Retrieve the path of an attribute in a payload struct
