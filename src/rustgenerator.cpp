@@ -543,7 +543,7 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
     if (!dir.exists()) {
         dir.mkpath(".");
     }
-    QString fileName = dirPath + "/protocol_" + low_prot_name + ".rs";
+    QString fileName = dirPath + "/protocol_" + low_prot_name + "_" + ((isA) ? "a" : "b") + ".rs";
     QList<Attribute::T_attInfos> attInfosList = this->getAttInfos(cmdList);
     QFile file(fileName);
 
@@ -581,6 +581,7 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
         // Command payload union
         out << "/// Command payload union" << Qt::endl;
         out << "#[derive(Debug, PartialEq)]" << Qt::endl;
+        out << "#[allow(dead_code)]" << Qt::endl;
         out << "pub enum CmdPayload {" << Qt::endl;
         out << "    Empty," << Qt::endl;
         for (Command *command : cmdList) {

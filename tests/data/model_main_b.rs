@@ -26,6 +26,7 @@ pub enum CmdEnum {
 
 /// Command payload union
 #[derive(Debug, PartialEq)]
+#[allow(dead_code)]
 pub enum CmdPayload {
     Empty,
     Cc1Payload(Cc1AttPayload),
