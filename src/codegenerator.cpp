@@ -1250,10 +1250,11 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
         out << "// *** Definitions ***" << Qt::endl;
         out << "// --- Private Types ---" << Qt::endl;
         out << Qt::endl;
+        out << "static uint8_t LifoData[LCSF_BRIDGE_" << protocolName.toUpper()
+            << "_LIFO_SIZE * sizeof(lcsf_valid_att_t)];" << Qt::endl;
+        out << Qt::endl;
         out << "// Module information structure" << Qt::endl;
         out << "typedef struct _lcsf_bridge_" << protocolName.toLower() << "_info {" << Qt::endl;
-        out << "    uint8_t LifoData[LCSF_BRIDGE_" << protocolName.toUpper() << "_LIFO_SIZE * sizeof(lcsf_valid_att_t)];"
-            << Qt::endl;
         out << "    lifo_desc_t Lifo;" << Qt::endl;
         out << "    " << protocolName.toLower() << "_cmd_payload_t CmdPayload;" << Qt::endl;
         out << "} lcsf_bridge_" << protocolName.toLower() << "_info_t;" << Qt::endl;
@@ -1638,9 +1639,8 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
         out << Qt::endl;
 
         out << "bool LCSF_Bridge_" << protocolName << "Init(void) {" << Qt::endl;
-        out << "    return LifoInit(&LcsfBridge" << protocolName << "Info.Lifo, LcsfBridge" << protocolName
-            << "Info.LifoData, LCSF_BRIDGE_" << protocolName.toUpper() << "_LIFO_SIZE, sizeof(lcsf_valid_att_t));"
-            << Qt::endl;
+        out << "    return LifoInit(&LcsfBridge" << protocolName << "Info.Lifo, LifoData, LCSF_BRIDGE_"
+            << protocolName.toUpper() << "_LIFO_SIZE, sizeof(lcsf_valid_att_t));" << Qt::endl;
         out << "}" << Qt::endl;
         out << Qt::endl;
 

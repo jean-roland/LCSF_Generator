@@ -17,9 +17,10 @@
 // *** Definitions ***
 // --- Private Types ---
 
+static uint8_t LifoData[LCSF_BRIDGE_TEST_LIFO_SIZE * sizeof(lcsf_valid_att_t)];
+
 // Module information structure
 typedef struct _lcsf_bridge_test_info {
-    uint8_t LifoData[LCSF_BRIDGE_TEST_LIFO_SIZE * sizeof(lcsf_valid_att_t)];
     lifo_desc_t Lifo;
     test_cmd_payload_t CmdPayload;
 } lcsf_bridge_test_info_t;
@@ -683,7 +684,7 @@ static bool LCSF_Bridge_TestFillCmdAtt(uint_fast16_t cmdName, lcsf_valid_att_t *
 // *** Public Functions ***
 
 bool LCSF_Bridge_TestInit(void) {
-    return LifoInit(&LcsfBridgeTestInfo.Lifo, LcsfBridgeTestInfo.LifoData, LCSF_BRIDGE_TEST_LIFO_SIZE, sizeof(lcsf_valid_att_t));
+    return LifoInit(&LcsfBridgeTestInfo.Lifo, LifoData, LCSF_BRIDGE_TEST_LIFO_SIZE, sizeof(lcsf_valid_att_t));
 }
 
 bool LCSF_Bridge_TestReceive(lcsf_valid_cmd_t *pValidCmd) {
