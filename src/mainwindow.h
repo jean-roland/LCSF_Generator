@@ -60,6 +60,7 @@ class MainWindow : public QMainWindow {
     CodeExtractor m_codeextractB;
     QString outAPath;
     QString outBPath;
+    QString currSaveLoc;
     bool treeIsCleared;
     const QString defProtocolName = "Default";
     const QString defoutAPath = "./COutputA";

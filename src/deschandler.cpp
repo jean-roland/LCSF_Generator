@@ -179,7 +179,7 @@ bool DescHandler::save_desc(
     }
     // Write commands in file
     DescFile.insert(QLatin1String("commands"), DescCmd);
-    QFile JsonDescFile(filename + ".json");
+    QFile JsonDescFile(filename);
 
     if (JsonDescFile.open(QIODevice::WriteOnly)) {
         JsonDescFile.write(QJsonDocument(DescFile).toJson());

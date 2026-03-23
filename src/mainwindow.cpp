@@ -40,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     // Default dir paths
     outAPath = defoutAPath;
     outBPath = defoutBPath;
+    currSaveLoc = descDirPath;
 
     // Set tree clear state
     treeIsCleared = false;
@@ -82,45 +83,41 @@ void MainWindow::on_actionSave_protocol_triggered(void) {
         QMessageBox::warning(nullptr, "Warning", "Protocol has no commands!");
         return;
     }
-    // Create repertory if needed
-    QDir dir(descDirPath);
-    if (!dir.exists()) {
-        dir.mkpath(".");
-    }
-    // Request file location
-    QString filename(
-        QFileDialog::getSaveFileName(this, "Choose save location", descDirPath + "/" + protocolName, "Descriptor (*.json)"));
+    // Create default repertory if needed
+    QDir().mkpath(currSaveLoc);
+    // Request file location.
+    QString selectedPath =
+        QFileDialog::getSaveFileName(this, "Choose save location", currSaveLoc + "/" + protocolName, "Descriptor (*.json)");
     // Validity check
-    if (filename.trimmed().isEmpty()) {
-        QMessageBox::warning(nullptr, "Warning", "Invalid save location!");
+    if (selectedPath.isEmpty()) {
         return;
     }
-    // Trim descriptor name
-    QFileInfo completeFileName = QFileInfo(filename);
-    filename = descDirPath + "/" + completeFileName.baseName();
-    qDebug() << "File selected: " << filename;
+    qDebug() << "File selected: " << selectedPath;
     // Save data
-    if (!DescHandler::save_desc(filename, this->m_cmdArray, protocolName, protocolId, protocolDesc)) {
+    if (!DescHandler::save_desc(selectedPath, this->m_cmdArray, protocolName, protocolId, protocolDesc)) {
         QMessageBox::warning(nullptr, "Warning", "Couldn't create json descriptor file!");
     }
 }
 
 void MainWindow::on_actionLoad_protocol_triggered(void) {
-    // Look for descriptor file
-    QFile file(QFileDialog::getOpenFileName(this, "Choose file to load", descDirPath, "Descriptor (*.json)"));
-
-    // Abort if no file selected
-    if (!file.exists()) {
-        QMessageBox::warning(nullptr, "Error", "No selected file!");
+    // Get the full path from the dialog
+    QString selectedFile = QFileDialog::getOpenFileName(this, "Choose file to load", currSaveLoc, "Descriptor (*.json)");
+    // Abort if the user cancelled
+    if (selectedFile.isEmpty()) {
         return;
     }
+    QFile file(selectedFile);
     // Clear data
     this->clearData();
     // Open file
     if (!file.open(QIODevice::ReadOnly)) {
-        QMessageBox::warning(nullptr, "Error", file.errorString());
+        QMessageBox::warning(nullptr, "Error opening file", file.errorString());
         return;
     }
+    // Store the directory location for next time
+    QFileInfo fileInfo(selectedFile);
+    currSaveLoc = fileInfo.absolutePath();
+
     // Extract data
     QString protocolName, protocolId, protocolDesc;
     DescHandler::load_desc(file, this->m_cmdArray, protocolName, protocolId, protocolDesc);
