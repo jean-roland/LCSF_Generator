@@ -58,15 +58,12 @@ class MainWindow : public QMainWindow {
     RustGenerator m_rustgen;
     CodeExtractor m_codeextractA;
     CodeExtractor m_codeextractB;
-    QString outAPath;
-    QString outBPath;
+    QString cOutPath;
     QString currSaveLoc;
     bool treeIsCleared;
     const QString defProtocolName = "Default";
-    const QString defoutAPath = "./COutputA";
-    const QString defoutBPath = "./COutputB";
-    const QString rustoutAPath = "./RustOutputA";
-    const QString rustoutBPath = "./RustOutputB";
+    const QString defCOutPath = "./COutput";
+    const QString defRustOutPath = "./RustOutput";
     const QString cmdArrayName = "Commands";
     const QString attArraySuffix = "_Attributes";
     const QString descDirPath = "./Description";

@@ -42,10 +42,8 @@ static QString protocolName;
 static QString protocolId;
 static QString protocolDesc;
 static QList<Command *> cmdArray;
-static QString outAPath = "./COutputA";
-static QString outBPath = "./COutputB";
-static QString rustOutAPath = "./RustOutputA";
-static QString rustOutBPath = "./RustOutputB";
+static QString cOutPath = "./COutput";
+static QString rustOutPath = "./RustOutput";
 static QString docPath = "./Export";
 
 static DocGenerator docgen;
@@ -168,7 +166,7 @@ int main(int argc, char *argv[]) {
             exit(EXIT_FAILURE);
         }
         QFileInfo importAInfo(importAFile);
-        outAPath = importAInfo.absoluteDir().absolutePath();
+        cOutPath = importAInfo.absoluteDir().absolutePath();
         out << "Import A extraction successful." << Qt::endl;
     }
     if (parser.isSet("b")) {
@@ -185,7 +183,7 @@ int main(int argc, char *argv[]) {
             exit(EXIT_FAILURE);
         }
         QFileInfo importBInfo(importBFile);
-        outBPath = importBInfo.absoluteDir().absolutePath();
+        cOutPath = importBInfo.absoluteDir().absolutePath();
         out << "Import B extraction successful." << Qt::endl;
     }
     // Check data
@@ -199,24 +197,22 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
     // Generate "A" C files
-    codegen.generateMainHeader(protocolName, cmdArray, codeextractA, outAPath);
-    codegen.generateMain(protocolName, cmdArray, codeextractA, true, outAPath);
-    codegen.generateBridgeHeader(protocolName, protocolId, cmdArray, outAPath);
-    codegen.generateBridge(protocolName, cmdArray, true, outAPath);
-    codegen.generateDescription(protocolName, cmdArray, outAPath);
+    codegen.generateMainHeader(protocolName, cmdArray, codeextractA, cOutPath);
+    codegen.generateMain(protocolName, cmdArray, codeextractA, true, cOutPath);
+    codegen.generateBridgeHeader(protocolName, protocolId, cmdArray, cOutPath);
+    codegen.generateBridge(protocolName, cmdArray, true, cOutPath);
 
-    rustgen.generateMain(protocolName, cmdArray, true, rustOutAPath);
-    rustgen.generateBridge(protocolName, protocolId, cmdArray, true, rustOutAPath);
+    rustgen.generateMain(protocolName, cmdArray, true, rustOutPath);
+    rustgen.generateBridge(protocolName, protocolId, cmdArray, true, rustOutPath);
 
     // Generate "B" C files
-    codegen.generateMainHeader(protocolName, cmdArray, codeextractB, outBPath);
-    codegen.generateMain(protocolName, cmdArray, codeextractB, false, outBPath);
-    codegen.generateBridgeHeader(protocolName, protocolId, cmdArray, outBPath);
-    codegen.generateBridge(protocolName, cmdArray, false, outBPath);
-    codegen.generateDescription(protocolName, cmdArray, outBPath);
+    codegen.generateMainHeader(protocolName, cmdArray, codeextractB, cOutPath);
+    codegen.generateMain(protocolName, cmdArray, codeextractB, false, cOutPath);
+    codegen.generateBridgeHeader(protocolName, protocolId, cmdArray, cOutPath);
+    codegen.generateBridge(protocolName, cmdArray, false, cOutPath);
 
-    rustgen.generateMain(protocolName, cmdArray, false, rustOutBPath);
-    rustgen.generateBridge(protocolName, protocolId, cmdArray, false, rustOutBPath);
+    rustgen.generateMain(protocolName, cmdArray, false, rustOutPath);
+    rustgen.generateBridge(protocolName, protocolId, cmdArray, false, rustOutPath);
 
     // Generate doc (if needed)
     if (parser.isSet("d")) {
@@ -226,8 +222,8 @@ int main(int argc, char *argv[]) {
     }
     // End output
     out << "Generation complete." << Qt::endl;
-    out << "C code A generated in: " << outAPath << ", code B generated in: " << outBPath << Qt::endl;
-    out << "Rust code A generated in: " << rustOutAPath << ", code B generated in: " << rustOutBPath << Qt::endl;
+    out << "C code generated in: " << cOutPath << Qt::endl;
+    out << "Rust code generated in: " << rustOutPath << Qt::endl;
     if (parser.isSet("d")) {
         out << "Documentation generated in: " << docPath << Qt::endl;
     }

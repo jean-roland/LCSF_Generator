@@ -38,8 +38,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->twDescTableView->horizontalHeader()->setStretchLastSection(true);
 
     // Default dir paths
-    outAPath = defoutAPath;
-    outBPath = defoutBPath;
+    cOutPath = defCOutPath;
     currSaveLoc = descDirPath;
 
     // Set tree clear state
@@ -1224,8 +1223,7 @@ void MainWindow::clearData(void) {
     // Reset Table
     this->showCommandArray();
     // Reset directories paths
-    outAPath = defoutAPath;
-    outBPath = defoutBPath;
+    cOutPath = defCOutPath;
 }
 
 void MainWindow::clearTree(void) {
@@ -1246,14 +1244,18 @@ void MainWindow::on_pbImportDescA_clicked(void) {
         return;
     }
     protocolName = CheckAndCorrectInputString(protocolName);
-    QDir dir(outAPath);
+    QDir dir(cOutPath);
     if (!dir.exists()) {
         dir.mkpath(".");
     }
     QString filterName = protocolName + "_Main_a.c";
     QString fileName = QFileDialog::getOpenFileName(this, "Choose file to load", "./", filterName);
+    // Abort if user closed the dialog
+    if (fileName.isEmpty()) {
+        return;
+    }
+    // Open file
     QFile file(fileName);
-
     if (!file.open(QIODevice::ReadOnly)) {
         QMessageBox::warning(nullptr, "Error", file.errorString());
         return;
@@ -1268,7 +1270,7 @@ void MainWindow::on_pbImportDescA_clicked(void) {
     file.close();
     // Note destination path
     QFileInfo fileInfo(file);
-    outAPath = fileInfo.absoluteDir().absolutePath();
+    cOutPath = fileInfo.absoluteDir().absolutePath();
     // Change button state to indicate importation
     QPalette pal;
     pal.setColor(QPalette::Button, QColor(Qt::green));
@@ -1284,14 +1286,18 @@ void MainWindow::on_pbImportDescB_clicked(void) {
         return;
     }
     protocolName = CheckAndCorrectInputString(protocolName);
-    QDir dir(outBPath);
+    QDir dir(cOutPath);
     if (!dir.exists()) {
         dir.mkpath(".");
     }
     QString filterName = protocolName + "_Main_b.c";
     QString fileName = QFileDialog::getOpenFileName(this, "Choose file to load", "./", filterName);
+    // Abort if user closed the dialog
+    if (fileName.isEmpty()) {
+        return;
+    }
+    // Open file
     QFile file(fileName);
-
     if (!file.open(QIODevice::ReadOnly)) {
         QMessageBox::warning(nullptr, "Error", file.errorString());
         return;
@@ -1306,7 +1312,7 @@ void MainWindow::on_pbImportDescB_clicked(void) {
     file.close();
     // Note destination path
     QFileInfo fileInfo(file);
-    outBPath = fileInfo.absoluteDir().absolutePath();
+    cOutPath = fileInfo.absoluteDir().absolutePath();
     // Change button state to indicate importation
     QPalette pal;
     pal.setColor(QPalette::Button, QColor(Qt::green));
@@ -1343,28 +1349,25 @@ void MainWindow::on_pbGenerateDesc_clicked(void) {
     }
 
     // Generate "A" files
-    this->m_codegen.generateMainHeader(protocolName, this->m_cmdArray, this->m_codeextractA, outAPath);
-    this->m_codegen.generateMain(protocolName, this->m_cmdArray, this->m_codeextractA, true, outAPath);
-    this->m_codegen.generateBridgeHeader(protocolName, protocolId, this->m_cmdArray, outAPath);
-    this->m_codegen.generateBridge(protocolName, this->m_cmdArray, true, outAPath);
-    this->m_codegen.generateDescription(protocolName, this->m_cmdArray, outAPath);
+    this->m_codegen.generateMainHeader(protocolName, this->m_cmdArray, this->m_codeextractA, cOutPath);
+    this->m_codegen.generateMain(protocolName, this->m_cmdArray, this->m_codeextractA, true, cOutPath);
+    this->m_codegen.generateBridgeHeader(protocolName, protocolId, this->m_cmdArray, cOutPath);
+    this->m_codegen.generateBridge(protocolName, this->m_cmdArray, true, cOutPath);
 
-    this->m_rustgen.generateMain(protocolName, this->m_cmdArray, true, rustoutAPath);
-    this->m_rustgen.generateBridge(protocolName, protocolId, this->m_cmdArray, true, rustoutAPath);
+    this->m_rustgen.generateMain(protocolName, this->m_cmdArray, true, defRustOutPath);
+    this->m_rustgen.generateBridge(protocolName, protocolId, this->m_cmdArray, true, defRustOutPath);
 
     // Generate "B" files
-    this->m_codegen.generateMainHeader(protocolName, this->m_cmdArray, this->m_codeextractB, outBPath);
-    this->m_codegen.generateMain(protocolName, this->m_cmdArray, this->m_codeextractB, false, outBPath);
-    this->m_codegen.generateBridgeHeader(protocolName, protocolId, this->m_cmdArray, outBPath);
-    this->m_codegen.generateBridge(protocolName, this->m_cmdArray, false, outBPath);
-    this->m_codegen.generateDescription(protocolName, this->m_cmdArray, outBPath);
+    this->m_codegen.generateMainHeader(protocolName, this->m_cmdArray, this->m_codeextractB, cOutPath);
+    this->m_codegen.generateMain(protocolName, this->m_cmdArray, this->m_codeextractB, false, cOutPath);
+    this->m_codegen.generateBridgeHeader(protocolName, protocolId, this->m_cmdArray, cOutPath);
+    this->m_codegen.generateBridge(protocolName, this->m_cmdArray, false, cOutPath);
 
-    this->m_rustgen.generateMain(protocolName, this->m_cmdArray, false, rustoutBPath);
-    this->m_rustgen.generateBridge(protocolName, protocolId, this->m_cmdArray, false, rustoutBPath);
+    this->m_rustgen.generateMain(protocolName, this->m_cmdArray, false, defRustOutPath);
+    this->m_rustgen.generateBridge(protocolName, protocolId, this->m_cmdArray, false, defRustOutPath);
 
     QMessageBox::information(nullptr, "Info",
-        "C code has been generated in A: " + outAPath + ", B: " + outBPath +
-            "\nRust code has been generated in A: " + rustoutAPath + ", B: " + rustoutBPath);
+        "C code has been generated in: " + cOutPath + "\nRust code has been generated in: " + defRustOutPath);
 }
 
 // Close event action
