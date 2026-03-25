@@ -66,7 +66,7 @@ TEST(test_deschandler, load_desc) {
 
 TEST(test_deschandler, save_desc) {
     QString path = "gen_out/";
-    QString filename = path + "Test_desc";
+    QString filename = path + "Test_desc.json" ;
     QFile model_file, output_file;
     QStringList model_content, output_content;
 
