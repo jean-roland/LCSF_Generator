@@ -9,6 +9,7 @@ use crate::lcsf_prot::lcsf_protocol_test;
 use lcsf_core::LcsfCore;
 use lcsf_validator::LcsfValidCmd;
 use std::ffi::CString;
+// --- Custom uses ---
 
 /// Command enum
 #[derive(Debug, PartialEq, Copy, Clone)]
@@ -210,6 +211,8 @@ pub struct Ca11AttCa12Payload {
     pub sa4: Vec<u8>,
 }
 
+// --- Custom definitions ---
+
 fn execute_sc1() {
     // Function to implement
     todo!();
@@ -374,6 +377,7 @@ fn execute_cmd(cmd_name: CmdEnum, cmd_payload: &CmdPayload) {
     }
 }
 
+// --- Custom public functions ---
 /// Init a LcsfCore with the protocol
 ///
 /// core: LcsfCore reference

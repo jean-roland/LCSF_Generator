@@ -22,6 +22,7 @@
 #include <QStringBuilder>
 
 #include "rustgenerator.h"
+#include "rustextractor.h"
 
 RustGenerator::RustGenerator() {
 }
@@ -537,7 +538,7 @@ void RustGenerator::printAttDesc_Rec(QString parentName, QList<Attribute *> attL
 }
 
 // Generate the protocol_<name>.rs file
-void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList, bool isA, QString dirPath) {
+void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList, bool isA, QString dirPath, RustExtractor rustExtract) {
     QString low_prot_name = protocolName.toLower();
     QDir dir(dirPath);
     if (!dir.exists()) {
@@ -565,6 +566,10 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
         // Check if Cstring needed
         if (this->is_CString_needed(attInfosList)) {
             out << "use std::ffi::CString;" << Qt::endl;
+        }
+        out << "// --- Custom uses ---" << Qt::endl;
+        if (rustExtract.getExtractionComplete()) {
+            out << rustExtract.getExtraUses();
         }
         out << Qt::endl;
 
@@ -705,11 +710,24 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
             }
         }
 
+        out << "// --- Custom definitions ---" << Qt::endl;
+        if (rustExtract.getExtractionComplete()) {
+            out << rustExtract.getCustomDefinitions();
+        }
+        out << Qt::endl;
+
         // Command execute functions
+        bool useExtract = rustExtract.getExtractionComplete();
+        QStringList cmdFunctions = useExtract ? rustExtract.getCommandFunctions() : QStringList();
+
         for (int idx = 0; idx < cmdList.size(); idx++) {
             Command *command = cmdList.at(idx);
 
             if (command->isReceivable(isA)) {
+                if (useExtract && idx < cmdFunctions.size() && !cmdFunctions.at(idx).isEmpty()) {
+                    out << cmdFunctions.at(idx);
+                    continue;
+                }
                 out << "fn " << "execute_" << command->getName().toLower() << "(";
 
                 if (command->getAttArray().size() > 0) {
@@ -803,40 +821,56 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
             }
         }
         out << "        _ => {" << Qt::endl;
-        out << "            // This case can be customized (e.g to send an error command)" << Qt::endl;
-        out << "            todo!();" << Qt::endl;
+        {
+            QString defaultHandler = useExtract ? rustExtract.getDefaultCommandHandler() : "";
+            if (!defaultHandler.isEmpty()) {
+                out << defaultHandler;
+            } else {
+                out << "            // This case can be customized (e.g to send an error command)" << Qt::endl;
+                out << "            todo!();" << Qt::endl;
+            }
+        }
         out << "        }" << Qt::endl;
         out << "    }" << Qt::endl;
         out << "}" << Qt::endl;
         out << Qt::endl;
+        out << "// --- Custom public functions ---" << Qt::endl;
 
-        // Utility functions
-        out << "/// Init a LcsfCore with the protocol" << Qt::endl;
-        out << "///" << Qt::endl;
-        out << "/// core: LcsfCore reference" << Qt::endl;
-        out << "pub fn init_core(core: &mut LcsfCore) {" << Qt::endl;
-        out << "    // Add protocol to LcsfCore" << Qt::endl;
-        out << "    core.add_protocol(" << Qt::endl;
-        out << "        lcsf_protocol_" << low_prot_name << "::PROT_ID," << Qt::endl;
-        out << "        &lcsf_protocol_" << low_prot_name << "::PROT_DESC," << Qt::endl;
-        out << "        process_cmd," << Qt::endl;
-        out << "    );" << Qt::endl;
-        out << "}" << Qt::endl;
-        out << Qt::endl;
-        out << "/// Process command callback, customize as you need" << Qt::endl;
-        out << "///" << Qt::endl;
-        out << "/// valid_cmd: received valid command" << Qt::endl;
-        out << "fn process_cmd(core: &LcsfCore, valid_cmd: &LcsfValidCmd) {" << Qt::endl;
-        out << "    // Process received command" << Qt::endl;
-        out << "    let (cmd_name, cmd_payload) = lcsf_protocol_" << low_prot_name << "::receive_cmd(valid_cmd);"
-            << Qt::endl;
-        out << "    execute_cmd(cmd_name, &cmd_payload);" << Qt::endl;
-        out << "    // Here the function will send back received commands like an echo" << Qt::endl;
-        out << "    // Customize as needed" << Qt::endl;
-        out << "    let valid_cmd = lcsf_protocol_" << low_prot_name << "::send_cmd(cmd_name, &cmd_payload);" << Qt::endl;
-        out << "    core.send_cmd(lcsf_protocol_" << low_prot_name << "::PROT_ID, &valid_cmd);" << Qt::endl;
-        out << "    todo!();" << Qt::endl;
-        out << "}" << Qt::endl;
+        if (useExtract && !rustExtract.getCustomPublicFunctions().isEmpty()) {
+            out << rustExtract.getCustomPublicFunctions();
+        } else {
+            // Utility functions
+            out << "/// Init a LcsfCore with the protocol" << Qt::endl;
+            out << "///" << Qt::endl;
+            out << "/// core: LcsfCore reference" << Qt::endl;
+            out << "pub fn init_core(core: &mut LcsfCore) {" << Qt::endl;
+            out << "    // Add protocol to LcsfCore" << Qt::endl;
+            out << "    core.add_protocol(" << Qt::endl;
+            out << "        lcsf_protocol_" << low_prot_name << "::PROT_ID," << Qt::endl;
+            out << "        &lcsf_protocol_" << low_prot_name << "::PROT_DESC," << Qt::endl;
+            out << "        process_cmd," << Qt::endl;
+            out << "    );" << Qt::endl;
+            out << "}" << Qt::endl;
+            out << Qt::endl;
+            out << "/// Process command callback, customize as you need" << Qt::endl;
+            out << "///" << Qt::endl;
+            out << "/// valid_cmd: received valid command" << Qt::endl;
+            out << "fn process_cmd(core: &LcsfCore, valid_cmd: &LcsfValidCmd) {" << Qt::endl;
+            out << "    // Process received command" << Qt::endl;
+            out << "    let (cmd_name, cmd_payload) = lcsf_protocol_" << low_prot_name << "::receive_cmd(valid_cmd);"
+                << Qt::endl;
+            out << "    execute_cmd(cmd_name, &cmd_payload);" << Qt::endl;
+            out << "    // Here the function will send back received commands like an echo" << Qt::endl;
+            out << "    // Customize as needed" << Qt::endl;
+            out << "    let valid_cmd = lcsf_protocol_" << low_prot_name << "::send_cmd(cmd_name, &cmd_payload);" << Qt::endl;
+            out << "    core.send_cmd(lcsf_protocol_" << low_prot_name << "::PROT_ID, &valid_cmd);" << Qt::endl;
+            out << "    todo!();" << Qt::endl;
+            out << "}" << Qt::endl;
+        }
+
+        if (useExtract && !rustExtract.getTrailingContent().isEmpty()) {
+            out << rustExtract.getTrailingContent();
+        }
 
         file.close();
     }

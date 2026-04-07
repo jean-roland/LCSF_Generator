@@ -25,6 +25,7 @@
 #include "attribute.h"
 #include "command.h"
 #include "enumtype.h"
+#include "rustextractor.h"
 #include <QDate>
 #include <QDir>
 #include <QFile>
@@ -56,7 +57,7 @@ class RustGenerator {
 
   public:
     RustGenerator();
-    void generateMain(QString protocolName, QList<Command *> cmdList, bool isA, QString dirPath);
+    void generateMain(QString protocolName, QList<Command *> cmdList, bool isA, QString dirPath, RustExtractor rustExtract = RustExtractor());
     void generateBridge(QString protocolName, QString protocolId, QList<Command *> cmdList, bool isA, QString dirPath);
 };
 
