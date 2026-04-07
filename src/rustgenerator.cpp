@@ -804,36 +804,33 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
         out << "/// cmd_name: name of the command" << Qt::endl;
         out << "///" << Qt::endl;
         out << "/// cmd_payload: pointer to command payload" << Qt::endl;
-        out << "fn execute_cmd(cmd_name: CmdEnum, cmd_payload: &CmdPayload) {" << Qt::endl;
-        out << "    match cmd_name {" << Qt::endl;
-        for (Command *command : cmdList) {
-            if (command->isReceivable(isA)) {
-                out << "        CmdEnum::" << this->capitalize(command->getName()) << " => ";
-                if (command->getAttArray().size() == 0) {
-                    out << "execute_" << command->getName().toLower() << "()," << Qt::endl;
-                } else {
-                    out << "{" << Qt::endl;
-                    out << "            if let CmdPayload::" << this->capitalize(command->getName())
-                        << "Payload(payload) = cmd_payload {" << Qt::endl;
-                    out << "                execute_" << command->getName().toLower() << "(payload);" << Qt::endl;
-                    out << "            }" << Qt::endl;
-                    out << "        }" << Qt::endl;
+        if (useExtract && !rustExtract.getExecuteCmdFunction().isEmpty()) {
+            out << rustExtract.getExecuteCmdFunction();
+        } else {
+            out << "fn execute_cmd(cmd_name: CmdEnum, cmd_payload: &CmdPayload) {" << Qt::endl;
+            out << "    match cmd_name {" << Qt::endl;
+            for (Command *command : cmdList) {
+                if (command->isReceivable(isA)) {
+                    out << "        CmdEnum::" << this->capitalize(command->getName()) << " => ";
+                    if (command->getAttArray().size() == 0) {
+                        out << "execute_" << command->getName().toLower() << "()," << Qt::endl;
+                    } else {
+                        out << "{" << Qt::endl;
+                        out << "            if let CmdPayload::" << this->capitalize(command->getName())
+                            << "Payload(payload) = cmd_payload {" << Qt::endl;
+                        out << "                execute_" << command->getName().toLower() << "(payload);" << Qt::endl;
+                        out << "            }" << Qt::endl;
+                        out << "        }" << Qt::endl;
+                    }
                 }
             }
+            out << "        _ => {" << Qt::endl;
+            out << "            // This case can be customized (e.g to send an error command)" << Qt::endl;
+            out << "            todo!();" << Qt::endl;
+            out << "        }" << Qt::endl;
+            out << "    }" << Qt::endl;
+            out << "}" << Qt::endl;
         }
-        out << "        _ => {" << Qt::endl;
-        {
-            QString defaultHandler = useExtract ? rustExtract.getDefaultCommandHandler() : "";
-            if (!defaultHandler.isEmpty()) {
-                out << defaultHandler;
-            } else {
-                out << "            // This case can be customized (e.g to send an error command)" << Qt::endl;
-                out << "            todo!();" << Qt::endl;
-            }
-        }
-        out << "        }" << Qt::endl;
-        out << "    }" << Qt::endl;
-        out << "}" << Qt::endl;
         out << Qt::endl;
         out << "// --- Custom public functions ---" << Qt::endl;
 

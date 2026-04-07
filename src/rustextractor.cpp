@@ -26,7 +26,7 @@ RustExtractor::RustExtractor() {
     this->m_extraUses = QString();
     this->m_customDefinitions = QString();
     this->m_commandFunctions = QStringList();
-    this->m_defaultCommandHandler = QString();
+    this->m_executeCmdFunction = QString();
     this->m_customPublicFunctions = QString();
     this->m_trailingContent = QString();
 }
@@ -54,36 +54,6 @@ QString RustExtractor::extractFunction(QString firstLine, QTextStream *pIn) {
     return buffer;
 }
 
-// Parse a full execute_cmd function string and extract the body of the "_ =>" arm.
-void RustExtractor::extractDefaultHandler(const QString &fullFunction) {
-    QStringList lines = fullFunction.split('\n');
-    bool inDefaultArm = false;
-    int armBraceDepth = 0;
-
-    for (const QString &line : lines) {
-        if (!inDefaultArm) {
-            if (line.trimmed().startsWith("_ =>")) {
-                inDefaultArm = true;
-                for (QChar ch : line) {
-                    if (ch == '{') armBraceDepth++;
-                    else if (ch == '}') armBraceDepth--;
-                }
-                // armBraceDepth == 0 means single-line `_ => {}`, nothing to collect
-            }
-        } else {
-            if (armBraceDepth <= 0) break;
-            for (QChar ch : line) {
-                if (ch == '{') armBraceDepth++;
-                else if (ch == '}') armBraceDepth--;
-            }
-            if (armBraceDepth <= 0) {
-                // This is the closing `}` of the arm — don't include it
-                break;
-            }
-            this->m_defaultCommandHandler.append(line + "\n");
-        }
-    }
-}
 
 // Collect extra uses added by the user between "// --- Custom uses ---"
 // and the "/// Command enum" doc comment.
@@ -129,6 +99,18 @@ bool RustExtractor::extractDefinitions(QTextStream *pIn, QString &firstExecLine)
     return false; // Marker or first execute function not found
 }
 
+// Strip Rust visibility modifiers (pub, pub(crate), etc.) from the start of a line.
+static QString stripVisibility(const QString &line) {
+    QString trimmed = line.trimmed();
+    if (trimmed.startsWith("pub(")) {
+        int closePos = trimmed.indexOf(')');
+        if (closePos > 0) trimmed = trimmed.mid(closePos + 1).trimmed();
+    } else if (trimmed.startsWith("pub ")) {
+        trimmed = trimmed.mid(4).trimmed();
+    }
+    return trimmed;
+}
+
 // Extract each "fn execute_X" function and match it to cmdList by name.
 // When "fn execute_cmd" is found, extract it and parse the "_ =>" arm.
 void RustExtractor::extractExecuteFunctions(QTextStream *pIn, QString firstLine, QList<Command *> cmdList) {
@@ -136,23 +118,25 @@ void RustExtractor::extractExecuteFunctions(QTextStream *pIn, QString firstLine,
     const QString execPrefix = "fn execute_";
 
     while (true) {
-        // Skip blank lines and doc comment lines to find the next function
-        while (currentLine.trimmed().isEmpty() || currentLine.trimmed().startsWith("///")) {
+        // Skip blank lines, doc comment lines, and attribute lines to find the next function
+        while (currentLine.trimmed().isEmpty() || currentLine.trimmed().startsWith("///")
+               || currentLine.trimmed().startsWith("#[")) {
             if (pIn->atEnd()) return;
             currentLine = pIn->readLine();
         }
 
-        if (currentLine.startsWith("fn execute_cmd(")) {
-            QString fullFunction = this->extractFunction(currentLine, pIn);
-            this->extractDefaultHandler(fullFunction);
+        QString effectiveLine = stripVisibility(currentLine);
+
+        if (effectiveLine.startsWith("fn execute_cmd(")) {
+            this->m_executeCmdFunction = this->extractFunction(currentLine, pIn);
             return;
         }
 
-        if (currentLine.startsWith(execPrefix)) {
+        if (effectiveLine.startsWith(execPrefix)) {
             int prefixLen = execPrefix.length();
-            int parenPos = currentLine.indexOf('(', prefixLen);
+            int parenPos = effectiveLine.indexOf('(', prefixLen);
             if (parenPos > prefixLen) {
-                QString execName = currentLine.mid(prefixLen, parenPos - prefixLen);
+                QString execName = effectiveLine.mid(prefixLen, parenPos - prefixLen);
                 QString fullFunction = this->extractFunction(currentLine, pIn);
                 for (int idx = 0; idx < cmdList.size(); idx++) {
                     if (cmdList.at(idx)->getName().toLower() == execName) {
@@ -227,8 +211,8 @@ QString RustExtractor::getCustomDefinitions() const {
 QStringList RustExtractor::getCommandFunctions() const {
     return this->m_commandFunctions;
 }
-QString RustExtractor::getDefaultCommandHandler() const {
-    return this->m_defaultCommandHandler;
+QString RustExtractor::getExecuteCmdFunction() const {
+    return this->m_executeCmdFunction;
 }
 QString RustExtractor::getCustomPublicFunctions() const {
     return this->m_customPublicFunctions;

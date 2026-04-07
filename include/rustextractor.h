@@ -34,12 +34,11 @@ class RustExtractor {
     QString m_extraUses;
     QString m_customDefinitions;
     QStringList m_commandFunctions;
-    QString m_defaultCommandHandler;
+    QString m_executeCmdFunction;
     QString m_customPublicFunctions;
     QString m_trailingContent;
 
     QString extractFunction(QString firstLine, QTextStream *pIn);
-    void extractDefaultHandler(const QString &fullFunction);
     bool extractUses(QTextStream *pIn);
     bool extractDefinitions(QTextStream *pIn, QString &firstExecLine);
     void extractExecuteFunctions(QTextStream *pIn, QString firstLine, QList<Command *> cmdList);
@@ -52,7 +51,7 @@ class RustExtractor {
     QString getExtraUses() const;
     QString getCustomDefinitions() const;
     QStringList getCommandFunctions() const;
-    QString getDefaultCommandHandler() const;
+    QString getExecuteCmdFunction() const;
     QString getCustomPublicFunctions() const;
     QString getTrailingContent() const;
 };
