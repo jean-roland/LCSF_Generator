@@ -38,7 +38,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     ui->twDescTableView->horizontalHeader()->setStretchLastSection(true);
 
     // Default dir paths
-    cOutPath = defCOutPath;
+    cOutPathA = defCOutPath;
+    cOutPathB = defCOutPath;
     currSaveLoc = descDirPath;
 
     // Set tree clear state
@@ -1223,7 +1224,8 @@ void MainWindow::clearData(void) {
     // Reset Table
     this->showCommandArray();
     // Reset directories paths
-    cOutPath = defCOutPath;
+    cOutPathA = defCOutPath;
+    cOutPathB = defCOutPath;
 }
 
 void MainWindow::clearTree(void) {
@@ -1244,7 +1246,7 @@ void MainWindow::on_pbImportDescA_clicked(void) {
         return;
     }
     protocolName = CheckAndCorrectInputString(protocolName);
-    QDir dir(cOutPath);
+    QDir dir(cOutPathA);
     if (!dir.exists()) {
         dir.mkpath(".");
     }
@@ -1270,7 +1272,8 @@ void MainWindow::on_pbImportDescA_clicked(void) {
     file.close();
     // Note destination path
     QFileInfo fileInfo(file);
-    cOutPath = fileInfo.absoluteDir().absolutePath();
+    cOutPathA = fileInfo.absoluteDir().absolutePath();
+    cOutPathB = cOutPathA;
     // Change button state to indicate importation
     QPalette pal;
     pal.setColor(QPalette::Button, QColor(Qt::green));
@@ -1286,7 +1289,7 @@ void MainWindow::on_pbImportDescB_clicked(void) {
         return;
     }
     protocolName = CheckAndCorrectInputString(protocolName);
-    QDir dir(cOutPath);
+    QDir dir(cOutPathB);
     if (!dir.exists()) {
         dir.mkpath(".");
     }
@@ -1312,7 +1315,7 @@ void MainWindow::on_pbImportDescB_clicked(void) {
     file.close();
     // Note destination path
     QFileInfo fileInfo(file);
-    cOutPath = fileInfo.absoluteDir().absolutePath();
+    cOutPathB = fileInfo.absoluteDir().absolutePath();
     // Change button state to indicate importation
     QPalette pal;
     pal.setColor(QPalette::Button, QColor(Qt::green));
@@ -1349,25 +1352,27 @@ void MainWindow::on_pbGenerateDesc_clicked(void) {
     }
 
     // Generate "A" files
-    this->m_codegen.generateMainHeader(protocolName, this->m_cmdArray, this->m_codeextractA, cOutPath);
-    this->m_codegen.generateMain(protocolName, this->m_cmdArray, this->m_codeextractA, true, cOutPath);
-    this->m_codegen.generateBridgeHeader(protocolName, protocolId, this->m_cmdArray, cOutPath);
-    this->m_codegen.generateBridge(protocolName, this->m_cmdArray, true, cOutPath);
+    this->m_codegen.generateMainHeader(protocolName, this->m_cmdArray, this->m_codeextractA, cOutPathA);
+    this->m_codegen.generateMain(protocolName, this->m_cmdArray, this->m_codeextractA, true, cOutPathA);
+    this->m_codegen.generateBridgeHeader(protocolName, protocolId, this->m_cmdArray, cOutPathA);
+    this->m_codegen.generateBridge(protocolName, this->m_cmdArray, true, cOutPathA);
 
     this->m_rustgen.generateMain(protocolName, this->m_cmdArray, true, defRustOutPath);
     this->m_rustgen.generateBridge(protocolName, protocolId, this->m_cmdArray, true, defRustOutPath);
 
     // Generate "B" files
-    this->m_codegen.generateMainHeader(protocolName, this->m_cmdArray, this->m_codeextractB, cOutPath);
-    this->m_codegen.generateMain(protocolName, this->m_cmdArray, this->m_codeextractB, false, cOutPath);
-    this->m_codegen.generateBridgeHeader(protocolName, protocolId, this->m_cmdArray, cOutPath);
-    this->m_codegen.generateBridge(protocolName, this->m_cmdArray, false, cOutPath);
+    this->m_codegen.generateMainHeader(protocolName, this->m_cmdArray, this->m_codeextractB, cOutPathB);
+    this->m_codegen.generateMain(protocolName, this->m_cmdArray, this->m_codeextractB, false, cOutPathB);
+    this->m_codegen.generateBridgeHeader(protocolName, protocolId, this->m_cmdArray, cOutPathB);
+    this->m_codegen.generateBridge(protocolName, this->m_cmdArray, false, cOutPathB);
 
     this->m_rustgen.generateMain(protocolName, this->m_cmdArray, false, defRustOutPath);
     this->m_rustgen.generateBridge(protocolName, protocolId, this->m_cmdArray, false, defRustOutPath);
 
-    QMessageBox::information(nullptr, "Info",
-        "C code has been generated in: " + cOutPath + "\nRust code has been generated in: " + defRustOutPath);
+    QString cOutMsg = (cOutPathA == cOutPathB)
+        ? "C code has been generated in: " + cOutPathA
+        : "C code A generated in: " + cOutPathA + "\nC code B generated in: " + cOutPathB;
+    QMessageBox::information(nullptr, "Info", cOutMsg + "\nRust code has been generated in: " + defRustOutPath);
 }
 
 // Close event action

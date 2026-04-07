@@ -58,7 +58,8 @@ class MainWindow : public QMainWindow {
     RustGenerator m_rustgen;
     CodeExtractor m_codeextractA;
     CodeExtractor m_codeextractB;
-    QString cOutPath;
+    QString cOutPathA;
+    QString cOutPathB;
     QString currSaveLoc;
     bool treeIsCleared;
     const QString defProtocolName = "Default";
