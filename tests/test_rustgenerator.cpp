@@ -51,7 +51,7 @@ TEST(test_rustgen, gen_A_output) {
 
     // Check Bridge
     ASSERT_TRUE(openFile(&model_file, MODEL_DIR_PATH, "model_bridge_a.rs"));
-    ASSERT_TRUE(openFile(&output_file, outputDir, "lcsf_protocol_test.rs"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "lcsf_protocol_test_a.rs"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     EXPECT_EQ(output_content.count(), model_content.count());
@@ -86,7 +86,7 @@ TEST(test_rustgen, gen_B_output) {
 
     // Check Bridge
     ASSERT_TRUE(openFile(&model_file, MODEL_DIR_PATH, "model_bridge_b.rs"));
-    ASSERT_TRUE(openFile(&output_file, outputDir, "lcsf_protocol_test.rs"));
+    ASSERT_TRUE(openFile(&output_file, outputDir, "lcsf_protocol_test_b.rs"));
     model_content = readFileContent(&model_file);
     output_content = readFileContent(&output_file);
     EXPECT_EQ(output_content.count(), model_content.count());

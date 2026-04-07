@@ -229,12 +229,12 @@ void RustGenerator::grabAttValues_REC(
 
 // Recursively print include type of attributes
 void RustGenerator::printInclude_Rec(
-    QString protocolName, QString parentName, QList<Attribute *> attList, QTextStream *pOut) {
+    QString protSuffix, QString parentName, QList<Attribute *> attList, QTextStream *pOut) {
     for (Attribute *attribute : attList) {
         if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
-            *pOut << "use protocol_" << protocolName.toLower() << "::" << this->capitalize(parentName) << "Att"
+            *pOut << "use protocol_" << protSuffix << "::" << this->capitalize(parentName) << "Att"
                   << this->capitalize(attribute->getName()) << "Payload;" << Qt::endl;
-            printInclude_Rec(protocolName, attribute->getName(), attribute->getSubAttArray(), pOut);
+            printInclude_Rec(protSuffix, attribute->getName(), attribute->getSubAttArray(), pOut);
         }
     }
 }
@@ -544,7 +544,8 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
     if (!dir.exists()) {
         dir.mkpath(".");
     }
-    QString fileName = dirPath + "/protocol_" + low_prot_name + "_" + ((isA) ? "a" : "b") + ".rs";
+    QString protSuffix = low_prot_name + "_" + ((isA) ? "a" : "b");
+    QString fileName = dirPath + "/protocol_" + protSuffix + ".rs";
     QList<Attribute::T_attInfos> attInfosList = this->getAttInfos(cmdList);
     QFile file(fileName);
 
@@ -560,7 +561,7 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
         out << Qt::endl;
         out << "use crate::lcsf_lib::lcsf_core;" << Qt::endl;
         out << "use crate::lcsf_lib::lcsf_validator;" << Qt::endl;
-        out << "use crate::lcsf_prot::lcsf_protocol_" << low_prot_name << ";" << Qt::endl;
+        out << "use crate::lcsf_prot::lcsf_protocol_" << protSuffix << ";" << Qt::endl;
         out << "use lcsf_core::LcsfCore;" << Qt::endl;
         out << "use lcsf_validator::LcsfValidCmd;" << Qt::endl;
         // Check if Cstring needed
@@ -846,8 +847,8 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
             out << "pub fn init_core(core: &mut LcsfCore) {" << Qt::endl;
             out << "    // Add protocol to LcsfCore" << Qt::endl;
             out << "    core.add_protocol(" << Qt::endl;
-            out << "        lcsf_protocol_" << low_prot_name << "::PROT_ID," << Qt::endl;
-            out << "        &lcsf_protocol_" << low_prot_name << "::PROT_DESC," << Qt::endl;
+            out << "        lcsf_protocol_" << protSuffix << "::PROT_ID," << Qt::endl;
+            out << "        &lcsf_protocol_" << protSuffix << "::PROT_DESC," << Qt::endl;
             out << "        process_cmd," << Qt::endl;
             out << "    );" << Qt::endl;
             out << "}" << Qt::endl;
@@ -857,13 +858,13 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
             out << "/// valid_cmd: received valid command" << Qt::endl;
             out << "fn process_cmd(core: &LcsfCore, valid_cmd: &LcsfValidCmd) {" << Qt::endl;
             out << "    // Process received command" << Qt::endl;
-            out << "    let (cmd_name, cmd_payload) = lcsf_protocol_" << low_prot_name << "::receive_cmd(valid_cmd);"
+            out << "    let (cmd_name, cmd_payload) = lcsf_protocol_" << protSuffix << "::receive_cmd(valid_cmd);"
                 << Qt::endl;
             out << "    execute_cmd(cmd_name, &cmd_payload);" << Qt::endl;
             out << "    // Here the function will send back received commands like an echo" << Qt::endl;
             out << "    // Customize as needed" << Qt::endl;
-            out << "    let valid_cmd = lcsf_protocol_" << low_prot_name << "::send_cmd(cmd_name, &cmd_payload);" << Qt::endl;
-            out << "    core.send_cmd(lcsf_protocol_" << low_prot_name << "::PROT_ID, &valid_cmd);" << Qt::endl;
+            out << "    let valid_cmd = lcsf_protocol_" << protSuffix << "::send_cmd(cmd_name, &cmd_payload);" << Qt::endl;
+            out << "    core.send_cmd(lcsf_protocol_" << protSuffix << "::PROT_ID, &valid_cmd);" << Qt::endl;
             out << "    todo!();" << Qt::endl;
             out << "}" << Qt::endl;
         }
@@ -883,7 +884,8 @@ void RustGenerator::generateBridge(
     if (!dir.exists()) {
         dir.mkpath(".");
     }
-    QString fileName = dirPath + "/lcsf_protocol_" + low_prot_name + ".rs";
+    QString protSuffix = low_prot_name + "_" + ((isA) ? "a" : "b");
+    QString fileName = dirPath + "/lcsf_protocol_" + protSuffix + ".rs";
     QList<Attribute::T_attInfos> attInfosList = this->getAttInfos(cmdList);
     QList<Attribute::T_attInfos> sortedAttInfosList = this->insertSortAttInfosListByParentName(attInfosList);
     QFile file(fileName);
@@ -900,7 +902,7 @@ void RustGenerator::generateBridge(
         out << "//! It shouldn't be edited manually" << Qt::endl;
         out << Qt::endl;
         out << "use crate::lcsf_lib::lcsf_validator;" << Qt::endl;
-        out << "use crate::lcsf_prot::protocol_" << low_prot_name << ";" << Qt::endl;
+        out << "use crate::lcsf_prot::protocol_" << protSuffix << ";" << Qt::endl;
         out << "use lazy_static::lazy_static;" << Qt::endl;
         out << "use lcsf_validator::LcsfAttDesc;" << Qt::endl;
         out << "use lcsf_validator::LcsfCmdDesc;" << Qt::endl;
@@ -919,14 +921,14 @@ void RustGenerator::generateBridge(
         for (Command *command : cmdList) {
             if (command->isReceivable(isA)) {
                 if (command->getAttArray().size() > 0) {
-                    out << "use protocol_" << low_prot_name << "::" << this->capitalize(command->getName()) << "AttPayload;"
+                    out << "use protocol_" << protSuffix << "::" << this->capitalize(command->getName()) << "AttPayload;"
                         << Qt::endl;
-                    printInclude_Rec(protocolName, command->getName(), command->getAttArray(), &out);
+                    printInclude_Rec(protSuffix, command->getName(), command->getAttArray(), &out);
                 }
             }
         }
-        out << "use protocol_" << low_prot_name << "::CmdEnum;" << Qt::endl;
-        out << "use protocol_" << low_prot_name << "::CmdPayload;" << Qt::endl;
+        out << "use protocol_" << protSuffix << "::CmdEnum;" << Qt::endl;
+        out << "use protocol_" << protSuffix << "::CmdPayload;" << Qt::endl;
         out << Qt::endl;
 
         // Id to and from enum functions

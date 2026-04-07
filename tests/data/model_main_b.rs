@@ -5,7 +5,7 @@
 
 use crate::lcsf_lib::lcsf_core;
 use crate::lcsf_lib::lcsf_validator;
-use crate::lcsf_prot::lcsf_protocol_test;
+use crate::lcsf_prot::lcsf_protocol_test_b;
 use lcsf_core::LcsfCore;
 use lcsf_validator::LcsfValidCmd;
 use std::ffi::CString;
@@ -384,8 +384,8 @@ fn execute_cmd(cmd_name: CmdEnum, cmd_payload: &CmdPayload) {
 pub fn init_core(core: &mut LcsfCore) {
     // Add protocol to LcsfCore
     core.add_protocol(
-        lcsf_protocol_test::PROT_ID,
-        &lcsf_protocol_test::PROT_DESC,
+        lcsf_protocol_test_b::PROT_ID,
+        &lcsf_protocol_test_b::PROT_DESC,
         process_cmd,
     );
 }
@@ -395,11 +395,11 @@ pub fn init_core(core: &mut LcsfCore) {
 /// valid_cmd: received valid command
 fn process_cmd(core: &LcsfCore, valid_cmd: &LcsfValidCmd) {
     // Process received command
-    let (cmd_name, cmd_payload) = lcsf_protocol_test::receive_cmd(valid_cmd);
+    let (cmd_name, cmd_payload) = lcsf_protocol_test_b::receive_cmd(valid_cmd);
     execute_cmd(cmd_name, &cmd_payload);
     // Here the function will send back received commands like an echo
     // Customize as needed
-    let valid_cmd = lcsf_protocol_test::send_cmd(cmd_name, &cmd_payload);
-    core.send_cmd(lcsf_protocol_test::PROT_ID, &valid_cmd);
+    let valid_cmd = lcsf_protocol_test_b::send_cmd(cmd_name, &cmd_payload);
+    core.send_cmd(lcsf_protocol_test_b::PROT_ID, &valid_cmd);
     todo!();
 }

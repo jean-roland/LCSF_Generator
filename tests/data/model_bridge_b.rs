@@ -4,7 +4,7 @@
 //! It shouldn't be edited manually
 
 use crate::lcsf_lib::lcsf_validator;
-use crate::lcsf_prot::protocol_test;
+use crate::lcsf_prot::protocol_test_b;
 use lazy_static::lazy_static;
 use lcsf_validator::LcsfAttDesc;
 use lcsf_validator::LcsfCmdDesc;
@@ -15,20 +15,20 @@ use lcsf_validator::LcsfValidAttPayload;
 use lcsf_validator::LcsfValidCmd;
 use std::ffi::CString;
 
-use protocol_test::Cc1AttPayload;
-use protocol_test::Cc3AttPayload;
-use protocol_test::Cc4AttPayload;
-use protocol_test::Cc4AttCa1Payload;
-use protocol_test::Cc4AttCa2Payload;
-use protocol_test::Ca2AttCa3Payload;
-use protocol_test::Ca3AttCa4Payload;
-use protocol_test::Cc6AttPayload;
-use protocol_test::Cc6AttCa9Payload;
-use protocol_test::Cc6AttCa10Payload;
-use protocol_test::Ca10AttCa11Payload;
-use protocol_test::Ca11AttCa12Payload;
-use protocol_test::CmdEnum;
-use protocol_test::CmdPayload;
+use protocol_test_b::Cc1AttPayload;
+use protocol_test_b::Cc3AttPayload;
+use protocol_test_b::Cc4AttPayload;
+use protocol_test_b::Cc4AttCa1Payload;
+use protocol_test_b::Cc4AttCa2Payload;
+use protocol_test_b::Ca2AttCa3Payload;
+use protocol_test_b::Ca3AttCa4Payload;
+use protocol_test_b::Cc6AttPayload;
+use protocol_test_b::Cc6AttCa9Payload;
+use protocol_test_b::Cc6AttCa10Payload;
+use protocol_test_b::Ca10AttCa11Payload;
+use protocol_test_b::Ca11AttCa12Payload;
+use protocol_test_b::CmdEnum;
+use protocol_test_b::CmdPayload;
 
 /// Convert command name to lcsf command id
 fn cmd_name_to_id(cmd_name: CmdEnum) -> u16 {
