@@ -35,6 +35,7 @@
 #include "deschandler.h"
 #include "docgenerator.h"
 #include "enumtype.h"
+#include "rustextractor.h"
 #include "rustgenerator.h"
 
 // Private variables
@@ -44,7 +45,8 @@ static QString protocolDesc;
 static QList<Command *> cmdArray;
 static QString cOutPathA = "./COutput";
 static QString cOutPathB = "./COutput";
-static QString rustOutPath = "./RustOutput";
+static QString rustOutPathA = "./RustOutput";
+static QString rustOutPathB = "./RustOutput";
 static QString docPath = "./Export";
 
 static DocGenerator docgen;
@@ -52,6 +54,8 @@ static CodeGenerator codegen;
 static RustGenerator rustgen;
 static CodeExtractor codeextractA;
 static CodeExtractor codeextractB;
+static RustExtractor rustextractA;
+static RustExtractor rustextractB;
 
 // Private functions
 static QString checkAttNameDuplicate_Rec(QSet<QString> *pSet, QList<Attribute *> attArray) {
@@ -125,6 +129,16 @@ int main(int argc, char *argv[]) {
         QCoreApplication::translate("main", "path/to/file"));
     parser.addOption(importBOption);
 
+    QCommandLineOption importRustAOption(QStringList() << "ra" << "import-rust-a",
+        QCoreApplication::translate("main", "Import specific protocol Rust code, A point of view"),
+        QCoreApplication::translate("main", "path/to/file"));
+    parser.addOption(importRustAOption);
+
+    QCommandLineOption importRustBOption(QStringList() << "rb" << "import-rust-b",
+        QCoreApplication::translate("main", "Import specific protocol Rust code, B point of view"),
+        QCoreApplication::translate("main", "path/to/file"));
+    parser.addOption(importRustBOption);
+
     // Parse arguments
     parser.process(a);
 
@@ -132,6 +146,8 @@ int main(int argc, char *argv[]) {
     QString descFilePath = parser.value(loadDescOption);
     QString importAFilePath = parser.value(importAOption);
     QString importBFilePath = parser.value(importBOption);
+    QString importRustAFilePath = parser.value(importRustAOption);
+    QString importRustBFilePath = parser.value(importRustBOption);
 
     // Process args
     QTextStream out(stdout);
@@ -188,6 +204,39 @@ int main(int argc, char *argv[]) {
         cOutPathB = importBInfo.absoluteDir().absolutePath();
         out << "Import B extraction successful." << Qt::endl;
     }
+    if (parser.isSet("ra")) {
+        QFile importRustAFile(importRustAFilePath);
+
+        if (!importRustAFile.open(QIODevice::ReadOnly)) {
+            out << "Error, couldn't open file: " << importRustAFilePath << ", reason: " << importRustAFile.errorString() << Qt::endl;
+            exit(EXIT_FAILURE);
+        }
+        QTextStream importRustAStream(&importRustAFile);
+        if (!rustextractA.extractFromSourceFile(protocolName, &importRustAStream, cmdArray)) {
+            out << "Error while extracting Rust import A info." << Qt::endl;
+            exit(EXIT_FAILURE);
+        }
+        QFileInfo importRustAInfo(importRustAFile);
+        rustOutPathA = importRustAInfo.absoluteDir().absolutePath();
+        rustOutPathB = rustOutPathA;
+        out << "Rust import A extraction successful." << Qt::endl;
+    }
+    if (parser.isSet("rb")) {
+        QFile importRustBFile(importRustBFilePath);
+
+        if (!importRustBFile.open(QIODevice::ReadOnly)) {
+            out << "Error, couldn't open file: " << importRustBFilePath << ", reason: " << importRustBFile.errorString() << Qt::endl;
+            exit(EXIT_FAILURE);
+        }
+        QTextStream importRustBStream(&importRustBFile);
+        if (!rustextractB.extractFromSourceFile(protocolName, &importRustBStream, cmdArray)) {
+            out << "Error while extracting Rust import B info." << Qt::endl;
+            exit(EXIT_FAILURE);
+        }
+        QFileInfo importRustBInfo(importRustBFile);
+        rustOutPathB = importRustBInfo.absoluteDir().absolutePath();
+        out << "Rust import B extraction successful." << Qt::endl;
+    }
     // Check data
     if (cmdArray.size() <= 0) {
         out << "Error, protocol has no command!" << Qt::endl;
@@ -204,8 +253,8 @@ int main(int argc, char *argv[]) {
     codegen.generateBridgeHeader(protocolName, protocolId, cmdArray, cOutPathA);
     codegen.generateBridge(protocolName, cmdArray, true, cOutPathA);
 
-    rustgen.generateMain(protocolName, cmdArray, true, rustOutPath);
-    rustgen.generateBridge(protocolName, protocolId, cmdArray, true, rustOutPath);
+    rustgen.generateMain(protocolName, cmdArray, true, rustOutPathA, rustextractA);
+    rustgen.generateBridge(protocolName, protocolId, cmdArray, true, rustOutPathA);
 
     // Generate "B" C files
     codegen.generateMainHeader(protocolName, cmdArray, codeextractB, cOutPathB);
@@ -213,8 +262,8 @@ int main(int argc, char *argv[]) {
     codegen.generateBridgeHeader(protocolName, protocolId, cmdArray, cOutPathB);
     codegen.generateBridge(protocolName, cmdArray, false, cOutPathB);
 
-    rustgen.generateMain(protocolName, cmdArray, false, rustOutPath);
-    rustgen.generateBridge(protocolName, protocolId, cmdArray, false, rustOutPath);
+    rustgen.generateMain(protocolName, cmdArray, false, rustOutPathB, rustextractB);
+    rustgen.generateBridge(protocolName, protocolId, cmdArray, false, rustOutPathB);
 
     // Generate doc (if needed)
     if (parser.isSet("d")) {
@@ -230,7 +279,12 @@ int main(int argc, char *argv[]) {
         out << "C code A generated in: " << cOutPathA << Qt::endl;
         out << "C code B generated in: " << cOutPathB << Qt::endl;
     }
-    out << "Rust code generated in: " << rustOutPath << Qt::endl;
+    if (rustOutPathA == rustOutPathB) {
+        out << "Rust code generated in: " << rustOutPathA << Qt::endl;
+    } else {
+        out << "Rust code A generated in: " << rustOutPathA << Qt::endl;
+        out << "Rust code B generated in: " << rustOutPathB << Qt::endl;
+    }
     if (parser.isSet("d")) {
         out << "Documentation generated in: " << docPath << Qt::endl;
     }
