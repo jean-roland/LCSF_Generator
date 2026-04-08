@@ -40,6 +40,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     // Default dir paths
     cOutPathA = defCOutPath;
     cOutPathB = defCOutPath;
+    rustOutPathA = defRustOutPath;
+    rustOutPathB = defRustOutPath;
     currSaveLoc = descDirPath;
 
     // Set tree clear state
@@ -1202,14 +1204,18 @@ void MainWindow::clearData(void) {
     ui->leProtocolName->setText(defProtocolName);
     // Clear protocolNId field
     ui->leProtocolId->clear();
-    // Clear code extractor
+    // Clear code extractors
     this->m_codeextractA = CodeExtractor();
     this->m_codeextractB = CodeExtractor();
+    this->m_rustextractA = RustExtractor();
+    this->m_rustextractB = RustExtractor();
     // Clear button states
     QPalette pal;
     pal.setColor(QPalette::Button, QColor(Qt::white));
     ui->pbImportDescA->setPalette(pal);
     ui->pbImportDescB->setPalette(pal);
+    ui->pbImportRustA->setPalette(pal);
+    ui->pbImportRustB->setPalette(pal);
     // Clear command array
     for (Command *command : this->m_cmdArray) {
         command->clearAttArray();
@@ -1322,6 +1328,77 @@ void MainWindow::on_pbImportDescB_clicked(void) {
     ui->pbImportDescB->setPalette(pal);
 }
 
+// Import Rust A button action
+void MainWindow::on_pbImportRustA_clicked(void) {
+    QString protocolName(ui->leProtocolName->text());
+
+    if (protocolName.isEmpty()) {
+        QMessageBox::warning(nullptr, "Warning", "Protocol name is empty!");
+        return;
+    }
+    protocolName = CheckAndCorrectInputString(protocolName);
+    QString filterName = "protocol_" + protocolName.toLower() + "_a.rs";
+    QString fileName = QFileDialog::getOpenFileName(this, "Choose file to load", "./", filterName);
+    if (fileName.isEmpty()) {
+        return;
+    }
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly)) {
+        QMessageBox::warning(nullptr, "Error", file.errorString());
+        return;
+    }
+    QTextStream inStream(&file);
+    this->m_rustextractA = RustExtractor();
+    if (this->m_rustextractA.extractFromSourceFile(protocolName, &inStream, this->m_cmdArray)) {
+        file.close();
+        QFileInfo fileInfo(file);
+        rustOutPathA = fileInfo.absoluteDir().absolutePath();
+        rustOutPathB = rustOutPathA;
+        QPalette pal;
+        pal.setColor(QPalette::Button, QColor(Qt::green));
+        ui->pbImportRustA->setPalette(pal);
+        QMessageBox::information(nullptr, "Info", "Rust code successfully imported!");
+    } else {
+        file.close();
+        QMessageBox::warning(nullptr, "Error", "Rust code importation failed!");
+    }
+}
+
+// Import Rust B button action
+void MainWindow::on_pbImportRustB_clicked(void) {
+    QString protocolName(ui->leProtocolName->text());
+
+    if (protocolName.isEmpty()) {
+        QMessageBox::warning(nullptr, "Warning", "Protocol name is empty!");
+        return;
+    }
+    protocolName = CheckAndCorrectInputString(protocolName);
+    QString filterName = "protocol_" + protocolName.toLower() + "_b.rs";
+    QString fileName = QFileDialog::getOpenFileName(this, "Choose file to load", "./", filterName);
+    if (fileName.isEmpty()) {
+        return;
+    }
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly)) {
+        QMessageBox::warning(nullptr, "Error", file.errorString());
+        return;
+    }
+    QTextStream inStream(&file);
+    this->m_rustextractB = RustExtractor();
+    if (this->m_rustextractB.extractFromSourceFile(protocolName, &inStream, this->m_cmdArray)) {
+        file.close();
+        QFileInfo fileInfo(file);
+        rustOutPathB = fileInfo.absoluteDir().absolutePath();
+        QPalette pal;
+        pal.setColor(QPalette::Button, QColor(Qt::green));
+        ui->pbImportRustB->setPalette(pal);
+        QMessageBox::information(nullptr, "Info", "Rust code successfully imported!");
+    } else {
+        file.close();
+        QMessageBox::warning(nullptr, "Error", "Rust code importation failed!");
+    }
+}
+
 // Generate Desc button action
 void MainWindow::on_pbGenerateDesc_clicked(void) {
     QString protocolName(ui->leProtocolName->text());
@@ -1357,8 +1434,8 @@ void MainWindow::on_pbGenerateDesc_clicked(void) {
     this->m_codegen.generateBridgeHeader(protocolName, protocolId, this->m_cmdArray, cOutPathA);
     this->m_codegen.generateBridge(protocolName, this->m_cmdArray, true, cOutPathA);
 
-    this->m_rustgen.generateMain(protocolName, this->m_cmdArray, true, defRustOutPath);
-    this->m_rustgen.generateBridge(protocolName, protocolId, this->m_cmdArray, true, defRustOutPath);
+    this->m_rustgen.generateMain(protocolName, this->m_cmdArray, true, rustOutPathA, this->m_rustextractA);
+    this->m_rustgen.generateBridge(protocolName, protocolId, this->m_cmdArray, true, rustOutPathA);
 
     // Generate "B" files
     this->m_codegen.generateMainHeader(protocolName, this->m_cmdArray, this->m_codeextractB, cOutPathB);
@@ -1366,13 +1443,16 @@ void MainWindow::on_pbGenerateDesc_clicked(void) {
     this->m_codegen.generateBridgeHeader(protocolName, protocolId, this->m_cmdArray, cOutPathB);
     this->m_codegen.generateBridge(protocolName, this->m_cmdArray, false, cOutPathB);
 
-    this->m_rustgen.generateMain(protocolName, this->m_cmdArray, false, defRustOutPath);
-    this->m_rustgen.generateBridge(protocolName, protocolId, this->m_cmdArray, false, defRustOutPath);
+    this->m_rustgen.generateMain(protocolName, this->m_cmdArray, false, rustOutPathB, this->m_rustextractB);
+    this->m_rustgen.generateBridge(protocolName, protocolId, this->m_cmdArray, false, rustOutPathB);
 
     QString cOutMsg = (cOutPathA == cOutPathB)
         ? "C code has been generated in: " + cOutPathA
         : "C code A generated in: " + cOutPathA + "\nC code B generated in: " + cOutPathB;
-    QMessageBox::information(nullptr, "Info", cOutMsg + "\nRust code has been generated in: " + defRustOutPath);
+    QString rustOutMsg = (rustOutPathA == rustOutPathB)
+        ? "Rust code has been generated in: " + rustOutPathA
+        : "Rust code A generated in: " + rustOutPathA + "\nRust code B generated in: " + rustOutPathB;
+    QMessageBox::information(nullptr, "Info", cOutMsg + "\n" + rustOutMsg);
 }
 
 // Close event action

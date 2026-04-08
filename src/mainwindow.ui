@@ -230,13 +230,13 @@
       <item>
        <widget class="QPushButton" name="pbImportDescA">
         <property name="toolTip">
-         <string>Import code from previous description (A point of view)</string>
+         <string>Import C code from previous description (A point of view)</string>
         </property>
         <property name="autoFillBackground">
          <bool>true</bool>
         </property>
         <property name="text">
-         <string>Import Desc (A)</string>
+         <string>Import C Desc (A)</string>
         </property>
         <property name="checkable">
          <bool>false</bool>
@@ -246,13 +246,57 @@
       <item>
        <widget class="QPushButton" name="pbImportDescB">
         <property name="toolTip">
-         <string>Import code from previous description (B point of view)</string>
+         <string>Import C code from previous description (B point of view)</string>
         </property>
         <property name="autoFillBackground">
          <bool>true</bool>
         </property>
         <property name="text">
-         <string>Import Desc (B)</string>
+         <string>Import C Desc (B)</string>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pbImportRustA">
+        <property name="toolTip">
+         <string>Import Rust code from previous description (A point of view)</string>
+        </property>
+        <property name="autoFillBackground">
+         <bool>true</bool>
+        </property>
+        <property name="text">
+         <string>Import Rust (A)</string>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pbImportRustB">
+        <property name="toolTip">
+         <string>Import Rust code from previous description (B point of view)</string>
+        </property>
+        <property name="autoFillBackground">
+         <bool>true</bool>
+        </property>
+        <property name="text">
+         <string>Import Rust (B)</string>
         </property>
         <property name="checkable">
          <bool>false</bool>

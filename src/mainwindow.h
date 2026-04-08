@@ -41,6 +41,7 @@
 #include "command.h"
 #include "docgenerator.h"
 #include "enumtype.h"
+#include "rustextractor.h"
 #include "rustgenerator.h"
 
 namespace Ui {
@@ -58,8 +59,12 @@ class MainWindow : public QMainWindow {
     RustGenerator m_rustgen;
     CodeExtractor m_codeextractA;
     CodeExtractor m_codeextractB;
+    RustExtractor m_rustextractA;
+    RustExtractor m_rustextractB;
     QString cOutPathA;
     QString cOutPathB;
+    QString rustOutPathA;
+    QString rustOutPathB;
     QString currSaveLoc;
     bool treeIsCleared;
     const QString defProtocolName = "Default";
@@ -129,6 +134,8 @@ class MainWindow : public QMainWindow {
     void on_pbGenerateDesc_clicked(void);
     void on_pbImportDescA_clicked(void);
     void on_pbImportDescB_clicked(void);
+    void on_pbImportRustA_clicked(void);
+    void on_pbImportRustB_clicked(void);
     void on_pbGenerateDoc_clicked(void);
     void on_twDescTableView_cellChanged(int row, int column);
     void on_twDescTableView_itemChanged(QTableWidgetItem *item);
