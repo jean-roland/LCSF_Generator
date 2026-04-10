@@ -85,21 +85,22 @@ void CodeExtractor::extractPrivateFunctions(QString protocolName, QTextStream *p
                 for (int idx = 0; idx < cmdList.size(); idx++) {
                     QString commandName = cmdList.at(idx)->getName();
 
-                    if (currentLine.contains(commandName)) {
+                    if (currentLine.contains(protocolName + "Execute" + commandName)) {
                         cmdIdx = idx;
                         isCommandFunction = true;
                         break;
                     }
                 }
             }
-            if (currentLine.contains("{")) {
-                if (bracketCounter == 0) {
-                    functionBegan = true;
+            for (QChar ch : currentLine) {
+                if (ch == '{') {
+                    if (bracketCounter == 0) {
+                        functionBegan = true;
+                    }
+                    bracketCounter++;
+                } else if (ch == '}') {
+                    bracketCounter--;
                 }
-                bracketCounter++;
-            }
-            if (currentLine.contains("}")) {
-                bracketCounter--;
             }
             if ((bracketCounter == 0) && functionBegan) {
                 functionFinished = true;
@@ -129,14 +130,15 @@ void CodeExtractor::extractDefaultCommandHandler(QTextStream *pInStream) {
     while (!pInStream->atEnd()) {
         QString currentLine = pInStream->readLine();
 
-        if (currentLine.contains("{")) {
-            if (bracketCounter == 0) {
-                functionBegan = true;
+        for (QChar ch : currentLine) {
+            if (ch == '{') {
+                if (bracketCounter == 0) {
+                    functionBegan = true;
+                }
+                bracketCounter++;
+            } else if (ch == '}') {
+                bracketCounter--;
             }
-            bracketCounter++;
-        }
-        if (currentLine.contains("}")) {
-            bracketCounter--;
         }
         if ((bracketCounter <= 0) && functionBegan) {
             return;
@@ -174,14 +176,15 @@ void CodeExtractor::extractPublicFunctions(QString protocolName, QTextStream *pI
             } else {
                 functionBuffer.append(currentLine + "\n");
 
-                if (currentLine.contains("{")) {
-                    if (bracketCounter == 0) {
-                        functionBegan = true;
+                for (QChar ch : currentLine) {
+                    if (ch == '{') {
+                        if (bracketCounter == 0) {
+                            functionBegan = true;
+                        }
+                        bracketCounter++;
+                    } else if (ch == '}') {
+                        bracketCounter--;
                     }
-                    bracketCounter++;
-                }
-                if (currentLine.contains("}")) {
-                    bracketCounter--;
                 }
             }
             if ((bracketCounter == 0) && functionBegan) {

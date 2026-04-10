@@ -555,7 +555,7 @@ QList<Attribute::T_attInfos> CodeGenerator::removeCommandAttributes(
 int findCmdFctIdxFromName(QString cmdName, QStringList cmdFcts) {
     int idx = 0;
     for (QString function : cmdFcts) {
-        if (function.contains(cmdName)) {
+        if (function.contains("Execute" + cmdName + "(") || function.contains("Execute" + cmdName + " (")) {
             return idx;
         }
         idx++;
