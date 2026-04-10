@@ -1279,7 +1279,9 @@ void MainWindow::on_pbImportDescA_clicked(void) {
     // Note destination path
     QFileInfo fileInfo(file);
     cOutPathA = fileInfo.absoluteDir().absolutePath();
-    cOutPathB = cOutPathA;
+    if (cOutPathB == defCOutPath) {
+        cOutPathB = cOutPathA;
+    }
     // Change button state to indicate importation
     QPalette pal;
     pal.setColor(QPalette::Button, QColor(Qt::green));
@@ -1322,6 +1324,9 @@ void MainWindow::on_pbImportDescB_clicked(void) {
     // Note destination path
     QFileInfo fileInfo(file);
     cOutPathB = fileInfo.absoluteDir().absolutePath();
+    if (cOutPathA == defCOutPath) {
+        cOutPathA = cOutPathB;
+    }
     // Change button state to indicate importation
     QPalette pal;
     pal.setColor(QPalette::Button, QColor(Qt::green));
@@ -1353,7 +1358,9 @@ void MainWindow::on_pbImportRustA_clicked(void) {
         file.close();
         QFileInfo fileInfo(file);
         rustOutPathA = fileInfo.absoluteDir().absolutePath();
-        rustOutPathB = rustOutPathA;
+        if (rustOutPathB == defRustOutPath) {
+            rustOutPathB = rustOutPathA;
+        }
         QPalette pal;
         pal.setColor(QPalette::Button, QColor(Qt::green));
         ui->pbImportRustA->setPalette(pal);
@@ -1389,6 +1396,9 @@ void MainWindow::on_pbImportRustB_clicked(void) {
         file.close();
         QFileInfo fileInfo(file);
         rustOutPathB = fileInfo.absoluteDir().absolutePath();
+        if (rustOutPathA == defRustOutPath) {
+            rustOutPathA = rustOutPathB;
+        }
         QPalette pal;
         pal.setColor(QPalette::Button, QColor(Qt::green));
         ui->pbImportRustB->setPalette(pal);
@@ -1446,12 +1456,12 @@ void MainWindow::on_pbGenerateDesc_clicked(void) {
     this->m_rustgen.generateMain(protocolName, this->m_cmdArray, false, rustOutPathB, this->m_rustextractB);
     this->m_rustgen.generateBridge(protocolName, protocolId, this->m_cmdArray, false, rustOutPathB);
 
-    QString cOutMsg = (cOutPathA == cOutPathB)
-        ? "C code has been generated in: " + cOutPathA
-        : "C code A generated in: " + cOutPathA + "\nC code B generated in: " + cOutPathB;
-    QString rustOutMsg = (rustOutPathA == rustOutPathB)
-        ? "Rust code has been generated in: " + rustOutPathA
-        : "Rust code A generated in: " + rustOutPathA + "\nRust code B generated in: " + rustOutPathB;
+    QString cOutMsg = (cOutPathA == cOutPathB) ?
+        "C code has been generated in: " + cOutPathA :
+        "C code A generated in: " + cOutPathA + "\nC code B generated in: " + cOutPathB;
+    QString rustOutMsg = (rustOutPathA == rustOutPathB) ?
+        "Rust code has been generated in: " + rustOutPathA :
+        "Rust code A generated in: " + rustOutPathA + "\nRust code B generated in: " + rustOutPathB;
     QMessageBox::information(nullptr, "Info", cOutMsg + "\n" + rustOutMsg);
 }
 

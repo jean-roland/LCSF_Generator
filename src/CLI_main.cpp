@@ -43,10 +43,12 @@ static QString protocolName;
 static QString protocolId;
 static QString protocolDesc;
 static QList<Command *> cmdArray;
-static QString cOutPathA = "./COutput";
-static QString cOutPathB = "./COutput";
-static QString rustOutPathA = "./RustOutput";
-static QString rustOutPathB = "./RustOutput";
+static const QString defCOutPath = "./COutput";
+static QString cOutPathA = defCOutPath;
+static QString cOutPathB = defCOutPath;
+static const QString defRustOutPath = "./RustOutput";
+static QString rustOutPathA = defRustOutPath;
+static QString rustOutPathB = defRustOutPath;
 static QString docPath = "./Export";
 
 static DocGenerator docgen;
@@ -184,7 +186,9 @@ int main(int argc, char *argv[]) {
         }
         QFileInfo importAInfo(importAFile);
         cOutPathA = importAInfo.absoluteDir().absolutePath();
-        cOutPathB = cOutPathA;
+        if (cOutPathB == defCOutPath) {
+            cOutPathB = cOutPathA;
+        }
         out << "Import A extraction successful." << Qt::endl;
     }
     if (parser.isSet("b")) {
@@ -202,13 +206,17 @@ int main(int argc, char *argv[]) {
         }
         QFileInfo importBInfo(importBFile);
         cOutPathB = importBInfo.absoluteDir().absolutePath();
+        if (cOutPathA == defCOutPath) {
+            cOutPathA = cOutPathB;
+        }
         out << "Import B extraction successful." << Qt::endl;
     }
     if (parser.isSet("ra")) {
         QFile importRustAFile(importRustAFilePath);
 
         if (!importRustAFile.open(QIODevice::ReadOnly)) {
-            out << "Error, couldn't open file: " << importRustAFilePath << ", reason: " << importRustAFile.errorString() << Qt::endl;
+            out << "Error, couldn't open file: " << importRustAFilePath << ", reason: " << importRustAFile.errorString()
+                << Qt::endl;
             exit(EXIT_FAILURE);
         }
         QTextStream importRustAStream(&importRustAFile);
@@ -218,14 +226,17 @@ int main(int argc, char *argv[]) {
         }
         QFileInfo importRustAInfo(importRustAFile);
         rustOutPathA = importRustAInfo.absoluteDir().absolutePath();
-        rustOutPathB = rustOutPathA;
+        if (rustOutPathB == defRustOutPath) {
+            rustOutPathB = rustOutPathA;
+        }
         out << "Rust import A extraction successful." << Qt::endl;
     }
     if (parser.isSet("rb")) {
         QFile importRustBFile(importRustBFilePath);
 
         if (!importRustBFile.open(QIODevice::ReadOnly)) {
-            out << "Error, couldn't open file: " << importRustBFilePath << ", reason: " << importRustBFile.errorString() << Qt::endl;
+            out << "Error, couldn't open file: " << importRustBFilePath << ", reason: " << importRustBFile.errorString()
+                << Qt::endl;
             exit(EXIT_FAILURE);
         }
         QTextStream importRustBStream(&importRustBFile);
@@ -235,6 +246,9 @@ int main(int argc, char *argv[]) {
         }
         QFileInfo importRustBInfo(importRustBFile);
         rustOutPathB = importRustBInfo.absoluteDir().absolutePath();
+        if (rustOutPathA == defRustOutPath) {
+            rustOutPathA = rustOutPathB;
+        }
         out << "Rust import B extraction successful." << Qt::endl;
     }
     // Check data
