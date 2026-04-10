@@ -266,6 +266,7 @@ int main(int argc, char *argv[]) {
     codegen.generateMain(protocolName, cmdArray, codeextractA, true, cOutPathA);
     codegen.generateBridgeHeader(protocolName, protocolId, cmdArray, cOutPathA);
     codegen.generateBridge(protocolName, cmdArray, true, cOutPathA);
+    codegen.generateDescription(protocolName, cmdArray, cOutPathA);
 
     rustgen.generateMain(protocolName, cmdArray, true, rustOutPathA, rustextractA);
     rustgen.generateBridge(protocolName, protocolId, cmdArray, true, rustOutPathA);
@@ -275,6 +276,7 @@ int main(int argc, char *argv[]) {
     codegen.generateMain(protocolName, cmdArray, codeextractB, false, cOutPathB);
     codegen.generateBridgeHeader(protocolName, protocolId, cmdArray, cOutPathB);
     codegen.generateBridge(protocolName, cmdArray, false, cOutPathB);
+    codegen.generateDescription(protocolName, cmdArray, cOutPathB);
 
     rustgen.generateMain(protocolName, cmdArray, false, rustOutPathB, rustextractB);
     rustgen.generateBridge(protocolName, protocolId, cmdArray, false, rustOutPathB);

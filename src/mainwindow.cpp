@@ -1443,6 +1443,7 @@ void MainWindow::on_pbGenerateDesc_clicked(void) {
     this->m_codegen.generateMain(protocolName, this->m_cmdArray, this->m_codeextractA, true, cOutPathA);
     this->m_codegen.generateBridgeHeader(protocolName, protocolId, this->m_cmdArray, cOutPathA);
     this->m_codegen.generateBridge(protocolName, this->m_cmdArray, true, cOutPathA);
+    this->m_codegen.generateDescription(protocolName, this->m_cmdArray, cOutPathA);
 
     this->m_rustgen.generateMain(protocolName, this->m_cmdArray, true, rustOutPathA, this->m_rustextractA);
     this->m_rustgen.generateBridge(protocolName, protocolId, this->m_cmdArray, true, rustOutPathA);
@@ -1452,6 +1453,7 @@ void MainWindow::on_pbGenerateDesc_clicked(void) {
     this->m_codegen.generateMain(protocolName, this->m_cmdArray, this->m_codeextractB, false, cOutPathB);
     this->m_codegen.generateBridgeHeader(protocolName, protocolId, this->m_cmdArray, cOutPathB);
     this->m_codegen.generateBridge(protocolName, this->m_cmdArray, false, cOutPathB);
+    this->m_codegen.generateDescription(protocolName, this->m_cmdArray, cOutPathB);
 
     this->m_rustgen.generateMain(protocolName, this->m_cmdArray, false, rustOutPathB, this->m_rustextractB);
     this->m_rustgen.generateBridge(protocolName, protocolId, this->m_cmdArray, false, rustOutPathB);
