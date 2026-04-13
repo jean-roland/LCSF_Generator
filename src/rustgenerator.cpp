@@ -570,7 +570,10 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
         }
         out << "// --- Custom uses ---" << Qt::endl;
         if (rustExtract.getExtractionComplete()) {
-            out << rustExtract.getExtraUses();
+            QString uses = rustExtract.getExtraUses().trimmed();
+            if (!uses.isEmpty()) {
+                out << uses << Qt::endl;
+            }
         }
         out << Qt::endl;
 
@@ -713,7 +716,10 @@ void RustGenerator::generateMain(QString protocolName, QList<Command *> cmdList,
 
         out << "// --- Custom definitions ---" << Qt::endl;
         if (rustExtract.getExtractionComplete()) {
-            out << rustExtract.getCustomDefinitions();
+            QString defs = rustExtract.getCustomDefinitions().trimmed();
+            if (!defs.isEmpty()) {
+                out << defs << Qt::endl;
+            }
         }
         out << Qt::endl;
 
