@@ -290,7 +290,7 @@ void RustGenerator::getSubAttData_Rec(QStringList parentNames, QList<Attribute *
             *pOut << indent << "if let LcsfValidAttPayload::SubattArr(subatt_arr) = &subatt_iter.next().unwrap().payload {"
                   << Qt::endl;
             if (attribute->getIsOptional()) {
-                *pOut << indent << "    if *subatt_arr != Vec::new() {" << Qt::endl;
+                *pOut << indent << "    if !subatt_arr.is_empty() {" << Qt::endl;
                 *pOut << indent << "        " << attDataPath << "is_" << attribute->getName().toLower() << "_here = true;"
                       << Qt::endl;
                 *pOut << indent << "        // Get iterator" << Qt::endl;
@@ -306,7 +306,7 @@ void RustGenerator::getSubAttData_Rec(QStringList parentNames, QList<Attribute *
         } else {
             *pOut << indent << "if let LcsfValidAttPayload::Data(data) = &subatt_iter.next().unwrap().payload {" << Qt::endl;
             if (attribute->getIsOptional()) {
-                *pOut << indent << "    if *data != Vec::new() {" << Qt::endl;
+                *pOut << indent << "    if !data.is_empty() {" << Qt::endl;
                 *pOut << indent << "        " << attDataPath << "is_" << attribute->getName().toLower() << "_here = true;"
                       << Qt::endl;
                 switch (attribute->getDataType()) {
@@ -1011,7 +1011,7 @@ void RustGenerator::generateBridge(
                             << Qt::endl;
                         QStringList parentNames = {command->getName(), attribute->getName()};
                         if (attribute->getIsOptional()) {
-                            out << "        if *subatt_arr != Vec::new() {" << Qt::endl;
+                            out << "        if !subatt_arr.is_empty() {" << Qt::endl;
                             out << "            " << command->getName().toLower() << "_payload.is_"
                                 << attribute->getName().toLower() << "_here = true;" << Qt::endl;
                             out << "            // Get iterator" << Qt::endl;
@@ -1028,7 +1028,7 @@ void RustGenerator::generateBridge(
                         out << "    if let LcsfValidAttPayload::Data(data) = &att_iter.next().unwrap().payload {"
                             << Qt::endl;
                         if (attribute->getIsOptional()) {
-                            out << "        if *data != Vec::new() {" << Qt::endl;
+                            out << "        if !data.is_empty() {" << Qt::endl;
                             out << "            " << command->getName().toLower() << "_payload.is_"
                                 << attribute->getName().toLower() << "_here = true;" << Qt::endl;
                             switch (attribute->getDataType()) {
