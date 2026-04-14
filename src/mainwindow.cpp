@@ -406,6 +406,9 @@ void MainWindow::loadCommandAttArray(QString cmdName) {
             comboBox->setCurrentIndex(attribute->getDataType());
             ui->twDescTableView->item(idx, 4)->setText(attribute->getDesc());
         }
+    } else {
+        this->fillCellItems(0);
+        this->preFillCmdIdxCell(0);
     }
 }
 
@@ -436,6 +439,9 @@ void MainWindow::loadAttArray(QTreeWidgetItem *item) {
             comboBox->setCurrentIndex(attribute->getDataType());
             ui->twDescTableView->item(idx, 4)->setText(attribute->getDesc());
         }
+    } else {
+        this->fillCellItems(0);
+        this->preFillCmdIdxCell(0);
     }
 }
 
@@ -446,7 +452,9 @@ void MainWindow::showAttributeArray(void) {
     ui->twDescTableView->setRowCount(1);
     ui->twDescTableView->setColumnCount(5);
     ui->twDescTableView->setHorizontalHeaderLabels(Headers);
+    this->fillCellItems(0);
     this->fillCellWidgets(0);
+    this->preFillCmdIdxCell(0);
 }
 
 QList<QTreeWidgetItem *> MainWindow::getTreeItemChildren(QTreeWidgetItem *parentTreeItem) {
@@ -653,6 +661,10 @@ QStringList MainWindow::getTableNames(void) {
 
     for (int idx = 0; idx < ui->twDescTableView->rowCount(); idx++) {
         if (ui->twDescTableView->item(idx, 0) != nullptr) {
+            // Skip placeholder row (auto-filled empty)
+            if (ui->twDescTableView->item(idx, 1) != nullptr && ui->twDescTableView->item(idx, 0)->text().isEmpty()) {
+                continue;
+            }
             QString input = ui->twDescTableView->item(idx, 0)->text();
             QString corrInput = CheckAndCorrectInputString(input);
             // Fix to avoid empty names
@@ -670,6 +682,10 @@ QList<short> MainWindow::getTableCodes(void) {
 
     for (int idx = 0; idx < ui->twDescTableView->rowCount(); idx++) {
         if (ui->twDescTableView->item(idx, 1) != nullptr) {
+            // Skip placeholder row (auto-filled empty)
+            if (ui->twDescTableView->item(idx, 0) != nullptr && ui->twDescTableView->item(idx, 0)->text().isEmpty()) {
+                continue;
+            }
             tableCodes.append(ui->twDescTableView->item(idx, 1)->text().toShort(nullptr, 16));
         } else {
             break;
@@ -685,10 +701,10 @@ bool MainWindow::saveCommandTable(void) {
     QList<short> newCmdCodes = this->getTableCodes();
 
     for (int idx = 0; idx < ui->twDescTableView->rowCount(); idx++) {
-        // Empty line
-        if ((ui->twDescTableView->item(idx, 0) == nullptr) && (ui->twDescTableView->item(idx, 1) == nullptr)) {
-            qDebug() << "Empty line detected" << Qt::endl;
-            return false;
+        // Placeholder row (auto-filled empty): skip silently
+        if (ui->twDescTableView->item(idx, 0) != nullptr && ui->twDescTableView->item(idx, 1) != nullptr &&
+            ui->twDescTableView->item(idx, 0)->text().isEmpty()) {
+            continue;
         }
         // Missing parameters
         if ((ui->twDescTableView->item(idx, 0) == nullptr) || (ui->twDescTableView->item(idx, 1) == nullptr) ||
@@ -770,10 +786,10 @@ bool MainWindow::saveCmdAttTable(QString cmdName) {
         QStringList noLongerExistingAttNames = prevExistingAttNames;
 
         for (int idx = 0; idx < ui->twDescTableView->rowCount(); idx++) {
-            // Empty line
-            if ((ui->twDescTableView->item(idx, 0) == nullptr) && (ui->twDescTableView->item(idx, 1) == nullptr)) {
-                qDebug() << "Empty line detected" << Qt::endl;
-                return false;
+            // Placeholder row (auto-filled empty): skip silently
+            if (ui->twDescTableView->item(idx, 0) != nullptr && ui->twDescTableView->item(idx, 1) != nullptr &&
+                ui->twDescTableView->item(idx, 0)->text().isEmpty()) {
+                continue;
             }
             // Missing parameters
             if ((ui->twDescTableView->item(idx, 0) == nullptr) || (ui->twDescTableView->item(idx, 1) == nullptr) ||
@@ -929,10 +945,10 @@ bool MainWindow::saveAttTable(QTreeWidgetItem *item) {
         QStringList noLongerExistingAttNames = prevExistingAttNames;
 
         for (int idx = 0; idx < ui->twDescTableView->rowCount(); idx++) {
-            // Empty line
-            if ((ui->twDescTableView->item(idx, 0) == nullptr) && (ui->twDescTableView->item(idx, 1) == nullptr)) {
-                qDebug() << "Empty line detected" << Qt::endl;
-                return false;
+            // Placeholder row (auto-filled empty): skip silently
+            if (ui->twDescTableView->item(idx, 0) != nullptr && ui->twDescTableView->item(idx, 1) != nullptr &&
+                ui->twDescTableView->item(idx, 0)->text().isEmpty()) {
+                continue;
             }
             // Missing parameters
             if ((ui->twDescTableView->item(idx, 0) == nullptr) || (ui->twDescTableView->item(idx, 1) == nullptr) ||
