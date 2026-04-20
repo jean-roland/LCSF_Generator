@@ -108,39 +108,29 @@ fn cc1_get_data(att_arr: &[LcsfValidAtt]) -> CmdPayload {
         cc1_payload.sa5 = CString::from_vec_with_nul(data.clone()).unwrap();
     }
     // Retrieve data of attribute sa6
-    if let LcsfValidAttPayload::Data(data) = &att_iter.next().unwrap().payload {
-        if !data.is_empty() {
-            cc1_payload.is_sa6_here = true;
-            cc1_payload.sa6 = u8::from_le_bytes(data.as_slice().try_into().unwrap());
-        }
+    if let LcsfValidAttPayload::Data(data) = &att_iter.next().unwrap().payload && !data.is_empty() {
+        cc1_payload.is_sa6_here = true;
+        cc1_payload.sa6 = u8::from_le_bytes(data.as_slice().try_into().unwrap());
     }
     // Retrieve data of attribute sa7
-    if let LcsfValidAttPayload::Data(data) = &att_iter.next().unwrap().payload {
-        if !data.is_empty() {
-            cc1_payload.is_sa7_here = true;
-            cc1_payload.sa7 = lcsf_validator::vle_decode(data) as u16;
-        }
+    if let LcsfValidAttPayload::Data(data) = &att_iter.next().unwrap().payload && !data.is_empty() {
+        cc1_payload.is_sa7_here = true;
+        cc1_payload.sa7 = lcsf_validator::vle_decode(data) as u16;
     }
     // Retrieve data of attribute sa8
-    if let LcsfValidAttPayload::Data(data) = &att_iter.next().unwrap().payload {
-        if !data.is_empty() {
-            cc1_payload.is_sa8_here = true;
-            cc1_payload.sa8 = lcsf_validator::vle_decode(data) as u32;
-        }
+    if let LcsfValidAttPayload::Data(data) = &att_iter.next().unwrap().payload && !data.is_empty() {
+        cc1_payload.is_sa8_here = true;
+        cc1_payload.sa8 = lcsf_validator::vle_decode(data) as u32;
     }
     // Retrieve data of attribute sa9
-    if let LcsfValidAttPayload::Data(data) = &att_iter.next().unwrap().payload {
-        if !data.is_empty() {
-            cc1_payload.is_sa9_here = true;
-            cc1_payload.sa9 = data.clone();
-        }
+    if let LcsfValidAttPayload::Data(data) = &att_iter.next().unwrap().payload && !data.is_empty() {
+        cc1_payload.is_sa9_here = true;
+        cc1_payload.sa9 = data.clone();
     }
     // Retrieve data of attribute sa10
-    if let LcsfValidAttPayload::Data(data) = &att_iter.next().unwrap().payload {
-        if !data.is_empty() {
-            cc1_payload.is_sa10_here = true;
-            cc1_payload.sa10 = CString::from_vec_with_nul(data.clone()).unwrap();
-        }
+    if let LcsfValidAttPayload::Data(data) = &att_iter.next().unwrap().payload && !data.is_empty() {
+        cc1_payload.is_sa10_here = true;
+        cc1_payload.sa10 = CString::from_vec_with_nul(data.clone()).unwrap();
     }
     // Retrieve data of attribute sa11
     if let LcsfValidAttPayload::Data(data) = &att_iter.next().unwrap().payload {
@@ -201,39 +191,29 @@ fn cc3_get_data(att_arr: &[LcsfValidAtt]) -> CmdPayload {
         cc3_payload.sa5 = CString::from_vec_with_nul(data.clone()).unwrap();
     }
     // Retrieve data of attribute sa6
-    if let LcsfValidAttPayload::Data(data) = &att_iter.next().unwrap().payload {
-        if !data.is_empty() {
-            cc3_payload.is_sa6_here = true;
-            cc3_payload.sa6 = u8::from_le_bytes(data.as_slice().try_into().unwrap());
-        }
+    if let LcsfValidAttPayload::Data(data) = &att_iter.next().unwrap().payload && !data.is_empty() {
+        cc3_payload.is_sa6_here = true;
+        cc3_payload.sa6 = u8::from_le_bytes(data.as_slice().try_into().unwrap());
     }
     // Retrieve data of attribute sa7
-    if let LcsfValidAttPayload::Data(data) = &att_iter.next().unwrap().payload {
-        if !data.is_empty() {
-            cc3_payload.is_sa7_here = true;
-            cc3_payload.sa7 = lcsf_validator::vle_decode(data) as u16;
-        }
+    if let LcsfValidAttPayload::Data(data) = &att_iter.next().unwrap().payload && !data.is_empty() {
+        cc3_payload.is_sa7_here = true;
+        cc3_payload.sa7 = lcsf_validator::vle_decode(data) as u16;
     }
     // Retrieve data of attribute sa8
-    if let LcsfValidAttPayload::Data(data) = &att_iter.next().unwrap().payload {
-        if !data.is_empty() {
-            cc3_payload.is_sa8_here = true;
-            cc3_payload.sa8 = lcsf_validator::vle_decode(data) as u32;
-        }
+    if let LcsfValidAttPayload::Data(data) = &att_iter.next().unwrap().payload && !data.is_empty() {
+        cc3_payload.is_sa8_here = true;
+        cc3_payload.sa8 = lcsf_validator::vle_decode(data) as u32;
     }
     // Retrieve data of attribute sa9
-    if let LcsfValidAttPayload::Data(data) = &att_iter.next().unwrap().payload {
-        if !data.is_empty() {
-            cc3_payload.is_sa9_here = true;
-            cc3_payload.sa9 = data.clone();
-        }
+    if let LcsfValidAttPayload::Data(data) = &att_iter.next().unwrap().payload && !data.is_empty() {
+        cc3_payload.is_sa9_here = true;
+        cc3_payload.sa9 = data.clone();
     }
     // Retrieve data of attribute sa10
-    if let LcsfValidAttPayload::Data(data) = &att_iter.next().unwrap().payload {
-        if !data.is_empty() {
-            cc3_payload.is_sa10_here = true;
-            cc3_payload.sa10 = CString::from_vec_with_nul(data.clone()).unwrap();
-        }
+    if let LcsfValidAttPayload::Data(data) = &att_iter.next().unwrap().payload && !data.is_empty() {
+        cc3_payload.is_sa10_here = true;
+        cc3_payload.sa10 = CString::from_vec_with_nul(data.clone()).unwrap();
     }
     // Retrieve data of attribute sa11
     if let LcsfValidAttPayload::Data(data) = &att_iter.next().unwrap().payload {
@@ -291,45 +271,37 @@ fn cc4_get_data(att_arr: &[LcsfValidAtt]) -> CmdPayload {
             cc4_payload.ca1_payload.sa2 = lcsf_validator::vle_decode(data) as u16;
         }
         // Retrieve data of sub-attribute sa3
-        if let LcsfValidAttPayload::Data(data) = &subatt_iter.next().unwrap().payload {
-            if !data.is_empty() {
-                cc4_payload.ca1_payload.is_sa3_here = true;
-                cc4_payload.ca1_payload.sa3 = lcsf_validator::vle_decode(data) as u32;
-            }
+        if let LcsfValidAttPayload::Data(data) = &subatt_iter.next().unwrap().payload && !data.is_empty() {
+            cc4_payload.ca1_payload.is_sa3_here = true;
+            cc4_payload.ca1_payload.sa3 = lcsf_validator::vle_decode(data) as u32;
         }
     }
     // Retrieve data of attribute ca2
-    if let LcsfValidAttPayload::SubattArr(subatt_arr) = &att_iter.next().unwrap().payload {
-        if !subatt_arr.is_empty() {
-            cc4_payload.is_ca2_here = true;
+    if let LcsfValidAttPayload::SubattArr(subatt_arr) = &att_iter.next().unwrap().payload && !subatt_arr.is_empty() {
+        cc4_payload.is_ca2_here = true;
+        // Get iterator
+        let subatt_iter = &mut subatt_arr.iter();
+        // Retrieve data of sub-attribute sa1
+        if let LcsfValidAttPayload::Data(data) = &subatt_iter.next().unwrap().payload && !data.is_empty() {
+            cc4_payload.ca2_payload.is_sa1_here = true;
+            cc4_payload.ca2_payload.sa1 = u8::from_le_bytes(data.as_slice().try_into().unwrap());
+        }
+        // Retrieve data of sub-attribute ca3
+        if let LcsfValidAttPayload::SubattArr(subatt_arr) = &subatt_iter.next().unwrap().payload {
             // Get iterator
             let subatt_iter = &mut subatt_arr.iter();
             // Retrieve data of sub-attribute sa1
-            if let LcsfValidAttPayload::Data(data) = &subatt_iter.next().unwrap().payload {
-                if !data.is_empty() {
-                    cc4_payload.ca2_payload.is_sa1_here = true;
-                    cc4_payload.ca2_payload.sa1 = u8::from_le_bytes(data.as_slice().try_into().unwrap());
-                }
+            if let LcsfValidAttPayload::Data(data) = &subatt_iter.next().unwrap().payload && !data.is_empty() {
+                cc4_payload.ca2_payload.ca3_payload.is_sa1_here = true;
+                cc4_payload.ca2_payload.ca3_payload.sa1 = u8::from_le_bytes(data.as_slice().try_into().unwrap());
             }
-            // Retrieve data of sub-attribute ca3
+            // Retrieve data of sub-attribute ca4
             if let LcsfValidAttPayload::SubattArr(subatt_arr) = &subatt_iter.next().unwrap().payload {
                 // Get iterator
                 let subatt_iter = &mut subatt_arr.iter();
-                // Retrieve data of sub-attribute sa1
+                // Retrieve data of sub-attribute sa4
                 if let LcsfValidAttPayload::Data(data) = &subatt_iter.next().unwrap().payload {
-                    if !data.is_empty() {
-                        cc4_payload.ca2_payload.ca3_payload.is_sa1_here = true;
-                        cc4_payload.ca2_payload.ca3_payload.sa1 = u8::from_le_bytes(data.as_slice().try_into().unwrap());
-                    }
-                }
-                // Retrieve data of sub-attribute ca4
-                if let LcsfValidAttPayload::SubattArr(subatt_arr) = &subatt_iter.next().unwrap().payload {
-                    // Get iterator
-                    let subatt_iter = &mut subatt_arr.iter();
-                    // Retrieve data of sub-attribute sa4
-                    if let LcsfValidAttPayload::Data(data) = &subatt_iter.next().unwrap().payload {
-                        cc4_payload.ca2_payload.ca3_payload.ca4_payload.sa4 = data.clone();
-                    }
+                    cc4_payload.ca2_payload.ca3_payload.ca4_payload.sa4 = data.clone();
                 }
             }
         }
@@ -378,45 +350,37 @@ fn cc6_get_data(att_arr: &[LcsfValidAtt]) -> CmdPayload {
             cc6_payload.ca9_payload.sa2 = lcsf_validator::vle_decode(data) as u16;
         }
         // Retrieve data of sub-attribute sa3
-        if let LcsfValidAttPayload::Data(data) = &subatt_iter.next().unwrap().payload {
-            if !data.is_empty() {
-                cc6_payload.ca9_payload.is_sa3_here = true;
-                cc6_payload.ca9_payload.sa3 = lcsf_validator::vle_decode(data) as u32;
-            }
+        if let LcsfValidAttPayload::Data(data) = &subatt_iter.next().unwrap().payload && !data.is_empty() {
+            cc6_payload.ca9_payload.is_sa3_here = true;
+            cc6_payload.ca9_payload.sa3 = lcsf_validator::vle_decode(data) as u32;
         }
     }
     // Retrieve data of attribute ca10
-    if let LcsfValidAttPayload::SubattArr(subatt_arr) = &att_iter.next().unwrap().payload {
-        if !subatt_arr.is_empty() {
-            cc6_payload.is_ca10_here = true;
+    if let LcsfValidAttPayload::SubattArr(subatt_arr) = &att_iter.next().unwrap().payload && !subatt_arr.is_empty() {
+        cc6_payload.is_ca10_here = true;
+        // Get iterator
+        let subatt_iter = &mut subatt_arr.iter();
+        // Retrieve data of sub-attribute sa1
+        if let LcsfValidAttPayload::Data(data) = &subatt_iter.next().unwrap().payload && !data.is_empty() {
+            cc6_payload.ca10_payload.is_sa1_here = true;
+            cc6_payload.ca10_payload.sa1 = u8::from_le_bytes(data.as_slice().try_into().unwrap());
+        }
+        // Retrieve data of sub-attribute ca11
+        if let LcsfValidAttPayload::SubattArr(subatt_arr) = &subatt_iter.next().unwrap().payload {
             // Get iterator
             let subatt_iter = &mut subatt_arr.iter();
             // Retrieve data of sub-attribute sa1
-            if let LcsfValidAttPayload::Data(data) = &subatt_iter.next().unwrap().payload {
-                if !data.is_empty() {
-                    cc6_payload.ca10_payload.is_sa1_here = true;
-                    cc6_payload.ca10_payload.sa1 = u8::from_le_bytes(data.as_slice().try_into().unwrap());
-                }
+            if let LcsfValidAttPayload::Data(data) = &subatt_iter.next().unwrap().payload && !data.is_empty() {
+                cc6_payload.ca10_payload.ca11_payload.is_sa1_here = true;
+                cc6_payload.ca10_payload.ca11_payload.sa1 = u8::from_le_bytes(data.as_slice().try_into().unwrap());
             }
-            // Retrieve data of sub-attribute ca11
+            // Retrieve data of sub-attribute ca12
             if let LcsfValidAttPayload::SubattArr(subatt_arr) = &subatt_iter.next().unwrap().payload {
                 // Get iterator
                 let subatt_iter = &mut subatt_arr.iter();
-                // Retrieve data of sub-attribute sa1
+                // Retrieve data of sub-attribute sa4
                 if let LcsfValidAttPayload::Data(data) = &subatt_iter.next().unwrap().payload {
-                    if !data.is_empty() {
-                        cc6_payload.ca10_payload.ca11_payload.is_sa1_here = true;
-                        cc6_payload.ca10_payload.ca11_payload.sa1 = u8::from_le_bytes(data.as_slice().try_into().unwrap());
-                    }
-                }
-                // Retrieve data of sub-attribute ca12
-                if let LcsfValidAttPayload::SubattArr(subatt_arr) = &subatt_iter.next().unwrap().payload {
-                    // Get iterator
-                    let subatt_iter = &mut subatt_arr.iter();
-                    // Retrieve data of sub-attribute sa4
-                    if let LcsfValidAttPayload::Data(data) = &subatt_iter.next().unwrap().payload {
-                        cc6_payload.ca10_payload.ca11_payload.ca12_payload.sa4 = data.clone();
-                    }
+                    cc6_payload.ca10_payload.ca11_payload.ca12_payload.sa4 = data.clone();
                 }
             }
         }
