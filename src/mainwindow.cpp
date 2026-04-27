@@ -61,20 +61,19 @@ void MainWindow::on_actionNew_protocol_triggered(void) {
     }
 }
 
-void MainWindow::on_actionSave_protocol_triggered(void) {
+bool MainWindow::saveCurrentProtocol(void) {
     QString protocolName(ui->leProtocolName->text());
     const QString protocolId(ui->leProtocolId->text().trimmed());
     const QString protocolDesc(ui->leProtocolDesc->text());
 
     if (protocolName.isEmpty()) {
-        QMessageBox::warning(nullptr, "Warning", "Protocol name is empty!");
-        return;
+        QMessageBox::warning(this, "Warning", "Protocol name is empty!");
+        return false;
     }
     protocolName = CheckAndCorrectInputString(protocolName);
-
     if (protocolId.isEmpty()) {
-        QMessageBox::warning(nullptr, "Warning", "Protocol id is empty!");
-        return;
+        QMessageBox::warning(this, "Warning", "Protocol id is empty!");
+        return false;
     }
     // Save current table
     if (ui->twDescTreeView->currentItem() != nullptr) {
@@ -82,8 +81,8 @@ void MainWindow::on_actionSave_protocol_triggered(void) {
     }
     // If no commands, don't generate
     if (this->m_cmdArray.isEmpty()) {
-        QMessageBox::warning(nullptr, "Warning", "Protocol has no commands!");
-        return;
+        QMessageBox::warning(this, "Warning", "Protocol has no commands!");
+        return false;
     }
     // Create default repertory if needed
     QDir().mkpath(currSaveLoc);
@@ -92,13 +91,19 @@ void MainWindow::on_actionSave_protocol_triggered(void) {
         QFileDialog::getSaveFileName(this, "Choose save location", currSaveLoc + "/" + protocolName, "Descriptor (*.json)");
     // Validity check
     if (selectedPath.isEmpty()) {
-        return;
+        return false; // User cancelled the file dialog
     }
     qDebug() << "File selected: " << selectedPath;
     // Save data
     if (!DescHandler::save_desc(selectedPath, this->m_cmdArray, protocolName, protocolId, protocolDesc)) {
-        QMessageBox::warning(nullptr, "Warning", "Couldn't create json descriptor file!");
+        QMessageBox::warning(this, "Warning", "Couldn't create json descriptor file!");
+        return false;
     }
+    return true;
+}
+
+void MainWindow::on_actionSave_protocol_triggered(void) {
+    saveCurrentProtocol();
 }
 
 void MainWindow::on_actionLoad_protocol_triggered(void) {
@@ -1485,10 +1490,16 @@ void MainWindow::on_pbGenerateDesc_clicked(void) {
 
 // Close event action
 void MainWindow::closeEvent(QCloseEvent *event) {
-    int questionAnswer = QMessageBox::question(
-        this, "Question", "Do you want to leave (unsaved work will be lost)?", QMessageBox::Yes | QMessageBox::No);
-
+    int questionAnswer =
+        QMessageBox::question(this, "Question", "Do you want to save before leaving?", QMessageBox::Yes | QMessageBox::No);
     if (questionAnswer == QMessageBox::Yes) {
+        if (saveCurrentProtocol()) {
+            event->accept();
+        } else {
+            // Abort exit because save failed
+            event->ignore();
+        }
+    } else if (questionAnswer == QMessageBox::No) {
         event->accept();
     } else {
         event->ignore();

@@ -76,6 +76,7 @@ class MainWindow : public QMainWindow {
     const QString exportDirPath = "./Export";
     const QString baseTableLabel = "Current table - ";
 
+    bool saveCurrentProtocol(void);
     QString CheckAttNameDuplicate_Rec(QSet<QString> *pSet, QList<Attribute *> attArray);
     QString CheckAttNameDuplicate(void);
     bool CheckInputString(QString input);
