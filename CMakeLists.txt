@@ -23,6 +23,7 @@ project(LCSF_Generator VERSION 1.4 LANGUAGES CXX)
 
 # Includes
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
+include(GNUInstallDirs)
 
 # Compile options
 add_compile_options("-DAPP_VERSION=\"${PROJECT_VERSION}\"" "$<$<CONFIG:DEBUG>:-D_APP_DEBUG>")

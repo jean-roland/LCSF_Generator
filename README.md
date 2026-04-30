@@ -62,6 +62,22 @@ If you're new with CMake, here's my process:
 
 Everything should now be compiling without issues.
 
+## How to install from source
+
+After building, you can install the GUI and CLI executables (along with the shared library they depend on) using CMake's install target.
+
+To install to a custom location:
+* `cmake --install build/ --prefix /your/install/path`
+
+To install to the system default (e.g. `/usr/local` on Linux), pass the prefix at configure time or omit `--prefix`:
+* `cmake --install build/`
+
+The install layout is:
+* `<prefix>/bin/lcsf_generator_gui` and `<prefix>/bin/lcsf_generator_cli`
+* `<prefix>/lib/liblcsf_generator_lib.so`
+
+The executables are installed with an rpath of `$ORIGIN/../lib`, so they will locate the shared library without needing `LD_LIBRARY_PATH`.
+
 ## How to run tests
 
 To run unit-testing, you'll need [googletest](https://github.com/google/googletest) and (re)build the project using CMake.

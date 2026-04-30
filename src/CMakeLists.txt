@@ -28,3 +28,11 @@ target_include_directories(${GUI_BIN_NAME} PUBLIC "../include/")
 add_executable(${CLI_BIN_NAME} CLI_main.cpp)
 target_link_libraries(${CLI_BIN_NAME} ${CORE_LIB_NAME})
 target_include_directories(${CLI_BIN_NAME} PUBLIC "../include/")
+
+# Install
+set_target_properties(${CORE_LIB_NAME} PROPERTIES INSTALL_RPATH "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
+set_target_properties(${GUI_BIN_NAME} ${CLI_BIN_NAME} PROPERTIES INSTALL_RPATH "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
+install(TARGETS ${GUI_BIN_NAME} ${CLI_BIN_NAME} ${CORE_LIB_NAME}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
