@@ -1649,6 +1649,8 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
         out << "    " << protocolName.toLower() << "_cmd_payload_t *pCmdPayload = &LcsfBridge" << protocolName
             << "Info.CmdPayload;" << Qt::endl;
         out << Qt::endl;
+        out << "    // Clear payload to remove stale VLE bytes" << Qt::endl;
+        out << "    memset(pCmdPayload, 0, sizeof(*pCmdPayload));" << Qt::endl;
         out << "    LCSF_Bridge_" << protocolName << "GetCmdData(cmdName, pValidCmd->pAttArray, pCmdPayload);" << Qt::endl;
         out << "    return " << protocolName << "_MainExecute(cmdName, pCmdPayload);" << Qt::endl;
         out << "}" << Qt::endl;
