@@ -1476,7 +1476,10 @@ void MainWindow::on_pbGenerateDesc_clicked(void) {
     this->m_rustgen.generateBridge(protocolName, protocolId, this->m_cmdArray, true, rustOutPathA);
 
     // Generate "B" files
-    this->m_codegen.generateMainHeader(protocolName, this->m_cmdArray, this->m_codeextractB, cOutPathB);
+    if (this->m_codeextractB.getExtractionComplete() || !this->m_codeextractA.getExtractionComplete()) {
+        // Avoid a non imported side to clobber the commonly generated Main header
+        this->m_codegen.generateMainHeader(protocolName, this->m_cmdArray, this->m_codeextractB, cOutPathB);
+    }
     this->m_codegen.generateMain(protocolName, this->m_cmdArray, this->m_codeextractB, false, cOutPathB);
     this->m_codegen.generateBridgeHeader(protocolName, protocolId, this->m_cmdArray, cOutPathB);
     this->m_codegen.generateBridge(protocolName, this->m_cmdArray, false, cOutPathB);

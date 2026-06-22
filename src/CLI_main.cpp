@@ -272,7 +272,10 @@ int main(int argc, char *argv[]) {
     rustgen.generateBridge(protocolName, protocolId, cmdArray, true, rustOutPathA);
 
     // Generate "B" C files
-    codegen.generateMainHeader(protocolName, cmdArray, codeextractB, cOutPathB);
+    if (codeextractB.getExtractionComplete() || !codeextractA.getExtractionComplete()) {
+        // Avoid a non imported side to clobber the commonly generated Main header
+        codegen.generateMainHeader(protocolName, cmdArray, codeextractB, cOutPathB);
+    }
     codegen.generateMain(protocolName, cmdArray, codeextractB, false, cOutPathB);
     codegen.generateBridgeHeader(protocolName, protocolId, cmdArray, cOutPathB);
     codegen.generateBridge(protocolName, cmdArray, false, cOutPathB);
