@@ -93,6 +93,10 @@ bool MainWindow::saveCurrentProtocol(void) {
     if (selectedPath.isEmpty()) {
         return false; // User cancelled the file dialog
     }
+    // Append the extension if the user didn't type one
+    if (!selectedPath.endsWith(".json", Qt::CaseInsensitive)) {
+        selectedPath.append(".json");
+    }
     qDebug() << "File selected: " << selectedPath;
     // Save data
     if (!DescHandler::save_desc(selectedPath, this->m_cmdArray, protocolName, protocolId, protocolDesc)) {
@@ -330,6 +334,8 @@ void MainWindow::fillCellWidgets(int rowIdx) {
     ui->twDescTableView->setCellWidget(rowIdx, 2, comboYesNo);
 
     if (ui->twDescTableView->horizontalHeaderItem(0)->text().compare("Attribute Name") == 0) {
+        // Attributes default to non-optional ("No")
+        comboYesNo->setCurrentIndex(1);
         QComboBox *comboDataType = new QComboBox();
         comboDataType->addItems(NS_AttDataType::SL_DocAttDataType);
         ui->twDescTableView->setCellWidget(rowIdx, 3, comboDataType);
