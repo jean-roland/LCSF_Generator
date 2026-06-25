@@ -23,6 +23,7 @@
 #include <gtest/gtest.h>
 
 #include "codeextractor.h"
+#include "rustextractor.h"
 #include "test_data.h"
 
 TEST(test_extractor, a_extraction) {
@@ -83,4 +84,57 @@ TEST(test_extractor, b_extraction) {
     for (int idx = 0; idx < b_cmd_fct.count(); idx++) {
         ASSERT_EQ(cmdFcnList.at(idx).toStdString(), b_cmd_fct.at(idx).toStdString());
     }
+}
+
+// Regression: a user helper fn interleaved among the execute_ functions must be preserved (moved
+// into the custom definitions section) instead of aborting extraction and silently dropping it
+// together with every customization that follows it.
+TEST(test_extractor, rust_interleaved_helper_preserved) {
+    QString source = R"RUST(// --- Custom uses ---
+use crate::foo::bar;
+/// Command enum
+pub enum CmdEnum { Sc2, Sc3 }
+// --- Custom definitions ---
+const ANSWER: u32 = 42;
+
+fn execute_sc2() {
+    custom_sc2_body();
+}
+
+/// A helper placed right next to its caller, between two execute_ functions.
+fn decode_le_u32s(bytes: &[u8]) -> Vec<u32> {
+    bytes.chunks_exact(4).map(|c| u32::from_le_bytes([c[0], c[1], c[2], c[3]])).collect()
+}
+
+fn execute_sc3() {
+    custom_sc3_body();
+}
+
+fn execute_cmd(cmd_name: CmdEnum, cmd_payload: &CmdPayload) {
+    custom_dispatch_body();
+}
+// --- Custom public functions ---
+pub fn init_core(core: &mut LcsfCore) {
+    custom_init_body();
+}
+)RUST";
+
+    QTextStream stream(&source);
+    RustExtractor test_extractor;
+    ASSERT_TRUE(test_extractor.extractFromSourceFile(protocol_name, &stream, cmd_list));
+
+    // The interleaved helper is preserved in the custom definitions section.
+    QString defs = test_extractor.getCustomDefinitions();
+    ASSERT_TRUE(defs.contains("const ANSWER: u32 = 42;"));
+    ASSERT_TRUE(defs.contains("fn decode_le_u32s"));
+
+    // execute_sc3 sits AFTER the helper: its body must still be captured (this is what used to
+    // be lost). Search every command slot since indexing depends on the shared cmd_list order.
+    QString allCmdFns = test_extractor.getCommandFunctions().join("\n");
+    ASSERT_TRUE(allCmdFns.contains("custom_sc2_body();"));
+    ASSERT_TRUE(allCmdFns.contains("custom_sc3_body();"));
+
+    // execute_cmd (also after the helper) and the public functions survive too.
+    ASSERT_TRUE(test_extractor.getExecuteCmdFunction().contains("custom_dispatch_body();"));
+    ASSERT_TRUE(test_extractor.getCustomPublicFunctions().contains("custom_init_body();"));
 }

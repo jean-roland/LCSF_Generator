@@ -118,9 +118,13 @@ void RustExtractor::extractExecuteFunctions(QTextStream *pIn, QString firstLine,
     const QString execPrefix = "fn execute_";
 
     while (true) {
-        // Skip blank lines, doc comment lines, and attribute lines to find the next function
+        // Buffer blank lines, doc comments, and attributes preceding the next item. They are
+        // discarded ahead of (re)generated execute_ functions, but kept when the item turns out
+        // to be a user helper we preserve, so its doc comment / attributes stay attached.
+        QString leading;
         while (currentLine.trimmed().isEmpty() || currentLine.trimmed().startsWith("///")
                || currentLine.trimmed().startsWith("#[")) {
+            leading.append(currentLine + "\n");
             if (pIn->atEnd()) return;
             currentLine = pIn->readLine();
         }
@@ -149,7 +153,23 @@ void RustExtractor::extractExecuteFunctions(QTextStream *pIn, QString firstLine,
             continue;
         }
 
-        // Unknown line — stop
+        // A user-defined helper interleaved among the execute_ functions (e.g. a decode helper
+        // placed next to its only caller). Preserve it in the custom definitions section -- which
+        // is emitted before the execute_ functions, and Rust is order-independent -- instead of
+        // stopping here and silently dropping it together with every later customization.
+        if (effectiveLine.startsWith("fn ")) {
+            QString fullFunction = this->extractFunction(currentLine, pIn);
+            QString docAndAttrs = leading.trimmed();
+            this->m_customDefinitions.append("\n");
+            if (!docAndAttrs.isEmpty()) {
+                this->m_customDefinitions.append(docAndAttrs + "\n");
+            }
+            this->m_customDefinitions.append(fullFunction);
+            currentLine = pIn->atEnd() ? "" : pIn->readLine();
+            continue;
+        }
+
+        // Truly unrecognized line (not blank/doc/attr/fn) -- stop to avoid mis-parsing the rest.
         break;
     }
 }
