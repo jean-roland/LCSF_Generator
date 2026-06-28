@@ -226,8 +226,25 @@ void CodeExtractor::extractPublicFunctionHeader(QString functionBuffer) {
         if (!isHeader(currentLine) && (!isHeaderStarted || (isHeaderStarted && isHeaderFinished))) {
             isHeaderStarted = false;
             isHeaderFinished = false;
-            QRegExp re(R"([\{])");
-            functionHeaderBuffer.append(currentLine.replace(re, "").trimmed() + ";\n\n");
+            // Accumulate the (possibly multi-line) signature up to the body's opening brace, then emit it as one
+            // declaration. A wrapped prototype would otherwise be truncated at its first line (left dangling on a ',').
+            QString signature = QString();
+            while (true) {
+                QString sigLine = currentLine;
+                int bracePos = sigLine.indexOf('{');
+                if (bracePos >= 0) {
+                    sigLine = sigLine.left(bracePos);
+                }
+                if (!signature.isEmpty()) {
+                    signature.append(" ");
+                }
+                signature.append(sigLine.trimmed());
+                if ((bracePos >= 0) || (i + 1 >= functionLinesBuffer.size())) {
+                    break;
+                }
+                currentLine = functionLinesBuffer.at(++i);
+            }
+            functionHeaderBuffer.append(signature.trimmed() + ";\n\n");
             this->m_unknownPublicFunctionsHeaders.append(functionHeaderBuffer);
             break;
         } else if (currentLine.contains("/*")) {
