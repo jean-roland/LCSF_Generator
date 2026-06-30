@@ -25,6 +25,9 @@
 
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
+    // Identify the app so QSettings (e.g. the "Open Recent" list) has a stable location
+    QApplication::setOrganizationName("LCSF");
+    QApplication::setApplicationName("LCSF_Generator");
     MainWindow w;
     w.show();
 

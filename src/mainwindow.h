@@ -23,6 +23,7 @@
 #define MAINWINDOW_H
 
 // Qt include
+#include <QAction>
 #include <QCloseEvent>
 #include <QComboBox>
 #include <QDebug>
@@ -33,6 +34,7 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QSet>
+#include <QSettings>
 #include <QTableWidgetItem>
 #include <QTreeWidget>
 // Custom include
@@ -52,7 +54,10 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 
   private:
+    enum { MaxRecentFiles = 8 };
+
     Ui::MainWindow *ui;
+    QAction *m_recentFileActs[MaxRecentFiles];
     QList<Command *> m_cmdArray;
     DocGenerator m_docgen;
     CodeGenerator m_codegen;
@@ -75,8 +80,13 @@ class MainWindow : public QMainWindow {
     const QString descDirPath = "./Description";
     const QString exportDirPath = "./Export";
     const QString baseTableLabel = "Current table - ";
+    const QString recentFilesKey = "recentFiles";
 
     bool saveCurrentProtocol(void);
+    void loadProtocolFile(const QString &filePath);
+    void addToRecentFiles(const QString &filePath);
+    void removeFromRecentFiles(const QString &filePath);
+    void updateRecentFileActions(void);
     QString CheckAttNameDuplicate_Rec(QSet<QString> *pSet, QList<Attribute *> attArray);
     QString CheckAttNameDuplicate(void);
     bool CheckInputString(QString input);
@@ -124,6 +134,8 @@ class MainWindow : public QMainWindow {
     void on_actionNew_protocol_triggered(void);
     void on_actionSave_protocol_triggered(void);
     void on_actionLoad_protocol_triggered(void);
+    void on_actionQuit_triggered(void);
+    void openRecentFile(void);
     void on_actionDocumentation_triggered(void);
     void on_actionAbout_triggered(void);
     void on_twDescTreeView_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);

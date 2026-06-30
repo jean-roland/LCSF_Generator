@@ -44,6 +44,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     rustOutPathB = defRustOutPath;
     currSaveLoc = descDirPath;
 
+    // Setup the "Open Recent" menu
+    ui->menuOpenRecent->setToolTipsVisible(true);
+    for (int i = 0; i < MaxRecentFiles; ++i) {
+        m_recentFileActs[i] = new QAction(this);
+        m_recentFileActs[i]->setVisible(false);
+        connect(m_recentFileActs[i], &QAction::triggered, this, &MainWindow::openRecentFile);
+        ui->menuOpenRecent->addAction(m_recentFileActs[i]);
+    }
+    this->updateRecentFileActions();
+
     // Set tree clear state
     treeIsCleared = false;
 }
@@ -103,6 +113,8 @@ bool MainWindow::saveCurrentProtocol(void) {
         QMessageBox::warning(this, "Warning", "Couldn't create json descriptor file!");
         return false;
     }
+    // Remember the file in the "Open Recent" menu
+    this->addToRecentFiles(selectedPath);
     return true;
 }
 
@@ -117,16 +129,24 @@ void MainWindow::on_actionLoad_protocol_triggered(void) {
     if (selectedFile.isEmpty()) {
         return;
     }
-    QFile file(selectedFile);
-    // Clear data
-    this->clearData();
-    // Open file
+    this->loadProtocolFile(selectedFile);
+}
+
+void MainWindow::loadProtocolFile(const QString &filePath) {
+    QFile file(filePath);
+    // Open file before touching the current data, so a failure doesn't wipe unsaved work
     if (!file.open(QIODevice::ReadOnly)) {
         QMessageBox::warning(nullptr, "Error opening file", file.errorString());
+        // Drop moved/deleted files from the "Open Recent" list to avoid polluting it
+        if (!QFileInfo::exists(filePath)) {
+            this->removeFromRecentFiles(filePath);
+        }
         return;
     }
+    // Clear data
+    this->clearData();
     // Store the directory location for next time
-    QFileInfo fileInfo(selectedFile);
+    QFileInfo fileInfo(filePath);
     currSaveLoc = fileInfo.absolutePath();
 
     // Extract data
@@ -149,6 +169,60 @@ void MainWindow::on_actionLoad_protocol_triggered(void) {
     }
     // Close file
     file.close();
+    // Remember the file in the "Open Recent" menu
+    this->addToRecentFiles(filePath);
+}
+
+void MainWindow::on_actionQuit_triggered(void) {
+    // Triggers closeEvent(), which prompts to save before leaving
+    this->close();
+}
+
+void MainWindow::openRecentFile(void) {
+    QAction *action = qobject_cast<QAction *>(sender());
+    if (action != nullptr) {
+        this->loadProtocolFile(action->data().toString());
+    }
+}
+
+void MainWindow::addToRecentFiles(const QString &filePath) {
+    QSettings settings;
+    QStringList files = settings.value(recentFilesKey).toStringList();
+    // Move the file to the front, avoiding duplicates
+    files.removeAll(filePath);
+    files.prepend(filePath);
+    while (files.size() > MaxRecentFiles) {
+        files.removeLast();
+    }
+    settings.setValue(recentFilesKey, files);
+    this->updateRecentFileActions();
+}
+
+void MainWindow::removeFromRecentFiles(const QString &filePath) {
+    QSettings settings;
+    QStringList files = settings.value(recentFilesKey).toStringList();
+    if (files.removeAll(filePath) > 0) {
+        settings.setValue(recentFilesKey, files);
+        this->updateRecentFileActions();
+    }
+}
+
+void MainWindow::updateRecentFileActions(void) {
+    QSettings settings;
+    QStringList files = settings.value(recentFilesKey).toStringList();
+    int numRecentFiles = qMin(files.size(), static_cast<int>(MaxRecentFiles));
+
+    for (int i = 0; i < numRecentFiles; ++i) {
+        QString text = QString("&%1  %2").arg(i + 1).arg(QFileInfo(files[i]).fileName());
+        m_recentFileActs[i]->setText(text);
+        m_recentFileActs[i]->setData(files[i]);
+        m_recentFileActs[i]->setToolTip(files[i]);
+        m_recentFileActs[i]->setVisible(true);
+    }
+    for (int i = numRecentFiles; i < MaxRecentFiles; ++i) {
+        m_recentFileActs[i]->setVisible(false);
+    }
+    ui->menuOpenRecent->setEnabled(numRecentFiles > 0);
 }
 
 void MainWindow::on_actionDocumentation_triggered(void) {
