@@ -52,6 +52,7 @@ QStringList readFileContent(QFile *pFile) {
 // Model protocol info
 QString protocol_name = "Test";
 QString protocol_id = "55";
+QString protocol_version = "1";
 QString protocol_desc = "The test protocol used to test/bench the lcsf ecosystem.";
 
 // Model command/attributes

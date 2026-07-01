@@ -67,7 +67,8 @@ class CodeGenerator {
     CodeGenerator();
     void generateMainHeader(QString protocolName, QList<Command *> cmdList, CodeExtractor codeExtract, QString dirPath);
     void generateMain(QString protocolName, QList<Command *> cmdList, CodeExtractor codeExtract, bool isA, QString dirPath);
-    void generateBridgeHeader(QString protocolName, QString protocolId, QList<Command *> cmdList, QString dirPath);
+    void generateBridgeHeader(
+        QString protocolName, QString protocolId, QString protocolVersion, QList<Command *> cmdList, QString dirPath);
     void generateBridge(QString protocolName, QList<Command *> cmdList, bool isA, QString dirPath);
     void generateDescription(QString protocolName, QList<Command *> cmdList, QString dirPath);
 };

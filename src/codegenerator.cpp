@@ -1069,7 +1069,7 @@ void CodeGenerator::generateMain(
 }
 
 void CodeGenerator::generateBridgeHeader(
-    QString protocolName, QString protocolId, QList<Command *> cmdList, QString dirPath) {
+    QString protocolName, QString protocolId, QString protocolVersion, QList<Command *> cmdList, QString dirPath) {
     QDir dir(dirPath);
     if (!dir.exists()) {
         dir.mkpath(".");
@@ -1152,6 +1152,8 @@ void CodeGenerator::generateBridgeHeader(
             << Qt::endl;
         out << "// Lcsf protocol identifier" << Qt::endl;
         out << "#define LCSF_" << protocolName.toUpper() << "_PROTOCOL_ID 0x" << protocolId << Qt::endl;
+        out << "// Lcsf protocol version" << Qt::endl;
+        out << "#define LCSF_" << protocolName.toUpper() << "_PROTOCOL_VERSION " << protocolVersion << Qt::endl;
         out << "// Command number" << Qt::endl;
         out << "#define LCSF_" << protocolName.toUpper() << "_CMD_NB " << protocolName.toUpper() << "_CMD_COUNT" << Qt::endl;
         if (!attIdxList.isEmpty()) {
@@ -1763,8 +1765,9 @@ void CodeGenerator::generateDescription(QString protocolName, QList<Command *> c
         out << "static const lcsf_protocol_desc_t LCSF_" << protocolName << "_Desc = {.CmdNb = LCSF_"
             << protocolName.toUpper() << "_CMD_NB, .pCmdDescArray = LCSF_" << protocolName << "_CmdDescArray};" << Qt::endl;
         out << "const lcsf_validator_protocol_desc_t LCSF_" << protocolName << "_ProtDesc = {.ProtId = LCSF_"
-            << protocolName.toUpper() << "_PROTOCOL_ID, .pProtDesc = &LCSF_" << protocolName
-            << "_Desc, .pFnInterpretMsg = LCSF_Bridge_" << protocolName << "Receive};" << Qt::endl;
+            << protocolName.toUpper() << "_PROTOCOL_ID, .ProtVer = LCSF_" << protocolName.toUpper()
+            << "_PROTOCOL_VERSION, .pProtDesc = &LCSF_" << protocolName << "_Desc, .pFnInterpretMsg = LCSF_Bridge_"
+            << protocolName << "Receive};" << Qt::endl;
 
         file.close();
     }

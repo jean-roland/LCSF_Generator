@@ -41,6 +41,7 @@
 // Private variables
 static QString protocolName;
 static QString protocolId;
+static QString protocolVersion;
 static QString protocolDesc;
 static QList<Command *> cmdArray;
 static const QString defCOutPath = "./COutput";
@@ -167,7 +168,7 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
     // Process description file
-    DescHandler::load_desc(descFile, cmdArray, protocolName, protocolId, protocolDesc);
+    DescHandler::load_desc(descFile, cmdArray, protocolName, protocolId, protocolVersion, protocolDesc);
     descFile.close();
 
     // Check import
@@ -264,12 +265,12 @@ int main(int argc, char *argv[]) {
     // Generate "A" C files
     codegen.generateMainHeader(protocolName, cmdArray, codeextractA, cOutPathA);
     codegen.generateMain(protocolName, cmdArray, codeextractA, true, cOutPathA);
-    codegen.generateBridgeHeader(protocolName, protocolId, cmdArray, cOutPathA);
+    codegen.generateBridgeHeader(protocolName, protocolId, protocolVersion, cmdArray, cOutPathA);
     codegen.generateBridge(protocolName, cmdArray, true, cOutPathA);
     codegen.generateDescription(protocolName, cmdArray, cOutPathA);
 
     rustgen.generateMain(protocolName, cmdArray, true, rustOutPathA, rustextractA);
-    rustgen.generateBridge(protocolName, protocolId, cmdArray, true, rustOutPathA);
+    rustgen.generateBridge(protocolName, protocolId, protocolVersion, cmdArray, true, rustOutPathA);
 
     // Generate "B" C files
     if (codeextractB.getExtractionComplete() || !codeextractA.getExtractionComplete()) {
@@ -277,12 +278,12 @@ int main(int argc, char *argv[]) {
         codegen.generateMainHeader(protocolName, cmdArray, codeextractB, cOutPathB);
     }
     codegen.generateMain(protocolName, cmdArray, codeextractB, false, cOutPathB);
-    codegen.generateBridgeHeader(protocolName, protocolId, cmdArray, cOutPathB);
+    codegen.generateBridgeHeader(protocolName, protocolId, protocolVersion, cmdArray, cOutPathB);
     codegen.generateBridge(protocolName, cmdArray, false, cOutPathB);
     codegen.generateDescription(protocolName, cmdArray, cOutPathB);
 
     rustgen.generateMain(protocolName, cmdArray, false, rustOutPathB, rustextractB);
-    rustgen.generateBridge(protocolName, protocolId, cmdArray, false, rustOutPathB);
+    rustgen.generateBridge(protocolName, protocolId, protocolVersion, cmdArray, false, rustOutPathB);
 
     // Generate doc (if needed)
     if (parser.isSet("d")) {

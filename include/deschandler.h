@@ -28,8 +28,8 @@ class DescHandler {
   private:
   public:
     DescHandler();
-    static void load_desc(
-        QFile &file, QList<Command *> &cmdArray, QString &protocolName, QString &protocolId, QString &protocolDesc);
-    static bool save_desc(
-        QString filename, QList<Command *> cmdArray, QString protocolName, QString protocolId, QString protocolDesc);
+    static void load_desc(QFile &file, QList<Command *> &cmdArray, QString &protocolName, QString &protocolId,
+        QString &protocolVersion, QString &protocolDesc);
+    static bool save_desc(QString filename, QList<Command *> cmdArray, QString protocolName, QString protocolId,
+        QString protocolVersion, QString protocolDesc);
 };

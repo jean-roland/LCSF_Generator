@@ -38,7 +38,7 @@ TEST(test_generator, gen_A_output) {
     // Check raw A generation
     test_generator.generateMainHeader(protocol_name, cmd_list, test_extractor, path);
     test_generator.generateMain(protocol_name, cmd_list, test_extractor, true, path);
-    test_generator.generateBridgeHeader(protocol_name, protocol_id, cmd_list, path);
+    test_generator.generateBridgeHeader(protocol_name, protocol_id, protocol_version, cmd_list, path);
     test_generator.generateBridge(protocol_name, cmd_list, true, path);
     test_generator.generateDescription(protocol_name, cmd_list, path);
 
@@ -109,7 +109,7 @@ TEST(test_generator, gen_A_output) {
     model_file.close();
     test_generator.generateMainHeader(protocol_name, cmd_list, test_extractor, path);
     test_generator.generateMain(protocol_name, cmd_list, test_extractor, true, path);
-    test_generator.generateBridgeHeader(protocol_name, protocol_id, cmd_list, path);
+    test_generator.generateBridgeHeader(protocol_name, protocol_id, protocol_version, cmd_list, path);
     test_generator.generateBridge(protocol_name, cmd_list, true, path);
     test_generator.generateDescription(protocol_name, cmd_list, path);
 
@@ -184,7 +184,7 @@ TEST(test_generator, gen_B_output) {
     // Check raw B generation
     test_generator.generateMainHeader(protocol_name, cmd_list, test_extractor, path);
     test_generator.generateMain(protocol_name, cmd_list, test_extractor, false, path);
-    test_generator.generateBridgeHeader(protocol_name, protocol_id, cmd_list, path);
+    test_generator.generateBridgeHeader(protocol_name, protocol_id, protocol_version, cmd_list, path);
     test_generator.generateBridge(protocol_name, cmd_list, false, path);
     test_generator.generateDescription(protocol_name, cmd_list, path);
 

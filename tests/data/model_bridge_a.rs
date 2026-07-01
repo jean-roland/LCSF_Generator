@@ -643,16 +643,19 @@ pub fn send_cmd(cmd_name: CmdEnum, cmd_payload: &CmdPayload) -> LcsfValidCmd {
 /// Protocol id
 pub const PROT_ID: u16 = 0x55;
 
+/// Protocol version
+pub const PROT_VER: u16 = 1;
+
 /// Commands ids
-const CMD_ID_SC1: u16 = 0x0;
-const CMD_ID_SC2: u16 = 0x1;
-const CMD_ID_SC3: u16 = 0x2;
-const CMD_ID_CC1: u16 = 0x3;
-const CMD_ID_CC2: u16 = 0x4;
-const CMD_ID_CC3: u16 = 0x5;
-const CMD_ID_CC4: u16 = 0x6;
-const CMD_ID_CC5: u16 = 0x7;
-const CMD_ID_CC6: u16 = 0x8;
+pub const CMD_ID_SC1: u16 = 0x0;
+pub const CMD_ID_SC2: u16 = 0x1;
+pub const CMD_ID_SC3: u16 = 0x2;
+pub const CMD_ID_CC1: u16 = 0x3;
+pub const CMD_ID_CC2: u16 = 0x4;
+pub const CMD_ID_CC3: u16 = 0x5;
+pub const CMD_ID_CC4: u16 = 0x6;
+pub const CMD_ID_CC5: u16 = 0x7;
+pub const CMD_ID_CC6: u16 = 0x8;
 
 // Ca1 attribute ids
 const CA1_ATT_ID_SA1: u16 = 0x0;
@@ -764,7 +767,7 @@ const CC6_ATT_ID_CA10: u16 = 0xb;
 
 lazy_static! {
     /// Test protocol descriptor
-    pub static ref PROT_DESC:LcsfProtDesc = LcsfProtDesc {cmd_desc_arr: vec![
+    pub static ref PROT_DESC:LcsfProtDesc = LcsfProtDesc {prot_ver: PROT_VER, cmd_desc_arr: vec![
         (CMD_ID_SC1, LcsfCmdDesc {att_desc_arr: Vec::new()}),
         (CMD_ID_SC2, LcsfCmdDesc {att_desc_arr: Vec::new()}),
         (CMD_ID_SC3, LcsfCmdDesc {att_desc_arr: Vec::new()}),

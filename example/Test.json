@@ -702,5 +702,6 @@
     ],
     "desc": "The test protocol used to test/bench the lcsf ecosystem.",
     "id": "55",
-    "name": "Test"
+    "name": "Test",
+    "version": 1
 }

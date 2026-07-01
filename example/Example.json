@@ -228,5 +228,6 @@
     ],
     "desc": "",
     "id": "00",
-    "name": "Example"
+    "name": "Example",
+    "version": 1
 }

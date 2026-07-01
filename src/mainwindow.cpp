@@ -74,6 +74,7 @@ void MainWindow::on_actionNew_protocol_triggered(void) {
 bool MainWindow::saveCurrentProtocol(void) {
     QString protocolName(ui->leProtocolName->text());
     const QString protocolId(ui->leProtocolId->text().trimmed());
+    const QString protocolVersion(ui->leProtocolVersion->text().trimmed());
     const QString protocolDesc(ui->leProtocolDesc->text());
 
     if (protocolName.isEmpty()) {
@@ -109,7 +110,8 @@ bool MainWindow::saveCurrentProtocol(void) {
     }
     qDebug() << "File selected: " << selectedPath;
     // Save data
-    if (!DescHandler::save_desc(selectedPath, this->m_cmdArray, protocolName, protocolId, protocolDesc)) {
+    if (!DescHandler::save_desc(
+            selectedPath, this->m_cmdArray, protocolName, protocolId, protocolVersion, protocolDesc)) {
         QMessageBox::warning(this, "Warning", "Couldn't create json descriptor file!");
         return false;
     }
@@ -150,11 +152,12 @@ void MainWindow::loadProtocolFile(const QString &filePath) {
     currSaveLoc = fileInfo.absolutePath();
 
     // Extract data
-    QString protocolName, protocolId, protocolDesc;
-    DescHandler::load_desc(file, this->m_cmdArray, protocolName, protocolId, protocolDesc);
+    QString protocolName, protocolId, protocolVersion, protocolDesc;
+    DescHandler::load_desc(file, this->m_cmdArray, protocolName, protocolId, protocolVersion, protocolDesc);
 
     ui->leProtocolName->setText(protocolName);
     ui->leProtocolId->setText(protocolId);
+    ui->leProtocolVersion->setText(protocolVersion);
     ui->leProtocolDesc->setText(protocolDesc);
 
     // Update UI
@@ -1514,6 +1517,7 @@ void MainWindow::on_pbImportRustB_clicked(void) {
 void MainWindow::on_pbGenerateDesc_clicked(void) {
     QString protocolName(ui->leProtocolName->text());
     const QString protocolId(ui->leProtocolId->text());
+    const QString protocolVersion(ui->leProtocolVersion->text().trimmed());
 
     if (ui->twDescTreeView->currentItem() != nullptr) {
         this->saveCurrentDescTable(ui->twDescTreeView->currentItem());
@@ -1542,12 +1546,12 @@ void MainWindow::on_pbGenerateDesc_clicked(void) {
     // Generate "A" files
     this->m_codegen.generateMainHeader(protocolName, this->m_cmdArray, this->m_codeextractA, cOutPathA);
     this->m_codegen.generateMain(protocolName, this->m_cmdArray, this->m_codeextractA, true, cOutPathA);
-    this->m_codegen.generateBridgeHeader(protocolName, protocolId, this->m_cmdArray, cOutPathA);
+    this->m_codegen.generateBridgeHeader(protocolName, protocolId, protocolVersion, this->m_cmdArray, cOutPathA);
     this->m_codegen.generateBridge(protocolName, this->m_cmdArray, true, cOutPathA);
     this->m_codegen.generateDescription(protocolName, this->m_cmdArray, cOutPathA);
 
     this->m_rustgen.generateMain(protocolName, this->m_cmdArray, true, rustOutPathA, this->m_rustextractA);
-    this->m_rustgen.generateBridge(protocolName, protocolId, this->m_cmdArray, true, rustOutPathA);
+    this->m_rustgen.generateBridge(protocolName, protocolId, protocolVersion, this->m_cmdArray, true, rustOutPathA);
 
     // Generate "B" files
     if (this->m_codeextractB.getExtractionComplete() || !this->m_codeextractA.getExtractionComplete()) {
@@ -1555,12 +1559,12 @@ void MainWindow::on_pbGenerateDesc_clicked(void) {
         this->m_codegen.generateMainHeader(protocolName, this->m_cmdArray, this->m_codeextractB, cOutPathB);
     }
     this->m_codegen.generateMain(protocolName, this->m_cmdArray, this->m_codeextractB, false, cOutPathB);
-    this->m_codegen.generateBridgeHeader(protocolName, protocolId, this->m_cmdArray, cOutPathB);
+    this->m_codegen.generateBridgeHeader(protocolName, protocolId, protocolVersion, this->m_cmdArray, cOutPathB);
     this->m_codegen.generateBridge(protocolName, this->m_cmdArray, false, cOutPathB);
     this->m_codegen.generateDescription(protocolName, this->m_cmdArray, cOutPathB);
 
     this->m_rustgen.generateMain(protocolName, this->m_cmdArray, false, rustOutPathB, this->m_rustextractB);
-    this->m_rustgen.generateBridge(protocolName, protocolId, this->m_cmdArray, false, rustOutPathB);
+    this->m_rustgen.generateBridge(protocolName, protocolId, protocolVersion, this->m_cmdArray, false, rustOutPathB);
 
     QString cOutMsg = (cOutPathA == cOutPathB) ?
         "C code has been generated in: " + cOutPathA :

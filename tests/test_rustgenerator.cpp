@@ -35,7 +35,7 @@ TEST(test_rustgen, gen_A_output) {
 
     // Check raw A generation
     test_rustgen.generateMain(protocol_name, cmd_list, true, path);
-    test_rustgen.generateBridge(protocol_name, protocol_id, cmd_list, true, path);
+    test_rustgen.generateBridge(protocol_name, protocol_id, protocol_version, cmd_list, true, path);
 
     // Check Main
     ASSERT_TRUE(openFile(&model_file, MODEL_DIR_PATH, "model_main_a.rs"));
@@ -70,7 +70,7 @@ TEST(test_rustgen, gen_B_output) {
 
     // Check raw B generation
     test_rustgen.generateMain(protocol_name, cmd_list, false, path);
-    test_rustgen.generateBridge(protocol_name, protocol_id, cmd_list, false, path);
+    test_rustgen.generateBridge(protocol_name, protocol_id, protocol_version, cmd_list, false, path);
 
     // Check Main
     ASSERT_TRUE(openFile(&model_file, MODEL_DIR_PATH, "model_main_b.rs"));

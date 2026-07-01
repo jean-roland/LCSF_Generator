@@ -116,13 +116,14 @@ static void saveAtt_Rec(QJsonArray &attributes, QList<Attribute *> attList) {
 DescHandler::DescHandler() {
 }
 
-void DescHandler::load_desc(
-    QFile &file, QList<Command *> &cmdArray, QString &protocolName, QString &protocolId, QString &protocolDesc) {
+void DescHandler::load_desc(QFile &file, QList<Command *> &cmdArray, QString &protocolName, QString &protocolId,
+    QString &protocolVersion, QString &protocolDesc) {
     QJsonDocument DescFile(QJsonDocument::fromJson(file.readAll()));
     QJsonObject DescFileObject(DescFile.object());
 
     protocolName = correctInputString(DescFileObject.value(QLatin1String("name")).toString());
     protocolId = DescFileObject.value(QLatin1String("id")).toString();
+    protocolVersion = QString::number(DescFileObject.value(QLatin1String("version")).toInt());
     protocolDesc = DescFileObject.value(QLatin1String("desc")).toString();
 
     // Attributes
@@ -150,12 +151,13 @@ void DescHandler::load_desc(
     }
 }
 
-bool DescHandler::save_desc(
-    QString filename, QList<Command *> cmdArray, QString protocolName, QString protocolId, QString protocolDesc) {
+bool DescHandler::save_desc(QString filename, QList<Command *> cmdArray, QString protocolName, QString protocolId,
+    QString protocolVersion, QString protocolDesc) {
     // Generate JSON
     QJsonObject DescFile;
     DescFile.insert(QLatin1String("name"), protocolName);
     DescFile.insert(QLatin1String("id"), protocolId);
+    DescFile.insert(QLatin1String("version"), protocolVersion.toInt());
     DescFile.insert(QLatin1String("desc"), protocolDesc);
 
     // Save commands

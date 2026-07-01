@@ -58,7 +58,8 @@ class RustGenerator {
   public:
     RustGenerator();
     void generateMain(QString protocolName, QList<Command *> cmdList, bool isA, QString dirPath, RustExtractor rustExtract = RustExtractor());
-    void generateBridge(QString protocolName, QString protocolId, QList<Command *> cmdList, bool isA, QString dirPath);
+    void generateBridge(QString protocolName, QString protocolId, QString protocolVersion, QList<Command *> cmdList,
+        bool isA, QString dirPath);
 };
 
 #endif // RUSTGENERATOR_H

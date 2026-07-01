@@ -889,7 +889,7 @@ void RustGenerator::generateMain(
 }
 
 void RustGenerator::generateBridge(
-    QString protocolName, QString protocolId, QList<Command *> cmdList, bool isA, QString dirPath) {
+    QString protocolName, QString protocolId, QString protocolVersion, QList<Command *> cmdList, bool isA, QString dirPath) {
     QString low_prot_name = protocolName.toLower();
     QDir dir(dirPath);
     if (!dir.exists()) {
@@ -1289,12 +1289,15 @@ void RustGenerator::generateBridge(
         out << "/// Protocol id" << Qt::endl;
         out << "pub const PROT_ID: u16 = 0x" << protocolId << ";" << Qt::endl;
         out << Qt::endl;
+        out << "/// Protocol version" << Qt::endl;
+        out << "pub const PROT_VER: u16 = " << protocolVersion << ";" << Qt::endl;
+        out << Qt::endl;
 
         // Commands Ids enum
         out << "/// Commands ids" << Qt::endl;
         for (Command *command : cmdList) {
-            out << "const CMD_ID_" << command->getName().toUpper() << ": u16 = 0x" << QString::number(command->getId(), 16)
-                << ";" << Qt::endl;
+            out << "pub const CMD_ID_" << command->getName().toUpper() << ": u16 = 0x"
+                << QString::number(command->getId(), 16) << ";" << Qt::endl;
         }
         out << Qt::endl;
 
@@ -1328,7 +1331,8 @@ void RustGenerator::generateBridge(
         // Description
         out << "lazy_static! {" << Qt::endl;
         out << "    /// Test protocol descriptor" << Qt::endl;
-        out << "    pub static ref PROT_DESC:LcsfProtDesc = LcsfProtDesc {cmd_desc_arr: vec![" << Qt::endl;
+        out << "    pub static ref PROT_DESC:LcsfProtDesc = LcsfProtDesc {prot_ver: PROT_VER, cmd_desc_arr: vec!["
+            << Qt::endl;
         for (Command *command : cmdList) {
             out << "        (CMD_ID_" << command->getName().toUpper() << ", LcsfCmdDesc {att_desc_arr: ";
             if (command->getAttArray().size() == 0) {
