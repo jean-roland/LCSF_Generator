@@ -22,6 +22,7 @@
 #include "mainwindow.h"
 
 #include <QApplication>
+#include <QScreen>
 
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
@@ -29,6 +30,8 @@ int main(int argc, char *argv[]) {
     QApplication::setOrganizationName("LCSF");
     QApplication::setApplicationName("LCSF_Generator");
     MainWindow w;
+    // Center on the primary screen instead of the top-left corner
+    w.move(a.primaryScreen()->availableGeometry().center() - w.rect().center());
     w.show();
 
     return a.exec();

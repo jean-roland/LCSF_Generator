@@ -54,6 +54,18 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     }
     this->updateRecentFileActions();
 
+    // Greyed overlay shown when a filter matches nothing
+    m_noResultLabel = new QLabel("No result", ui->twDescTreeView->viewport());
+    m_noResultLabel->setAlignment(Qt::AlignCenter);
+    m_noResultLabel->setStyleSheet("color: gray;");
+    m_noResultLabel->hide();
+
+    // Ctrl+F focuses the tree search bar
+    connect(new QShortcut(QKeySequence::Find, this), &QShortcut::activated, this, [this] {
+        ui->leTreeSearch->setFocus();
+        ui->leTreeSearch->selectAll();
+    });
+
     // Set tree clear state
     treeIsCleared = false;
 }
@@ -226,6 +238,34 @@ void MainWindow::updateRecentFileActions(void) {
         m_recentFileActs[i]->setVisible(false);
     }
     ui->menuOpenRecent->setEnabled(numRecentFiles > 0);
+}
+
+void MainWindow::on_leTreeSearch_textChanged(const QString &text) {
+    bool anyVisible = false;
+    for (int i = 0; i < ui->twDescTreeView->topLevelItemCount(); ++i) {
+        anyVisible |= this->filterTreeItem(ui->twDescTreeView->topLevelItem(i), text, false);
+    }
+    // Expand so matches nested under collapsed parents stay visible
+    if (!text.isEmpty()) {
+        ui->twDescTreeView->expandAll();
+    }
+    // Toggle the "No result" overlay
+    m_noResultLabel->setGeometry(ui->twDescTreeView->viewport()->rect());
+    m_noResultLabel->setVisible(!anyVisible && !text.isEmpty());
+    m_noResultLabel->raise();
+}
+
+// Show item if it, an ancestor, or a descendant matches. Returns whether item stays visible.
+bool MainWindow::filterTreeItem(QTreeWidgetItem *item, const QString &text, bool ancestorMatched) {
+    bool show = ancestorMatched || item->text(0).contains(text, Qt::CaseInsensitive);
+    bool childVisible = false;
+    for (int i = 0; i < item->childCount(); ++i) {
+        // Bitwise-or (not ||): must recurse every child to set its hidden state
+        childVisible |= this->filterTreeItem(item->child(i), text, show);
+    }
+    bool visible = show || childVisible;
+    item->setHidden(!visible);
+    return visible;
 }
 
 void MainWindow::on_actionDocumentation_triggered(void) {
@@ -1577,18 +1617,27 @@ void MainWindow::on_pbGenerateDesc_clicked(void) {
 
 // Close event action
 void MainWindow::closeEvent(QCloseEvent *event) {
-    int questionAnswer =
-        QMessageBox::question(this, "Question", "Do you want to save before leaving?", QMessageBox::Yes | QMessageBox::No);
-    if (questionAnswer == QMessageBox::Yes) {
+    QMessageBox box(
+        QMessageBox::Question, "Question", "Do you want to save before leaving?", QMessageBox::Yes | QMessageBox::No, this);
+    box.setDefaultButton(QMessageBox::Yes);
+    // Hidden reject button so Esc / window-X map here instead of to "No"
+    QAbstractButton *escBtn = box.addButton(QString(), QMessageBox::RejectRole);
+    escBtn->hide();
+    box.setEscapeButton(escBtn);
+    box.exec();
+
+    QAbstractButton *clicked = box.clickedButton();
+    if (clicked == box.button(QMessageBox::Yes)) {
         if (saveCurrentProtocol()) {
             event->accept();
         } else {
             // Abort exit because save failed
             event->ignore();
         }
-    } else if (questionAnswer == QMessageBox::No) {
+    } else if (clicked == box.button(QMessageBox::No)) {
         event->accept();
     } else {
+        // Dialog dismissed (Esc / X): stay in the app
         event->ignore();
     }
 }

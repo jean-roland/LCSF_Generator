@@ -395,10 +395,31 @@
     <item row="2" column="0">
      <layout class="QHBoxLayout" name="hlCmd" stretch="0,1">
       <item>
+       <layout class="QVBoxLayout" name="vlTree">
+       <item>
+        <widget class="QLineEdit" name="leTreeSearch">
+         <property name="maximumSize">
+          <size>
+           <width>400</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Filter tree by name (Ctrl+F)</string>
+         </property>
+         <property name="placeholderText">
+          <string>Search commands / attributes…</string>
+         </property>
+         <property name="clearButtonEnabled">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
        <widget class="QTreeWidget" name="twDescTreeView">
         <property name="minimumSize">
          <size>
-          <width>0</width>
+          <width>300</width>
           <height>0</height>
          </size>
         </property>
@@ -412,7 +433,7 @@
          <string>Tree showing the protocol commands and attributes</string>
         </property>
         <property name="sizeAdjustPolicy">
-         <enum>QAbstractScrollArea::AdjustToContents</enum>
+         <enum>QAbstractScrollArea::AdjustIgnored</enum>
         </property>
         <property name="autoScroll">
          <bool>false</bool>
@@ -449,6 +470,8 @@
          </property>
         </item>
        </widget>
+       </item>
+       </layout>
       </item>
       <item>
        <layout class="QVBoxLayout" name="vlCmdTable">

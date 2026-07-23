@@ -31,10 +31,12 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QLabel>
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QSet>
 #include <QSettings>
+#include <QShortcut>
 #include <QTableWidgetItem>
 #include <QTreeWidget>
 // Custom include
@@ -57,6 +59,7 @@ class MainWindow : public QMainWindow {
     enum { MaxRecentFiles = 8 };
 
     Ui::MainWindow *ui;
+    QLabel *m_noResultLabel;
     QAction *m_recentFileActs[MaxRecentFiles];
     QList<Command *> m_cmdArray;
     DocGenerator m_docgen;
@@ -129,6 +132,7 @@ class MainWindow : public QMainWindow {
     void loadAtt_REC_Json(Command *pParentCmd, Attribute *pParentAtt, const QJsonObject &attribut);
     void clearData(void);
     void clearTree(void);
+    bool filterTreeItem(QTreeWidgetItem *item, const QString &text, bool ancestorMatched);
 
   private slots:
     void on_actionNew_protocol_triggered(void);
@@ -139,6 +143,7 @@ class MainWindow : public QMainWindow {
     void on_actionDocumentation_triggered(void);
     void on_actionAbout_triggered(void);
     void on_twDescTreeView_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+    void on_leTreeSearch_textChanged(const QString &text);
     void on_pbSaveTable_clicked(void);
     void on_pbAddTableLine_clicked(void);
     void on_pbDeleteTableLine_clicked(void);
