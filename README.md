@@ -15,13 +15,15 @@ For more information, check the official LCSF documentation [here](https://jean-
 ## How to install
 
 ### Windows
+* Note: release 1.4 ships Linux binaries only. For Windows, use an earlier release or build from source (see below).
 * Go to the [release section](https://github.com/jean-roland/LCSF_Generator/releases) and download the latest Windows version.
 * Unzip the archive and execute `LCSF_Generator.exe` (GUI) or `LCSF_Generator_CLI.exe + args` (CLI).
 
 ### Linux
 * Go to the [release section](https://github.com/jean-roland/LCSF_Generator/releases) and download the latest Linux version.
 * Unzip the archive and execute `lcsf_generator_gui.sh` or `lcsf_generator_cli.sh + args`
-* There might be missing libraries, in that case you should use the `ldd` command on the executables to find the missing packages.
+* Requires the Qt5 runtime. On Debian/Ubuntu: `sudo apt install libqt5widgets5`.
+* There might be other missing libraries, in that case you should use the `ldd` command on the executables to find the missing packages.
 
 ### Other OS
 * No other OS are currently supported.
@@ -53,10 +55,11 @@ If for some reasons you want or need to build the application yourself, you will
 
 Next, you have two options:
 * Use the Qt Creator IDE, the project file is found at `src/LCSF_Generator.pro`, and compile from here.
-* Use CMake 3.10 or higher (indicate your Qt directories in the `CMakeLists.txt` in the project root directory if needed).
+* Use CMake 3.14 or higher (indicate your Qt directories in the `CMakeLists.txt` in the project root directory if needed).
 
 If you're new with CMake, here's my process:
 * Install [Ninja](https://ninja-build.org/)
+* On Debian/Ubuntu, the build dependencies are: `sudo apt install qtbase5-dev cmake ninja-build`.
 * Run the command `cmake -B build/ -G Ninja -DCMAKE_BUILD_TYPE="Release"` at the project root directory.
 * `ninja -C build/`
 
