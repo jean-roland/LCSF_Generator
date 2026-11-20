@@ -46,6 +46,9 @@ class CodeGenerator {
     QString getTypeStringFromDataType(NS_AttDataType::T_AttDataType dataType);
     QString getInitStringFromDataType(NS_AttDataType::T_AttDataType dataType);
     QString getAttDescString(QString protocolName, QString parentName, Attribute *attribute);
+    NS_AttDataType::T_AttDataType getPayloadDataType(Attribute *attribute);
+    QString getStructTypeString(QString protocolName, Attribute::T_structType *pStruct);
+    QString getStructFctString(QString protocolName, Attribute::T_structType *pStruct);
     QList<Attribute::T_attInfos> getAttInfos_Rec(QString parentName, QList<Attribute *> attList);
     QList<Attribute::T_attInfos> getAttInfos(QList<Command *> cmdList);
     QList<Attribute::T_attInfos> insertSortAttInfosListByParentName(QList<Attribute::T_attInfos> attInfosList);
@@ -55,9 +58,13 @@ class CodeGenerator {
         QString protocolName, QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, int indentNb);
     void fillSubAttPayload_Rec(
         QString protocolName, QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, int indentNb);
-    void declareAtt_REC(QString parentName, QList<Attribute *> attList, QTextStream *pOut);
+    void declareAtt_REC(QString protocolName, QString parentName, QList<Attribute *> attList, QTextStream *pOut);
     void grabAttValues_REC(
         QString protocolName, QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, int indentNb);
+    void printFixedStructFunctions(QString protocolName, Attribute::T_structType *pStruct, QTextStream *pOut);
+    void printVarStructFunctions(QString protocolName, Attribute::T_structType *pStruct, QTextStream *pOut);
+    void printVarUintFunctions(QString protocolName, QTextStream *pOut);
+    void printZigZagFunctions(QString protocolName, QTextStream *pOut);
     QString toCamelCase(const QString &s);
     QString toFirstLetterUpperCase(const QString &s);
     QList<Attribute::T_attInfos> removeCommandAttributes(

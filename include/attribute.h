@@ -26,6 +26,20 @@
 #include <QString>
 
 class Attribute {
+  public:
+    typedef struct _structField {
+        QString name;
+        NS_FieldType::T_FieldType dataType;
+        QString desc;
+    } T_structField;
+
+    typedef struct _structType {
+        QString name;
+        QString desc;
+        bool isExtensible;
+        QList<T_structField> fields;
+    } T_structType;
+
   private:
     QString m_name;
     short m_id;
@@ -34,6 +48,8 @@ class Attribute {
     QList<Attribute *> m_subAttArray;
     QString m_desc;
     void *pObj;
+    T_structType *m_pStruct;
+    bool m_isArray;
 
   public:
     typedef struct _attInfos {
@@ -66,6 +82,10 @@ class Attribute {
     void setSubAttArray(QList<Attribute *> attSubAttArray);
     void addSubAtt(Attribute *newAtt);
     QList<Attribute *> getSubAttArray(void);
+    void setStruct(T_structType *pStruct);
+    T_structType *getStruct(void);
+    void setIsArray(bool isArray);
+    bool getIsArray(void);
 
     /**
      * @brief      Gets attribute total attribute and sub-attribute number recursively
@@ -83,6 +103,9 @@ class Attribute {
     Attribute *getSubAttPointer(QString subAttName);
 
     static bool compareRefAttList(QList<Attribute *> a_list, QList<Attribute *> b_list, int &err_idx);
+    static int getStructSize(const T_structType *pStruct); // Maximum with variable-length fields
+    static bool hasStructVarField(const T_structType *pStruct);
+    static QStringList getStructFieldOffsets(const T_structType *pStruct); // "-" after a variable-length field
 
     friend bool operator==(const Attribute &lhs, const Attribute &rhs) {
         if (lhs.m_name != rhs.m_name) {
@@ -98,6 +121,15 @@ class Attribute {
             return false;
         }
         if (lhs.m_desc != rhs.m_desc) {
+            return false;
+        }
+        if (lhs.m_isArray != rhs.m_isArray) {
+            return false;
+        }
+        if ((lhs.m_pStruct == nullptr) != (rhs.m_pStruct == nullptr)) {
+            return false;
+        }
+        if ((lhs.m_pStruct != nullptr) && (lhs.m_pStruct->name != rhs.m_pStruct->name)) {
             return false;
         }
         if (lhs.m_subAttArray.count() != rhs.m_subAttArray.count()) {

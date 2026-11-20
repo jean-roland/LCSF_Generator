@@ -62,6 +62,7 @@ class MainWindow : public QMainWindow {
     QLabel *m_noResultLabel;
     QAction *m_recentFileActs[MaxRecentFiles];
     QList<Command *> m_cmdArray;
+    QList<Attribute::T_structType *> m_structArray;
     DocGenerator m_docgen;
     CodeGenerator m_codegen;
     RustGenerator m_rustgen;

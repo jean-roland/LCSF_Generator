@@ -87,6 +87,30 @@ QList<Attribute::T_attInfos> DocGenerator::removeCommandAttributes(
     return trimmedAttInfosList;
 }
 
+QString DocGenerator::getDocDataType(Attribute *attribute) {
+    if ((attribute->getDataType() == NS_AttDataType::STRUCT) && (attribute->getStruct() != nullptr)) {
+        return "struct " + attribute->getStruct()->name + ((attribute->getIsArray()) ? "[]" : "");
+    }
+    return NS_AttDataType::SL_DocAttDataType[attribute->getDataType()];
+}
+
+QString DocGenerator::getStructSummary(Attribute::T_structType *pStruct) {
+    QString sizeString = QString::number(Attribute::getStructSize(pStruct));
+    QString summary;
+
+    if (Attribute::hasStructVarField(pStruct)) {
+        summary = "Size: up to " + sizeString +
+            " bytes, little endian, variable-length fields in LEB128 with signed "
+            "ones zigzag encoded, extensible: array elements each start with their size on one byte";
+    } else {
+        summary = "Size: " + sizeString + " bytes, little endian";
+        if (pStruct->isExtensible) {
+            summary.append(", extensible: arrays start with the element size on one byte");
+        }
+    }
+    return summary + ".";
+}
+
 void DocGenerator::generateWikiTable(
     QString protocolName, QString protocolId, QString protocolDesc, QList<Command *> cmdList, QString dirPath) {
     QDir dir(dirPath);
@@ -128,16 +152,14 @@ void DocGenerator::generateWikiTable(
                         isFirtAttribute = false;
                         out << attribute->getName() << " || '''"
                             << QString::number(attribute->getId(), 16).rightJustified(2, '0').prepend("0x") << "''' || "
-                            << ((attribute->getIsOptional()) ? "Yes" : "No") << " || '''"
-                            << NS_AttDataType::SL_DocAttDataType[attribute->getDataType()] << "''' || "
-                            << attribute->getDesc() << Qt::endl;
+                            << ((attribute->getIsOptional()) ? "Yes" : "No") << " || '''" << this->getDocDataType(attribute)
+                            << "''' || " << attribute->getDesc() << Qt::endl;
                         out << "|-" << Qt::endl;
                     } else {
                         out << "| " << attribute->getName() << " || '''"
                             << QString::number(attribute->getId(), 16).rightJustified(2, '0').prepend("0x") << "''' || "
-                            << ((attribute->getIsOptional()) ? "Yes" : "No") << " || '''"
-                            << NS_AttDataType::SL_DocAttDataType[attribute->getDataType()] << "''' || "
-                            << attribute->getDesc() << Qt::endl;
+                            << ((attribute->getIsOptional()) ? "Yes" : "No") << " || '''" << this->getDocDataType(attribute)
+                            << "''' || " << attribute->getDesc() << Qt::endl;
                         out << "|-" << Qt::endl;
                     }
                 }
@@ -170,8 +192,7 @@ void DocGenerator::generateWikiTable(
             out << "| " << currentAttInfo.attName << " || '''"
                 << QString::number(currentAttInfo.attId, 16).rightJustified(2, '0').prepend("0x") << "''' || "
                 << ((currentAttInfo.isOptional) ? "Yes" : "No") << " || '''"
-                << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << "''' || " << currentAttInfo.attDesc
-                << Qt::endl;
+                << this->getDocDataType(currentAttInfo.attPointer) << "''' || " << currentAttInfo.attDesc << Qt::endl;
             out << "|-" << Qt::endl;
 
             if (idx < trimmedAttInfosList.size() - 1) {
@@ -181,7 +202,7 @@ void DocGenerator::generateWikiTable(
                     out << "| " << currentAttInfo.attName << " || '''"
                         << QString::number(currentAttInfo.attId, 16).rightJustified(2, '0').prepend("0x") << "''' || "
                         << ((currentAttInfo.isOptional) ? "Yes" : "No") << " || '''"
-                        << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << "''' || " << currentAttInfo.attDesc
+                        << this->getDocDataType(currentAttInfo.attPointer) << "''' || " << currentAttInfo.attDesc
                         << Qt::endl;
                     out << "|-" << Qt::endl;
                     previousParentName = currentAttInfo.parentName;
@@ -193,6 +214,29 @@ void DocGenerator::generateWikiTable(
                         break;
                     }
                 }
+            }
+            out << "|}" << Qt::endl;
+            out << Qt::endl;
+        }
+
+        // Struct tables
+        for (Attribute::T_structType *pStruct : Command::getStructList(cmdList)) {
+            QStringList offsets = Attribute::getStructFieldOffsets(pStruct);
+            out << "==== " << pStruct->name << " struct table ====" << Qt::endl;
+            out << Qt::endl;
+            out << pStruct->desc << Qt::endl;
+            out << Qt::endl;
+            out << this->getStructSummary(pStruct) << Qt::endl;
+            out << Qt::endl;
+            out << "{| class=\"wikitable sortable\"" << Qt::endl;
+            out << "|-" << Qt::endl;
+            out << "! Field !! Offset !! Data type !! Description" << Qt::endl;
+            out << "|-" << Qt::endl;
+            for (int fieldIdx = 0; fieldIdx < pStruct->fields.size(); fieldIdx++) {
+                const Attribute::T_structField &field = pStruct->fields.at(fieldIdx);
+                out << "| " << field.name << " || '''" << offsets.at(fieldIdx) << "''' || '''"
+                    << NS_FieldType::SL_DocFieldType.at(field.dataType) << "''' || " << field.desc << Qt::endl;
+                out << "|-" << Qt::endl;
             }
             out << "|}" << Qt::endl;
             out << Qt::endl;
@@ -238,15 +282,13 @@ void DocGenerator::generateDokuWikiTable(
                         isFirtAttribute = false;
                         out << attribute->getName() << " | "
                             << QString::number(attribute->getId(), 16).rightJustified(2, '0').prepend("0x") << " | "
-                            << ((attribute->getIsOptional()) ? "Yes" : "No") << " | "
-                            << NS_AttDataType::SL_DocAttDataType[attribute->getDataType()] << " | " << attribute->getDesc()
-                            << " |" << Qt::endl;
+                            << ((attribute->getIsOptional()) ? "Yes" : "No") << " | " << this->getDocDataType(attribute)
+                            << " | " << attribute->getDesc() << " |" << Qt::endl;
                     } else {
                         out << "| ::: | ::: | ::: | ::: " << "| " << attribute->getName() << " | "
                             << QString::number(attribute->getId(), 16).rightJustified(2, '0').prepend("0x") << " | "
-                            << ((attribute->getIsOptional()) ? "Yes" : "No") << " | "
-                            << NS_AttDataType::SL_DocAttDataType[attribute->getDataType()] << " | " << attribute->getDesc()
-                            << " |" << Qt::endl;
+                            << ((attribute->getIsOptional()) ? "Yes" : "No") << " | " << this->getDocDataType(attribute)
+                            << " | " << attribute->getDesc() << " |" << Qt::endl;
                     }
                 }
             } else {
@@ -272,9 +314,8 @@ void DocGenerator::generateDokuWikiTable(
             out << "^ Name ^ Id ^ Optional? ^ Data type ^ Description ^" << Qt::endl;
             out << "| " << currentAttInfo.attName << " | "
                 << QString::number(currentAttInfo.attId, 16).rightJustified(2, '0').prepend("0x") << " | "
-                << ((currentAttInfo.isOptional) ? "Yes" : "No") << " | "
-                << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << " | " << currentAttInfo.attDesc << " |"
-                << Qt::endl;
+                << ((currentAttInfo.isOptional) ? "Yes" : "No") << " | " << this->getDocDataType(currentAttInfo.attPointer)
+                << " | " << currentAttInfo.attDesc << " |" << Qt::endl;
 
             if (idx < trimmedAttInfosList.size() - 1) {
                 currentAttInfo = trimmedAttInfosList.at(idx + 1);
@@ -283,8 +324,8 @@ void DocGenerator::generateDokuWikiTable(
                     out << "| " << currentAttInfo.attName << " | "
                         << QString::number(currentAttInfo.attId, 16).rightJustified(2, '0').prepend("0x") << " | "
                         << ((currentAttInfo.isOptional) ? "Yes" : "No") << " | "
-                        << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << " | " << currentAttInfo.attDesc
-                        << " |" << Qt::endl;
+                        << this->getDocDataType(currentAttInfo.attPointer) << " | " << currentAttInfo.attDesc << " |"
+                        << Qt::endl;
                     previousParentName = currentAttInfo.parentName;
                     idx++;
 
@@ -294,6 +335,24 @@ void DocGenerator::generateDokuWikiTable(
                         break;
                     }
                 }
+            }
+            out << Qt::endl;
+        }
+
+        // Struct tables
+        for (Attribute::T_structType *pStruct : Command::getStructList(cmdList)) {
+            QStringList offsets = Attribute::getStructFieldOffsets(pStruct);
+            out << "== " << pStruct->name << " struct table ==" << Qt::endl;
+            out << Qt::endl;
+            out << pStruct->desc << Qt::endl;
+            out << Qt::endl;
+            out << this->getStructSummary(pStruct) << Qt::endl;
+            out << Qt::endl;
+            out << "^ Field ^ Offset ^ Data type ^ Description ^" << Qt::endl;
+            for (int fieldIdx = 0; fieldIdx < pStruct->fields.size(); fieldIdx++) {
+                const Attribute::T_structField &field = pStruct->fields.at(fieldIdx);
+                out << "| " << field.name << " | " << offsets.at(fieldIdx) << " | "
+                    << NS_FieldType::SL_DocFieldType.at(field.dataType) << " | " << field.desc << " |" << Qt::endl;
             }
             out << Qt::endl;
         }
@@ -344,9 +403,8 @@ void DocGenerator::generateMkdownTable(
             for (Attribute *attribute : command->getAttArray()) {
                 out << "| " << attribute->getName() << " | `"
                     << QString::number(attribute->getId(), 16).rightJustified(2, '0').prepend("0x") << "` | "
-                    << ((attribute->getIsOptional()) ? "Yes" : "No") << " | `"
-                    << NS_AttDataType::SL_DocAttDataType[attribute->getDataType()] << "` | " << attribute->getDesc() << " |"
-                    << Qt::endl;
+                    << ((attribute->getIsOptional()) ? "Yes" : "No") << " | `" << this->getDocDataType(attribute) << "` | "
+                    << attribute->getDesc() << " |" << Qt::endl;
             }
             out << Qt::endl;
         }
@@ -365,9 +423,8 @@ void DocGenerator::generateMkdownTable(
             out << "|:----:|:--:|:----------:|:---------:|:-----------:|" << Qt::endl;
             out << "| " << currentAttInfo.attName << " | `"
                 << QString::number(currentAttInfo.attId, 16).rightJustified(2, '0').prepend("0x") << "` | "
-                << ((currentAttInfo.isOptional) ? "Yes" : "No") << " | `"
-                << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << "` | " << currentAttInfo.attDesc
-                << Qt::endl;
+                << ((currentAttInfo.isOptional) ? "Yes" : "No") << " | `" << this->getDocDataType(currentAttInfo.attPointer)
+                << "` | " << currentAttInfo.attDesc << Qt::endl;
 
             if (idx < trimmedAttInfosList.size() - 1) {
                 currentAttInfo = trimmedAttInfosList.at(idx + 1);
@@ -376,8 +433,7 @@ void DocGenerator::generateMkdownTable(
                     out << "| " << currentAttInfo.attName << " | `"
                         << QString::number(currentAttInfo.attId, 16).rightJustified(2, '0').prepend("0x") << "` | "
                         << ((currentAttInfo.isOptional) ? "Yes" : "No") << " | `"
-                        << NS_AttDataType::SL_DocAttDataType[currentAttInfo.dataType] << "` | " << currentAttInfo.attDesc
-                        << Qt::endl;
+                        << this->getDocDataType(currentAttInfo.attPointer) << "` | " << currentAttInfo.attDesc << Qt::endl;
                     previousParentName = currentAttInfo.parentName;
                     idx++;
 
@@ -387,6 +443,25 @@ void DocGenerator::generateMkdownTable(
                         break;
                     }
                 }
+            }
+            out << Qt::endl;
+        }
+
+        // Struct tables
+        for (Attribute::T_structType *pStruct : Command::getStructList(cmdList)) {
+            QStringList offsets = Attribute::getStructFieldOffsets(pStruct);
+            out << "## " << pStruct->name << " struct table" << Qt::endl;
+            out << Qt::endl;
+            out << pStruct->desc << Qt::endl;
+            out << Qt::endl;
+            out << this->getStructSummary(pStruct) << Qt::endl;
+            out << Qt::endl;
+            out << "| Field | Offset | Data type | Description |" << Qt::endl;
+            out << "|:-----:|:------:|:---------:|:-----------:|" << Qt::endl;
+            for (int fieldIdx = 0; fieldIdx < pStruct->fields.size(); fieldIdx++) {
+                const Attribute::T_structField &field = pStruct->fields.at(fieldIdx);
+                out << "| " << field.name << " | `" << offsets.at(fieldIdx) << "` | `"
+                    << NS_FieldType::SL_DocFieldType.at(field.dataType) << "` | " << field.desc << " |" << Qt::endl;
             }
             out << Qt::endl;
         }

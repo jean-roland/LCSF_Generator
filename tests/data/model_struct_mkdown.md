@@ -1,0 +1,85 @@
+# StructTest protocol
+
+Protocol used to test struct attributes.
+
+Protocol id: `56`
+
+## Commands table
+
+| Name | Id | Direction | Description | Attributes? |
+|:----:|:--:|:---------:|:-----------:|:------------:|
+| get_status | `0x00` | `Bidirectional` | Status report | Yes |
+| set_cfg | `0x01` | `Bidirectional` | Configuration | Yes |
+
+## get_status attributes table
+
+| Name | Id | Optional? | Data type | Attribute Description |
+|:----:|:--:|:----------:|:---------:|:---------------------:|
+| status | `0x00` | No | `struct status` | Current status |
+| links | `0x01` | No | `struct link[]` | One entry per link |
+| opt_status | `0x02` | Yes | `struct status` | Previous status |
+| ext_status | `0x03` | Yes | `struct status[]` | Status history |
+| counters | `0x04` | No | `struct counters` | Global counters |
+| link_counters | `0x05` | No | `struct counters[]` | One entry per link |
+
+## set_cfg attributes table
+
+| Name | Id | Optional? | Data type | Attribute Description |
+|:----:|:--:|:----------:|:---------:|:---------------------:|
+| mode | `0x00` | No | `(u)int8` | Mode |
+| cfg | `0x01` | No | `sub-attributes` | Configuration block |
+
+## cfg sub-attributes table
+
+| Name | Id | Optional? | Data type | Description |
+|:----:|:--:|:----------:|:---------:|:-----------:|
+| link | `0x00` | No | `struct link` | Reference link
+| links | `0x01` | Yes | `struct link[]` | Other links
+| opt_status | `0x02` | Yes | `struct status` | Status snapshot
+
+## status struct table
+
+Device status, append only
+
+Size: 38 bytes, little endian, extensible: arrays start with the element size on one byte.
+
+| Field | Offset | Data type | Description |
+|:-----:|:------:|:---------:|:-----------:|
+| uptime | `0` | `uint64` | Uptime in ms |
+| temp | `8` | `int16` | Temperature in 0.1 C |
+| ratio | `10` | `float32` | Load ratio |
+| flags | `14` | `uint8` | Status flags |
+| offset | `15` | `int32` | Clock offset in us |
+| drift | `19` | `float64` | Clock drift in ppm |
+| delta | `27` | `int8` | Last correction |
+| big | `28` | `int64` | Signed counter |
+| count | `36` | `uint16` | Event count |
+
+## link struct table
+
+Per link packet counters
+
+Size: 12 bytes, little endian.
+
+| Field | Offset | Data type | Description |
+|:-----:|:------:|:---------:|:-----------:|
+| sent | `0` | `uint32` | Packets sent |
+| lost | `4` | `uint32` | Packets lost |
+| crc | `8` | `uint32` | Crc errors |
+
+## counters struct table
+
+Link counters, mostly small values
+
+Size: up to 37 bytes, little endian, variable-length fields in LEB128 with signed ones zigzag encoded, extensible: array elements each start with their size on one byte.
+
+| Field | Offset | Data type | Description |
+|:-----:|:------:|:---------:|:-----------:|
+| rx | `0` | `varuint32` | Received frames |
+| err | `-` | `varuint16` | Errors |
+| uptime | `-` | `varuint64` | Uptime in ms |
+| crc | `-` | `uint8` | Last frame crc |
+| temp | `-` | `varint16` | Temperature delta |
+| drift | `-` | `varint32` | Clock drift |
+| offset | `-` | `varint64` | Time offset |
+

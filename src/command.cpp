@@ -288,3 +288,106 @@ int Command::getMaxAttNb(QList<Command *> cmdList) {
     }
     return max;
 }
+
+static void getStructAtt_Rec(QList<Attribute *> attList, QList<Attribute *> &structAttList) {
+    for (Attribute *attribute : attList) {
+        if (attribute->getDataType() == NS_AttDataType::STRUCT) {
+            structAttList.append(attribute);
+        }
+        getStructAtt_Rec(attribute->getSubAttArray(), structAttList);
+    }
+}
+
+int Command::getStructBuffSize(void) {
+    QList<Attribute *> structAttList;
+    int size = 0;
+
+    getStructAtt_Rec(this->m_attArray, structAttList);
+    // StructBuff holds single structs, the application serializes arrays with the array helpers
+    for (Attribute *attribute : structAttList) {
+        if ((attribute->getStruct() != nullptr) && (!attribute->getIsArray())) {
+            size += Attribute::getStructSize(attribute->getStruct());
+        }
+    }
+    return size;
+}
+
+int Command::getMaxStructBuffSize(QList<Command *> cmdList) {
+    int max = 0;
+
+    for (Command *command : cmdList) {
+        int size = command->getStructBuffSize();
+        if (size > max) {
+            max = size;
+        }
+    }
+    return max;
+}
+
+QList<Attribute::T_structType *> Command::getStructList(QList<Command *> cmdList) {
+    QList<Attribute::T_structType *> structList;
+
+    for (Command *command : cmdList) {
+        QList<Attribute *> structAttList;
+        getStructAtt_Rec(command->getAttArray(), structAttList);
+        for (Attribute *attribute : structAttList) {
+            if ((attribute->getStruct() != nullptr) && (!structList.contains(attribute->getStruct()))) {
+                structList.append(attribute->getStruct());
+            }
+        }
+    }
+    return structList;
+}
+
+bool Command::hasStructFieldType(QList<Command *> cmdList, bool (*pIsType)(NS_FieldType::T_FieldType)) {
+    for (Attribute::T_structType *pStruct : Command::getStructList(cmdList)) {
+        for (const Attribute::T_structField &field : pStruct->fields) {
+            if (pIsType(field.dataType)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+QString Command::checkStructs(QList<Command *> cmdList) {
+    for (Command *command : cmdList) {
+        QList<Attribute *> structAttList;
+        getStructAtt_Rec(command->getAttArray(), structAttList);
+        for (Attribute *attribute : structAttList) {
+            if (attribute->getStruct() == nullptr) {
+                return "Attribute '" + attribute->getName() + "' has no struct type";
+            }
+        }
+    }
+    QStringList structNames;
+    for (Attribute::T_structType *pStruct : Command::getStructList(cmdList)) {
+        QStringList fieldNames;
+        // Generated names are lower case
+        if (structNames.contains(pStruct->name, Qt::CaseInsensitive)) {
+            return "Struct '" + pStruct->name + "' is defined twice";
+        }
+        structNames.append(pStruct->name);
+        if (pStruct->fields.isEmpty()) {
+            return "Struct '" + pStruct->name + "' has no field";
+        }
+        for (const Attribute::T_structField &field : pStruct->fields) {
+            if (fieldNames.contains(field.name, Qt::CaseInsensitive)) {
+                return "Struct '" + pStruct->name + "' field '" + field.name + "' is defined twice";
+            }
+            fieldNames.append(field.name);
+            if (field.dataType == NS_FieldType::UNKNOWN) {
+                return "Struct '" + pStruct->name + "' field '" + field.name + "' has an unknown type";
+            }
+        }
+        // Variable-length elements each carry their size, which is the extensible array format
+        if ((Attribute::hasStructVarField(pStruct)) && (!pStruct->isExtensible)) {
+            return "Struct '" + pStruct->name + "' has variable-length fields, it must be extensible";
+        }
+        // The array element size is sent on a byte
+        if ((pStruct->isExtensible) && (Attribute::getStructSize(pStruct) > UINT8_MAX)) {
+            return "Extensible struct '" + pStruct->name + "' is over 255 bytes";
+        }
+    }
+    return QString();
+}

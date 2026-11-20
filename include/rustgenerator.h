@@ -53,6 +53,13 @@ class RustGenerator {
     void getSubAttData_Rec(QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, int indentNb);
     void fillSubAttData_Rec(QStringList parentNames, QList<Attribute *> attList, QTextStream *pOut, int indentNb);
     QString getAttDescString(bool isOptional, NS_AttDataType::T_AttDataType data_type);
+    QString getStructFieldString(Attribute *attribute);
+    QString getStructGetString(QString attDataPath, Attribute *attribute);
+    QString getStructFillString(QString attDataPath, Attribute *attribute);
+    void printFixedStructImpl(QString typeString, Attribute::T_structType *pStruct, QTextStream *pOut);
+    void printVarStructImpl(QString typeString, Attribute::T_structType *pStruct, QTextStream *pOut);
+    void printVarUintFunctions(QTextStream *pOut);
+    void printZigZagFunctions(QTextStream *pOut);
     void printAttDesc_Rec(QString parentName, QList<Attribute *> attList, QTextStream *pOut, int indentNb);
 
   public:

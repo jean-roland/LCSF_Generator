@@ -44,6 +44,7 @@ static QString protocolId;
 static QString protocolVersion;
 static QString protocolDesc;
 static QList<Command *> cmdArray;
+static QList<Attribute::T_structType *> structArray;
 static const QString defCOutPath = "./COutput";
 static QString cOutPathA = defCOutPath;
 static QString cOutPathB = defCOutPath;
@@ -168,7 +169,7 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
     // Process description file
-    DescHandler::load_desc(descFile, cmdArray, protocolName, protocolId, protocolVersion, protocolDesc);
+    DescHandler::load_desc(descFile, cmdArray, structArray, protocolName, protocolId, protocolVersion, protocolDesc);
     descFile.close();
 
     // Check import
@@ -260,6 +261,11 @@ int main(int argc, char *argv[]) {
     QString dupName = checkAttNameDuplicate(cmdArray);
     if (dupName.size() > 0) {
         out << "Error, duplicate complex attribute name: '" + dupName + "'." << Qt::endl;
+        exit(EXIT_FAILURE);
+    }
+    QString structErr = Command::checkStructs(cmdArray);
+    if (structErr.size() > 0) {
+        out << "Error, " << structErr << "." << Qt::endl;
         exit(EXIT_FAILURE);
     }
     // Generate "A" C files

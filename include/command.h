@@ -78,6 +78,12 @@ class Command {
     static bool compareRefCmdList(QList<Command *> a_list, QList<Command *> b_list, int &err_idx);
     static int getMaxAttNb(QList<Command *> cmdList);
 
+    int getStructBuffSize(void);
+    static int getMaxStructBuffSize(QList<Command *> cmdList);
+    static QList<Attribute::T_structType *> getStructList(QList<Command *> cmdList);
+    static bool hasStructFieldType(QList<Command *> cmdList, bool (*pIsType)(NS_FieldType::T_FieldType));
+    static QString checkStructs(QList<Command *> cmdList);
+
     friend bool operator==(const Command &lhs, const Command &rhs) {
         if (lhs.m_name != rhs.m_name) {
             return false;

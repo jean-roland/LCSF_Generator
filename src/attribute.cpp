@@ -28,6 +28,8 @@ Attribute::Attribute(void) {
     this->m_dataType = NS_AttDataType::UNKNOWN;
     this->m_subAttArray = QList<Attribute *>();
     this->m_desc = QString();
+    this->m_pStruct = nullptr;
+    this->m_isArray = false;
 }
 
 Attribute::Attribute(
@@ -38,6 +40,8 @@ Attribute::Attribute(
     this->m_dataType = attDataType;
     this->m_subAttArray = QList<Attribute *>();
     this->m_desc = attDesc;
+    this->m_pStruct = nullptr;
+    this->m_isArray = false;
 }
 
 Attribute::Attribute(QString attName, short attId, bool attIsOptional, NS_AttDataType::T_AttDataType attDataType,
@@ -48,6 +52,8 @@ Attribute::Attribute(QString attName, short attId, bool attIsOptional, NS_AttDat
     this->m_dataType = attDataType;
     this->m_subAttArray = attSubAttArray;
     this->m_desc = attDesc;
+    this->m_pStruct = nullptr;
+    this->m_isArray = false;
 }
 
 void Attribute::setName(QString attName) {
@@ -108,6 +114,56 @@ void Attribute::addSubAtt(Attribute *newAtt) {
 
 QList<Attribute *> Attribute::getSubAttArray(void) {
     return this->m_subAttArray;
+}
+
+void Attribute::setStruct(T_structType *pStruct) {
+    this->m_pStruct = pStruct;
+}
+
+Attribute::T_structType *Attribute::getStruct(void) {
+    return this->m_pStruct;
+}
+
+void Attribute::setIsArray(bool isArray) {
+    this->m_isArray = isArray;
+}
+
+bool Attribute::getIsArray(void) {
+    return this->m_isArray;
+}
+
+int Attribute::getStructSize(const T_structType *pStruct) {
+    int size = 0;
+    for (const T_structField &field : pStruct->fields) {
+        size += NS_FieldType::FieldTypeSize[field.dataType];
+    }
+    return size;
+}
+
+bool Attribute::hasStructVarField(const T_structType *pStruct) {
+    for (const T_structField &field : pStruct->fields) {
+        if (NS_FieldType::isVarType(field.dataType)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+QStringList Attribute::getStructFieldOffsets(const T_structType *pStruct) {
+    QStringList offsets;
+    int offset = 0;
+    bool isOffsetKnown = true;
+
+    for (const T_structField &field : pStruct->fields) {
+        offsets.append((isOffsetKnown) ? QString::number(offset) : "-");
+        // Offsets after a variable-length field depend on its value
+        if (NS_FieldType::isVarType(field.dataType)) {
+            isOffsetKnown = false;
+        } else if (field.dataType != NS_FieldType::UNKNOWN) {
+            offset += NS_FieldType::FieldTypeSize[field.dataType];
+        }
+    }
+    return offsets;
 }
 
 int Attribute::getTotalAttNb_rec(void) {

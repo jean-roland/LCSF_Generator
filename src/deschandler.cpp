@@ -61,17 +61,35 @@ static NS_AttDataType::T_AttDataType convertDataType(QString type) {
         return NS_AttDataType::SUB_ATTRIBUTES;
     } else if (type == "LCSF_STRING") {
         return NS_AttDataType::STRING;
+    } else if (type == "LCSF_STRUCT") {
+        return NS_AttDataType::STRUCT;
     } else {
         return NS_AttDataType::UNKNOWN;
     }
 }
 
-static void loadAtt_Rec(Command *pParentCmd, Attribute *pParentAtt, const QJsonObject &attribute) {
+static Attribute::T_structType *findStruct(QString name, QList<Attribute::T_structType *> structArray) {
+    for (Attribute::T_structType *pStruct : structArray) {
+        if (pStruct->name == name) {
+            return pStruct;
+        }
+    }
+    return nullptr;
+}
+
+static void loadAtt_Rec(
+    Command *pParentCmd, Attribute *pParentAtt, const QJsonObject &attribute, QList<Attribute::T_structType *> structArray) {
     Attribute *Attr(new Attribute(attribute.value(QLatin1String("name")).toString(),
         static_cast<short>(attribute.value(QLatin1String("id")).toInt()),
         attribute.value(QLatin1String("isOptional")).toBool(),
         convertDataType(attribute.value(QLatin1String("dataType")).toString()),
         attribute.value(QLatin1String("desc")).toString()));
+    // Unknown struct names are left null and caught before generation
+    if (Attr->getDataType() == NS_AttDataType::STRUCT) {
+        Attr->setStruct(
+            findStruct(correctInputString(attribute.value(QLatin1String("structName")).toString()), structArray));
+        Attr->setIsArray(attribute.value(QLatin1String("isArray")).toBool());
+    }
     // If this is a sub-attribute
     if (pParentAtt != nullptr) {
         pParentAtt->addSubAtt(Attr);
@@ -80,7 +98,7 @@ static void loadAtt_Rec(Command *pParentCmd, Attribute *pParentAtt, const QJsonO
     if (Attr->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
         for (const QJsonValueRef SubAttr : attribute.value(QLatin1String("subAttr")).toArray()) {
             QJsonObject SubAttrObject(SubAttr.toObject());
-            loadAtt_Rec(nullptr, Attr, SubAttrObject);
+            loadAtt_Rec(nullptr, Attr, SubAttrObject, structArray);
         }
     }
     // If this is a command attribute
@@ -101,6 +119,10 @@ static void saveAtt_Rec(QJsonArray &attributes, QList<Attribute *> attList) {
         Attr.insert(QLatin1String("dataType"), NS_AttDataType::SL_AttDataType.at(attribute->getDataType()));
         Attr.insert(QLatin1String("desc"), attribute->getDesc());
         Attr.insert(QLatin1String("size"), attribute->getSubAttArray().size());
+        if ((attribute->getDataType() == NS_AttDataType::STRUCT) && (attribute->getStruct() != nullptr)) {
+            Attr.insert(QLatin1String("structName"), attribute->getStruct()->name);
+            Attr.insert(QLatin1String("isArray"), attribute->getIsArray());
+        }
 
         // Parse sub-attributes
         if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
@@ -116,8 +138,8 @@ static void saveAtt_Rec(QJsonArray &attributes, QList<Attribute *> attList) {
 DescHandler::DescHandler() {
 }
 
-void DescHandler::load_desc(QFile &file, QList<Command *> &cmdArray, QString &protocolName, QString &protocolId,
-    QString &protocolVersion, QString &protocolDesc) {
+void DescHandler::load_desc(QFile &file, QList<Command *> &cmdArray, QList<Attribute::T_structType *> &structArray,
+    QString &protocolName, QString &protocolId, QString &protocolVersion, QString &protocolDesc) {
     QJsonDocument DescFile(QJsonDocument::fromJson(file.readAll()));
     QJsonObject DescFileObject(DescFile.object());
 
@@ -125,6 +147,23 @@ void DescHandler::load_desc(QFile &file, QList<Command *> &cmdArray, QString &pr
     protocolId = DescFileObject.value(QLatin1String("id")).toString();
     protocolVersion = QString::number(DescFileObject.value(QLatin1String("version")).toInt());
     protocolDesc = DescFileObject.value(QLatin1String("desc")).toString();
+
+    // Structs
+    for (const QJsonValueRef StructRef : DescFileObject.value(QLatin1String("structs")).toArray()) {
+        QJsonObject StructObject(StructRef.toObject());
+        Attribute::T_structType *pStruct = new Attribute::T_structType;
+        pStruct->name = correctInputString(StructObject.value(QLatin1String("name")).toString());
+        pStruct->desc = StructObject.value(QLatin1String("desc")).toString();
+        pStruct->isExtensible = StructObject.value(QLatin1String("isExtensible")).toBool();
+        for (const QJsonValueRef FieldRef : StructObject.value(QLatin1String("fields")).toArray()) {
+            QJsonObject FieldObject(FieldRef.toObject());
+            int typeIdx = NS_FieldType::SL_FieldType.indexOf(FieldObject.value(QLatin1String("dataType")).toString());
+            pStruct->fields.append({correctInputString(FieldObject.value(QLatin1String("name")).toString()),
+                (typeIdx < 0) ? NS_FieldType::UNKNOWN : static_cast<NS_FieldType::T_FieldType>(typeIdx),
+                FieldObject.value(QLatin1String("desc")).toString()});
+        }
+        structArray.append(pStruct);
+    }
 
     // Attributes
     for (const QJsonValueRef CmdRef : DescFileObject.value(QLatin1String("commands")).toArray()) {
@@ -143,7 +182,7 @@ void DescHandler::load_desc(QFile &file, QList<Command *> &cmdArray, QString &pr
         if (CmdObject.value(QLatin1String("hasAtt")).toBool()) {
             for (const QJsonValueRef AttrRef : CmdObject.value(QLatin1String("attributes")).toArray()) {
                 const QJsonObject AttrObject(AttrRef.toObject());
-                loadAtt_Rec(Cmd, nullptr, AttrObject);
+                loadAtt_Rec(Cmd, nullptr, AttrObject, structArray);
             }
         }
         // Add into command array
@@ -151,14 +190,36 @@ void DescHandler::load_desc(QFile &file, QList<Command *> &cmdArray, QString &pr
     }
 }
 
-bool DescHandler::save_desc(QString filename, QList<Command *> cmdArray, QString protocolName, QString protocolId,
-    QString protocolVersion, QString protocolDesc) {
+bool DescHandler::save_desc(QString filename, QList<Command *> cmdArray, QList<Attribute::T_structType *> structArray,
+    QString protocolName, QString protocolId, QString protocolVersion, QString protocolDesc) {
     // Generate JSON
     QJsonObject DescFile;
     DescFile.insert(QLatin1String("name"), protocolName);
     DescFile.insert(QLatin1String("id"), protocolId);
     DescFile.insert(QLatin1String("version"), protocolVersion.toInt());
     DescFile.insert(QLatin1String("desc"), protocolDesc);
+
+    // Save structs
+    if (!structArray.isEmpty()) {
+        QJsonArray DescStruct;
+        for (Attribute::T_structType *pStruct : structArray) {
+            QJsonObject jsonStruct;
+            jsonStruct.insert(QLatin1String("name"), pStruct->name);
+            jsonStruct.insert(QLatin1String("desc"), pStruct->desc);
+            jsonStruct.insert(QLatin1String("isExtensible"), pStruct->isExtensible);
+            QJsonArray Fields;
+            for (const Attribute::T_structField &field : pStruct->fields) {
+                QJsonObject jsonField;
+                jsonField.insert(QLatin1String("name"), field.name);
+                jsonField.insert(QLatin1String("dataType"), NS_FieldType::SL_FieldType.value(field.dataType));
+                jsonField.insert(QLatin1String("desc"), field.desc);
+                Fields.append(jsonField);
+            }
+            jsonStruct.insert(QLatin1String("fields"), Fields);
+            DescStruct.append(jsonStruct);
+        }
+        DescFile.insert(QLatin1String("structs"), DescStruct);
+    }
 
     // Save commands
     QJsonArray DescCmd;

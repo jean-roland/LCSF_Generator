@@ -146,7 +146,7 @@ void RustGenerator::declareAtt_REC(
                 nextParentNames, attribute->getSubAttArray(), pOut, (parentIsOpt || attribute->getIsOptional()));
         } else {
             if (parentIsOpt || attribute->getIsOptional()) {
-                if (attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) {
+                if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) || (attribute->getIsArray())) {
                     *pOut << "    let mut " << parentNames.last().toLower().toLower() << "_"
                           << attribute->getName().toLower() << " = &Vec::new();" << Qt::endl;
                 } else if (attribute->getDataType() == NS_AttDataType::STRING) {
@@ -155,12 +155,15 @@ void RustGenerator::declareAtt_REC(
                           << " = &CString::new("
                              ").unwrap();"
                           << Qt::endl;
+                } else if (attribute->getDataType() == NS_AttDataType::STRUCT) {
+                    *pOut << "    let mut " << parentNames.last().toLower().toLower() << "_"
+                          << attribute->getName().toLower() << " = Default::default();" << Qt::endl;
                 } else {
                     *pOut << "    let mut " << parentNames.last().toLower().toLower() << "_"
                           << attribute->getName().toLower() << " = 0;" << Qt::endl;
                 }
             } else {
-                if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) ||
+                if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) || (attribute->getIsArray()) ||
                     (attribute->getDataType() == NS_AttDataType::STRING)) {
                     *pOut << "    let " << parentNames.last().toLower().toLower() << "_" << attribute->getName().toLower()
                           << " = &payload." << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";"
@@ -195,7 +198,7 @@ void RustGenerator::grabAttValues_REC(
                 this->grabAttValues_REC(nextParentNames, attribute->getSubAttArray(), pOut, indentNb + 1,
                     attribute->getIsOptional() || parentIsOpt);
             } else {
-                if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) ||
+                if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) || (attribute->getIsArray()) ||
                     (attribute->getDataType() == NS_AttDataType::STRING)) {
                     *pOut << indent << parentNames.last().toLower() << "_" << attribute->getName().toLower()
                           << " = &payload." << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";"
@@ -213,7 +216,7 @@ void RustGenerator::grabAttValues_REC(
                 this->grabAttValues_REC(
                     nextParentNames, attribute->getSubAttArray(), pOut, indentNb, attribute->getIsOptional() || parentIsOpt);
             } else if (attribute->getIsOptional() || parentIsOpt) {
-                if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) ||
+                if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) || (attribute->getIsArray()) ||
                     (attribute->getDataType() == NS_AttDataType::STRING)) {
                     *pOut << indent << parentNames.last().toLower() << "_" << attribute->getName().toLower()
                           << " = &payload." << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";"
@@ -268,6 +271,12 @@ void RustGenerator::printInitstruct_Rec(QString parentName, QList<Attribute *> a
                 break;
             case NS_AttDataType::STRING:
                 *pOut << indent << attribute->getName().toLower() << ": CString::new(\"\").unwrap()," << Qt::endl;
+                break;
+            case NS_AttDataType::STRUCT:
+                *pOut << indent << attribute->getName().toLower() << ": Default::default()," << Qt::endl;
+                if (!attribute->getIsArray()) {
+                    *pOut << indent << attribute->getName().toLower() << "_field_nb: 0," << Qt::endl;
+                }
                 break;
         }
     }
@@ -347,6 +356,9 @@ void RustGenerator::getSubAttData_Rec(QStringList parentNames, QList<Attribute *
                         *pOut << indent << "    " << attDataPath << attribute->getName().toLower()
                               << " = CString::from_vec_with_nul(data.clone()).unwrap();" << Qt::endl;
                         break;
+                    case NS_AttDataType::STRUCT:
+                        *pOut << indent << "    " << this->getStructGetString(attDataPath, attribute) << Qt::endl;
+                        break;
                 }
                 *pOut << indent << "}" << Qt::endl;
             } else {
@@ -384,6 +396,9 @@ void RustGenerator::getSubAttData_Rec(QStringList parentNames, QList<Attribute *
                     case NS_AttDataType::STRING:
                         *pOut << indent << "    " << attDataPath << attribute->getName().toLower()
                               << " = CString::from_vec_with_nul(data.clone()).unwrap();" << Qt::endl;
+                        break;
+                    case NS_AttDataType::STRUCT:
+                        *pOut << indent << "    " << this->getStructGetString(attDataPath, attribute) << Qt::endl;
                         break;
                 }
                 *pOut << indent << "}" << Qt::endl;
@@ -448,6 +463,10 @@ void RustGenerator::fillSubAttData_Rec(
                         *pOut << indent << "    LcsfValidAttPayload::Data(payload." << attDataPath
                               << attribute->getName().toLower() << ".clone().into_bytes_with_nul())" << Qt::endl;
                         break;
+                    case NS_AttDataType::STRUCT:
+                        *pOut << indent << "    LcsfValidAttPayload::Data("
+                              << this->getStructFillString(attDataPath, attribute) << ")" << Qt::endl;
+                        break;
                 }
                 *pOut << indent << "} else {" << Qt::endl;
                 *pOut << indent << "    LcsfValidAttPayload::Data(Vec::new())" << Qt::endl;
@@ -476,6 +495,9 @@ void RustGenerator::fillSubAttData_Rec(
                     case NS_AttDataType::STRING:
                         *pOut << "LcsfValidAttPayload::Data(payload." << attDataPath << attribute->getName().toLower()
                               << ".clone().into_bytes_with_nul())";
+                        break;
+                    case NS_AttDataType::STRUCT:
+                        *pOut << "LcsfValidAttPayload::Data(" << this->getStructFillString(attDataPath, attribute) << ")";
                         break;
                 }
                 *pOut << "}," << Qt::endl;
@@ -515,6 +537,7 @@ QString RustGenerator::getAttDescString(bool isOptional, NS_AttDataType::T_AttDa
             descString.append("Float64");
             break;
         case NS_AttDataType::BYTE_ARRAY:
+        case NS_AttDataType::STRUCT:
             descString.append("ByteArray");
             break;
         case NS_AttDataType::STRING:
@@ -526,6 +549,262 @@ QString RustGenerator::getAttDescString(bool isOptional, NS_AttDataType::T_AttDa
     }
     descString.append(", subatt_desc_arr: ");
     return descString;
+}
+
+// Payload field declaration of a struct attribute
+QString RustGenerator::getStructFieldString(Attribute *attribute) {
+    QString typeString = this->capitalize(attribute->getStruct()->name);
+    if (attribute->getIsArray()) {
+        return "    pub " + attribute->getName().toLower() + ": Vec<" + typeString + ">,";
+    }
+    return "    pub " + attribute->getName().toLower() + ": " + typeString + ",\n    pub " + attribute->getName().toLower() +
+        "_field_nb: usize,";
+}
+
+// Retrieve code of a struct attribute from its data
+QString RustGenerator::getStructGetString(QString attDataPath, Attribute *attribute) {
+    QString typeString = this->capitalize(attribute->getStruct()->name);
+    QString attPath = attDataPath + attribute->getName().toLower();
+    if (attribute->getIsArray()) {
+        return attPath + " = " + typeString + "::deserialize_array(data);";
+    }
+    return "(" + attPath + ", " + attPath + "_field_nb) = " + typeString + "::deserialize(data);";
+}
+
+// Fill code of a struct attribute data
+QString RustGenerator::getStructFillString(QString attDataPath, Attribute *attribute) {
+    QString typeString = this->capitalize(attribute->getStruct()->name);
+    QString attPath = "&payload." + attDataPath + attribute->getName().toLower();
+    if (attribute->getIsArray()) {
+        return typeString + "::serialize_array(" + attPath + ")";
+    }
+    return typeString + "::serialize(" + attPath + ")";
+}
+
+void RustGenerator::printFixedStructImpl(QString typeString, Attribute::T_structType *pStruct, QTextStream *pOut) {
+    QTextStream &out = *pOut;
+    int offset = 0;
+    out << "#[allow(dead_code)]" << Qt::endl;
+    out << "impl " << typeString << " {" << Qt::endl;
+    out << "    /// Serialized size in bytes" << Qt::endl;
+    out << "    pub const SIZE: usize = " << Attribute::getStructSize(pStruct) << ";" << Qt::endl;
+    out << Qt::endl;
+    out << "    /// Serialize into little endian bytes" << Qt::endl;
+    out << "    pub fn serialize(&self) -> Vec<u8> {" << Qt::endl;
+    out << "        let mut data = Vec::with_capacity(Self::SIZE);" << Qt::endl;
+    for (const Attribute::T_structField &field : pStruct->fields) {
+        out << "        data.extend_from_slice(&self." << field.name.toLower() << ".to_le_bytes());" << Qt::endl;
+    }
+    out << "        data" << Qt::endl;
+    out << "    }" << Qt::endl;
+    out << Qt::endl;
+    out << "    /// Deserialize from little endian bytes, missing trailing fields are zeroed" << Qt::endl;
+    out << "    ///" << Qt::endl;
+    out << "    /// Returns the struct and the number of fields read" << Qt::endl;
+    out << "    pub fn deserialize(data: &[u8]) -> (Self, usize) {" << Qt::endl;
+    out << "        let mut value = Self::default();" << Qt::endl;
+    for (int idx = 0; idx < pStruct->fields.size(); idx++) {
+        const Attribute::T_structField &field = pStruct->fields.at(idx);
+        int end = offset + NS_FieldType::FieldTypeSize[field.dataType];
+        out << "        if data.len() < " << end << " {" << Qt::endl;
+        out << "            return (value, " << idx << ");" << Qt::endl;
+        out << "        }" << Qt::endl;
+        out << "        value." << field.name.toLower() << " = " << NS_FieldType::SL_RustFieldType.at(field.dataType)
+            << "::from_le_bytes(data[" << offset << ".." << end << "].try_into().unwrap());" << Qt::endl;
+        offset = end;
+    }
+    out << "        (value, " << pStruct->fields.size() << ")" << Qt::endl;
+    out << "    }" << Qt::endl;
+    out << Qt::endl;
+    out << "    /// Serialize an array" << Qt::endl;
+    out << "    pub fn serialize_array(arr: &[Self]) -> Vec<u8> {" << Qt::endl;
+    if (pStruct->isExtensible) {
+        out << "        let mut data = vec![Self::SIZE as u8];" << Qt::endl;
+    } else {
+        out << "        let mut data = Vec::with_capacity(arr.len() * Self::SIZE);" << Qt::endl;
+    }
+    out << "        for elem in arr {" << Qt::endl;
+    out << "            data.extend(elem.serialize());" << Qt::endl;
+    out << "        }" << Qt::endl;
+    out << "        data" << Qt::endl;
+    out << "    }" << Qt::endl;
+    out << Qt::endl;
+    out << "    /// Deserialize an array" << Qt::endl;
+    out << "    pub fn deserialize_array(data: &[u8]) -> Vec<Self> {" << Qt::endl;
+    if (pStruct->isExtensible) {
+        out << "        // Elements may be from another struct version" << Qt::endl;
+        out << "        let Some((&elem_size, data)) = data.split_first() else {" << Qt::endl;
+        out << "            return Vec::new();" << Qt::endl;
+        out << "        };" << Qt::endl;
+        out << "        if elem_size == 0 {" << Qt::endl;
+        out << "            return Vec::new();" << Qt::endl;
+        out << "        }" << Qt::endl;
+        out << "        data.chunks_exact(elem_size as usize)" << Qt::endl;
+    } else {
+        out << "        data.chunks_exact(Self::SIZE)" << Qt::endl;
+    }
+    out << "            .map(|elem| Self::deserialize(elem).0)" << Qt::endl;
+    out << "            .collect()" << Qt::endl;
+    out << "    }" << Qt::endl;
+    out << "}" << Qt::endl;
+    out << Qt::endl;
+}
+
+void RustGenerator::printVarStructImpl(QString typeString, Attribute::T_structType *pStruct, QTextStream *pOut) {
+    QTextStream &out = *pOut;
+    int fieldNb = pStruct->fields.size();
+
+    out << "#[allow(dead_code)]" << Qt::endl;
+    out << "impl " << typeString << " {" << Qt::endl;
+    out << "    /// Maximum serialized size in bytes, fields are variable-length" << Qt::endl;
+    out << "    pub const SIZE: usize = " << Attribute::getStructSize(pStruct) << ";" << Qt::endl;
+    out << Qt::endl;
+
+    // Serialize, a 64-bit field needs no widening
+    out << "    /// Serialize into little endian bytes, variable-length fields in LEB128" << Qt::endl;
+    out << "    pub fn serialize(&self) -> Vec<u8> {" << Qt::endl;
+    out << "        let mut data = Vec::with_capacity(Self::SIZE);" << Qt::endl;
+    for (const Attribute::T_structField &field : pStruct->fields) {
+        QString fieldString = "self." + field.name.toLower();
+        bool is64Bit = (NS_FieldType::FieldTypeBits[field.dataType] == 64);
+        if (NS_FieldType::isSignedVarType(field.dataType)) {
+            QString valueString = (is64Bit) ? fieldString : "i64::from(" + fieldString + ")";
+            out << "        var_uint_encode(zigzag_encode(" << valueString << "), &mut data);" << Qt::endl;
+        } else if (NS_FieldType::isVarType(field.dataType)) {
+            QString valueString = (is64Bit) ? fieldString : "u64::from(" + fieldString + ")";
+            out << "        var_uint_encode(" << valueString << ", &mut data);" << Qt::endl;
+        } else {
+            out << "        data.extend_from_slice(&" << fieldString << ".to_le_bytes());" << Qt::endl;
+        }
+    }
+    out << "        data" << Qt::endl;
+    out << "    }" << Qt::endl;
+    out << Qt::endl;
+
+    // Deserialize, a field cut short or malformed ends the decode
+    out << "    /// Deserialize from little endian bytes, fields after a missing or malformed one are zeroed" << Qt::endl;
+    out << "    ///" << Qt::endl;
+    out << "    /// Returns the struct and the number of fields read" << Qt::endl;
+    out << "    pub fn deserialize(data: &[u8]) -> (Self, usize) {" << Qt::endl;
+    out << "        let mut value = Self::default();" << Qt::endl;
+    out << "        let " << ((fieldNb > 1) ? "mut " : "") << "idx = 0;" << Qt::endl;
+    for (int fieldIdx = 0; fieldIdx < fieldNb; fieldIdx++) {
+        const Attribute::T_structField &field = pStruct->fields.at(fieldIdx);
+        QString fieldString = "value." + field.name.toLower();
+        QString rustTypeString = NS_FieldType::SL_RustFieldType.at(field.dataType);
+        int bits = NS_FieldType::FieldTypeBits[field.dataType];
+        bool isLastField = (fieldIdx == fieldNb - 1);
+        if (NS_FieldType::isVarType(field.dataType)) {
+            QString maxString = (bits == 64) ? "u64::MAX" : "u64::from(u" + QString::number(bits) + "::MAX)";
+            // The last field size is not needed
+            out << "        let Some((field, " << ((isLastField) ? "_" : "size") << ")) = var_uint_decode(&data[idx..], "
+                << maxString << ") else {" << Qt::endl;
+            out << "            return (value, " << fieldIdx << ");" << Qt::endl;
+            out << "        };" << Qt::endl;
+            if (NS_FieldType::isSignedVarType(field.dataType)) {
+                out << "        " << fieldString << " = zigzag_decode(field)"
+                    << ((bits == 64) ? "" : " as " + rustTypeString) << ";" << Qt::endl;
+            } else {
+                out << "        " << fieldString << " = field" << ((bits == 64) ? "" : " as " + rustTypeString) << ";"
+                    << Qt::endl;
+            }
+            if (!isLastField) {
+                out << "        idx += size;" << Qt::endl;
+            }
+        } else {
+            int size = NS_FieldType::FieldTypeSize[field.dataType];
+            out << "        let Some(field) = data.get(idx..idx + " << size << ") else {" << Qt::endl;
+            out << "            return (value, " << fieldIdx << ");" << Qt::endl;
+            out << "        };" << Qt::endl;
+            out << "        " << fieldString << " = " << rustTypeString << "::from_le_bytes(field.try_into().unwrap());"
+                << Qt::endl;
+            if (!isLastField) {
+                out << "        idx += " << size << ";" << Qt::endl;
+            }
+        }
+    }
+    out << "        (value, " << fieldNb << ")" << Qt::endl;
+    out << "    }" << Qt::endl;
+    out << Qt::endl;
+
+    // Arrays, element sizes vary so each element starts with its own
+    out << "    /// Serialize an array, each element starts with its size on one byte" << Qt::endl;
+    out << "    pub fn serialize_array(arr: &[Self]) -> Vec<u8> {" << Qt::endl;
+    out << "        let mut data = Vec::with_capacity(arr.len() * (1 + Self::SIZE));" << Qt::endl;
+    out << "        for elem in arr {" << Qt::endl;
+    out << "            let elem_data = elem.serialize();" << Qt::endl;
+    out << "            data.push(elem_data.len() as u8);" << Qt::endl;
+    out << "            data.extend(elem_data);" << Qt::endl;
+    out << "        }" << Qt::endl;
+    out << "        data" << Qt::endl;
+    out << "    }" << Qt::endl;
+    out << Qt::endl;
+    out << "    /// Deserialize an array, each element starts with its size on one byte" << Qt::endl;
+    out << "    pub fn deserialize_array(mut data: &[u8]) -> Vec<Self> {" << Qt::endl;
+    out << "        let mut arr = Vec::new();" << Qt::endl;
+    out << "        // Elements may be from another struct version" << Qt::endl;
+    out << "        while let Some((&elem_size, rest)) = data.split_first() {" << Qt::endl;
+    out << "            let Some(elem) = rest.get(..elem_size as usize) else {" << Qt::endl;
+    out << "                break;" << Qt::endl;
+    out << "            };" << Qt::endl;
+    out << "            arr.push(Self::deserialize(elem).0);" << Qt::endl;
+    out << "            data = &rest[elem_size as usize..];" << Qt::endl;
+    out << "        }" << Qt::endl;
+    out << "        arr" << Qt::endl;
+    out << "    }" << Qt::endl;
+    out << "}" << Qt::endl;
+    out << Qt::endl;
+}
+
+void RustGenerator::printVarUintFunctions(QTextStream *pOut) {
+    QTextStream &out = *pOut;
+
+    out << "/// Encode a value in unsigned LEB128, 7 bits per byte from the least significant, MSb set when more bytes "
+           "follow"
+        << Qt::endl;
+    out << "fn var_uint_encode(mut value: u64, data: &mut Vec<u8>) {" << Qt::endl;
+    out << "    while value >= 0x80 {" << Qt::endl;
+    out << "        data.push((value as u8) | 0x80);" << Qt::endl;
+    out << "        value >>= 7;" << Qt::endl;
+    out << "    }" << Qt::endl;
+    out << "    data.push(value as u8);" << Qt::endl;
+    out << "}" << Qt::endl;
+    out << Qt::endl;
+    out << "/// Decode an unsigned LEB128 value" << Qt::endl;
+    out << "///" << Qt::endl;
+    out << "/// Returns the value and its size in bytes, None if it is cut short, over 10 bytes or over max_value"
+        << Qt::endl;
+    out << "fn var_uint_decode(data: &[u8], max_value: u64) -> Option<(u64, usize)> {" << Qt::endl;
+    out << "    let mut value: u64 = 0;" << Qt::endl;
+    out << "    // A u64 takes up to 10 bytes, the 10th holds bit 63 only" << Qt::endl;
+    out << "    for (idx, &byte) in data.iter().take(10).enumerate() {" << Qt::endl;
+    out << "        let group = u64::from(byte & 0x7F);" << Qt::endl;
+    out << "        if idx == 9 && group > 1 {" << Qt::endl;
+    out << "            return None;" << Qt::endl;
+    out << "        }" << Qt::endl;
+    out << "        value |= group << (7 * idx);" << Qt::endl;
+    out << "        if byte & 0x80 == 0 {" << Qt::endl;
+    out << "            return (value <= max_value).then_some((value, idx + 1));" << Qt::endl;
+    out << "        }" << Qt::endl;
+    out << "    }" << Qt::endl;
+    out << "    None" << Qt::endl;
+    out << "}" << Qt::endl;
+    out << Qt::endl;
+}
+
+void RustGenerator::printZigZagFunctions(QTextStream *pOut) {
+    QTextStream &out = *pOut;
+
+    out << "/// Map a signed value to unsigned so small magnitudes stay small: 0, -1, 1, -2 give 0, 1, 2, 3" << Qt::endl;
+    out << "fn zigzag_encode(value: i64) -> u64 {" << Qt::endl;
+    out << "    ((value << 1) ^ (value >> 63)) as u64" << Qt::endl;
+    out << "}" << Qt::endl;
+    out << Qt::endl;
+    out << "/// Map a zigzag value back to signed" << Qt::endl;
+    out << "fn zigzag_decode(value: u64) -> i64 {" << Qt::endl;
+    out << "    ((value >> 1) as i64) ^ -((value & 1) as i64)" << Qt::endl;
+    out << "}" << Qt::endl;
+    out << Qt::endl;
 }
 
 // Print recursively attribute description
@@ -652,6 +931,9 @@ void RustGenerator::generateMain(
                         case NS_AttDataType::FLOAT64:
                             out << "    pub " << attribute->getName().toLower() << ": f64," << Qt::endl;
                             break;
+                        case NS_AttDataType::STRUCT:
+                            out << this->getStructFieldString(attribute) << Qt::endl;
+                            break;
                     }
                 }
                 out << "}" << Qt::endl;
@@ -711,6 +993,9 @@ void RustGenerator::generateMain(
                                 case NS_AttDataType::FLOAT64:
                                     out << "    pub " << currentSubAttInfo.attName.toLower() << ": f64," << Qt::endl;
                                     break;
+                                case NS_AttDataType::STRUCT:
+                                    out << this->getStructFieldString(currentSubAttInfo.attPointer) << Qt::endl;
+                                    break;
                             }
                         }
                         // Next attribute
@@ -719,6 +1004,34 @@ void RustGenerator::generateMain(
                     out << "}" << Qt::endl;
                     out << Qt::endl;
                 }
+            }
+        }
+
+        // Struct types
+        QList<Attribute::T_structType *> structList = Command::getStructList(cmdList);
+        if (!structList.isEmpty()) {
+            out << "// Struct types" << Qt::endl;
+        }
+        if (Command::hasStructFieldType(cmdList, NS_FieldType::isVarType)) {
+            this->printVarUintFunctions(&out);
+        }
+        if (Command::hasStructFieldType(cmdList, NS_FieldType::isSignedVarType)) {
+            this->printZigZagFunctions(&out);
+        }
+        for (Attribute::T_structType *pStruct : structList) {
+            QString typeString = this->capitalize(pStruct->name);
+            out << "#[derive(Debug, Default, PartialEq, Clone, Copy)]" << Qt::endl;
+            out << "pub struct " << typeString << " {" << Qt::endl;
+            for (const Attribute::T_structField &field : pStruct->fields) {
+                out << "    pub " << field.name.toLower() << ": " << NS_FieldType::SL_RustFieldType.at(field.dataType) << ","
+                    << Qt::endl;
+            }
+            out << "}" << Qt::endl;
+            out << Qt::endl;
+            if (Attribute::hasStructVarField(pStruct)) {
+                this->printVarStructImpl(typeString, pStruct, &out);
+            } else {
+                this->printFixedStructImpl(typeString, pStruct, &out);
             }
         }
 
@@ -755,16 +1068,19 @@ void RustGenerator::generateMain(
                             declareAtt_REC(parentNames, attribute->getSubAttArray(), &out, attribute->getIsOptional());
                         } else {
                             if (attribute->getIsOptional()) {
-                                if (attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) {
+                                if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) || (attribute->getIsArray())) {
                                     out << "    let mut " << attribute->getName().toLower() << " = &Vec::new();" << Qt::endl;
                                 } else if (attribute->getDataType() == NS_AttDataType::STRING) {
                                     out << "    let mut " << attribute->getName().toLower()
                                         << " = &CString::new(\"\").unwrap();" << Qt::endl;
+                                } else if (attribute->getDataType() == NS_AttDataType::STRUCT) {
+                                    out << "    let mut " << attribute->getName().toLower() << " = Default::default();"
+                                        << Qt::endl;
                                 } else {
                                     out << "    let mut " << attribute->getName().toLower() << " = 0;" << Qt::endl;
                                 }
                             } else {
-                                if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) ||
+                                if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) || (attribute->getIsArray()) ||
                                     (attribute->getDataType() == NS_AttDataType::STRING)) {
                                     out << "    let " << attribute->getName().toLower() << " = &payload."
                                         << attribute->getName().toLower() << ";" << Qt::endl;
@@ -784,7 +1100,7 @@ void RustGenerator::generateMain(
                                 this->grabAttValues_REC(
                                     parentNames, attribute->getSubAttArray(), &out, 2, attribute->getIsOptional());
                             } else if ((attribute->getDataType() == NS_AttDataType::BYTE_ARRAY) ||
-                                (attribute->getDataType() == NS_AttDataType::STRING)) {
+                                (attribute->getIsArray()) || (attribute->getDataType() == NS_AttDataType::STRING)) {
                                 out << "        " << attribute->getName().toLower() << " = &payload."
                                     << attribute->getName().toLower() << ";" << Qt::endl;
                             } else {
@@ -938,6 +1254,9 @@ void RustGenerator::generateBridge(
                 }
             }
         }
+        for (Attribute::T_structType *pStruct : Command::getStructList(cmdList)) {
+            out << "use protocol_" << protSuffix << "::" << this->capitalize(pStruct->name) << ";" << Qt::endl;
+        }
         out << "use protocol_" << protSuffix << "::CmdEnum;" << Qt::endl;
         out << "use protocol_" << protSuffix << "::CmdPayload;" << Qt::endl;
         out << Qt::endl;
@@ -1005,6 +1324,12 @@ void RustGenerator::generateBridge(
                         case NS_AttDataType::STRING:
                             out << "        " << attribute->getName().toLower() << ": CString::new(\"\").unwrap(),"
                                 << Qt::endl;
+                            break;
+                        case NS_AttDataType::STRUCT:
+                            out << "        " << attribute->getName().toLower() << ": Default::default()," << Qt::endl;
+                            if (!attribute->getIsArray()) {
+                                out << "        " << attribute->getName().toLower() << "_field_nb: 0," << Qt::endl;
+                            }
                             break;
                     }
                 }
@@ -1079,6 +1404,11 @@ void RustGenerator::generateBridge(
                                         << attribute->getName().toLower()
                                         << " = CString::from_vec_with_nul(data.clone()).unwrap();" << Qt::endl;
                                     break;
+                                case NS_AttDataType::STRUCT:
+                                    out << "        "
+                                        << this->getStructGetString(command->getName().toLower() + "_payload.", attribute)
+                                        << Qt::endl;
+                                    break;
                             }
                             out << "    }" << Qt::endl;
                         } else {
@@ -1123,6 +1453,11 @@ void RustGenerator::generateBridge(
                                     out << "        " << command->getName().toLower() << "_payload."
                                         << attribute->getName().toLower()
                                         << " = CString::from_vec_with_nul(data.clone()).unwrap();" << Qt::endl;
+                                    break;
+                                case NS_AttDataType::STRUCT:
+                                    out << "        "
+                                        << this->getStructGetString(command->getName().toLower() + "_payload.", attribute)
+                                        << Qt::endl;
                                     break;
                             }
                             out << "    }" << Qt::endl;
@@ -1204,6 +1539,10 @@ void RustGenerator::generateBridge(
                                 out << "            att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data(payload."
                                     << attribute->getName().toLower() << ".clone().into_bytes_with_nul()),});" << Qt::endl;
                                 break;
+                            case NS_AttDataType::STRUCT:
+                                out << "            att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data("
+                                    << this->getStructFillString("", attribute) << "),});" << Qt::endl;
+                                break;
                         }
                         out << "        } else {" << Qt::endl;
                         if (attribute->getDataType() == NS_AttDataType::SUB_ATTRIBUTES) {
@@ -1247,6 +1586,10 @@ void RustGenerator::generateBridge(
                             case NS_AttDataType::STRING:
                                 out << "        att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data(payload."
                                     << attribute->getName().toLower() << ".clone().into_bytes_with_nul()),});" << Qt::endl;
+                                break;
+                            case NS_AttDataType::STRUCT:
+                                out << "        att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data("
+                                    << this->getStructFillString("", attribute) << "),});" << Qt::endl;
                                 break;
                         }
                     }

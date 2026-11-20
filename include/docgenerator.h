@@ -42,6 +42,9 @@ class DocGenerator {
     QList<Attribute::T_attInfos> removeCommandAttributes(
         QList<Attribute::T_attInfos> attInfosList, QList<Command *> cmdList);
 
+    QString getDocDataType(Attribute *attribute);
+    QString getStructSummary(Attribute::T_structType *pStruct);
+
   public:
     DocGenerator();
     void generateWikiTable(

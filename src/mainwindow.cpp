@@ -123,7 +123,7 @@ bool MainWindow::saveCurrentProtocol(void) {
     qDebug() << "File selected: " << selectedPath;
     // Save data
     if (!DescHandler::save_desc(
-            selectedPath, this->m_cmdArray, protocolName, protocolId, protocolVersion, protocolDesc)) {
+            selectedPath, this->m_cmdArray, this->m_structArray, protocolName, protocolId, protocolVersion, protocolDesc)) {
         QMessageBox::warning(this, "Warning", "Couldn't create json descriptor file!");
         return false;
     }
@@ -165,7 +165,8 @@ void MainWindow::loadProtocolFile(const QString &filePath) {
 
     // Extract data
     QString protocolName, protocolId, protocolVersion, protocolDesc;
-    DescHandler::load_desc(file, this->m_cmdArray, protocolName, protocolId, protocolVersion, protocolDesc);
+    DescHandler::load_desc(
+        file, this->m_cmdArray, this->m_structArray, protocolName, protocolId, protocolVersion, protocolDesc);
 
     ui->leProtocolName->setText(protocolName);
     ui->leProtocolId->setText(protocolId);
@@ -1367,6 +1368,10 @@ void MainWindow::clearData(void) {
     while (!this->m_cmdArray.isEmpty()) {
         delete this->m_cmdArray.takeFirst();
     }
+    // Clear struct array
+    while (!this->m_structArray.isEmpty()) {
+        delete this->m_structArray.takeFirst();
+    }
     // Clear ui Tree
     this->clearTree();
     // Clear ui Table
@@ -1582,6 +1587,11 @@ void MainWindow::on_pbGenerateDesc_clicked(void) {
             nullptr, "Warning", "Duplicate complex attribute name: '" + dupName + "' found, this is not supported !");
         return;
     }
+    QString structErr = Command::checkStructs(this->m_cmdArray);
+    if (structErr.size() > 0) {
+        QMessageBox::warning(nullptr, "Warning", structErr + " !");
+        return;
+    }
 
     // Generate "A" files
     this->m_codegen.generateMainHeader(protocolName, this->m_cmdArray, this->m_codeextractA, cOutPathA);
@@ -1663,6 +1673,11 @@ void MainWindow::on_pbGenerateDoc_clicked(void) {
     if (dupName.size() > 0) {
         QMessageBox::warning(
             nullptr, "Warning", "Duplicate complex attribute name: '" + dupName + "' found, this is not supported !");
+        return;
+    }
+    QString structErr = Command::checkStructs(this->m_cmdArray);
+    if (structErr.size() > 0) {
+        QMessageBox::warning(nullptr, "Warning", structErr + " !");
         return;
     }
     this->m_docgen.generateWikiTable(protocolName, protocolId, protocolDesc, this->m_cmdArray, exportDirPath);

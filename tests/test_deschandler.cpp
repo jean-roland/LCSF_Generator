@@ -31,6 +31,7 @@
 #define outputDir "gen_out/"
 
 static QList<Command *> load_cmd_list;
+static QList<Attribute::T_structType *> load_struct_list;
 static QString load_prot_name;
 static QString load_prot_id;
 static QString load_prot_version;
@@ -56,7 +57,7 @@ TEST(test_deschandler, load_desc) {
     // Load model
     ASSERT_TRUE(openFile(&desc_file, MODEL_DIR_PATH, "model_desc.json"));
     DescHandler::load_desc(
-        desc_file, load_cmd_list, load_prot_name, load_prot_id, load_prot_version, load_prot_desc);
+        desc_file, load_cmd_list, load_struct_list, load_prot_name, load_prot_id, load_prot_version, load_prot_desc);
     desc_file.close();
 
     // Compared loaded data with model data
@@ -74,8 +75,7 @@ TEST(test_deschandler, save_desc) {
     QStringList model_content, output_content;
 
     // Generate desc
-    ASSERT_TRUE(
-        DescHandler::save_desc(filename, cmd_list, protocol_name, protocol_id, protocol_version, protocol_desc));
+    ASSERT_TRUE(DescHandler::save_desc(filename, cmd_list, {}, protocol_name, protocol_id, protocol_version, protocol_desc));
 
     // Check desc file
     ASSERT_TRUE(openFile(&model_file, MODEL_DIR_PATH, "model_desc.json"));

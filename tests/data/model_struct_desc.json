@@ -1,0 +1,256 @@
+{
+    "commands": [
+        {
+            "attributes": [
+                {
+                    "dataType": "LCSF_STRUCT",
+                    "desc": "Current status",
+                    "id": 0,
+                    "isArray": false,
+                    "isOptional": false,
+                    "name": "status",
+                    "size": 0,
+                    "structName": "status"
+                },
+                {
+                    "dataType": "LCSF_STRUCT",
+                    "desc": "One entry per link",
+                    "id": 1,
+                    "isArray": true,
+                    "isOptional": false,
+                    "name": "links",
+                    "size": 0,
+                    "structName": "link"
+                },
+                {
+                    "dataType": "LCSF_STRUCT",
+                    "desc": "Previous status",
+                    "id": 2,
+                    "isArray": false,
+                    "isOptional": true,
+                    "name": "opt_status",
+                    "size": 0,
+                    "structName": "status"
+                },
+                {
+                    "dataType": "LCSF_STRUCT",
+                    "desc": "Status history",
+                    "id": 3,
+                    "isArray": true,
+                    "isOptional": true,
+                    "name": "ext_status",
+                    "size": 0,
+                    "structName": "status"
+                },
+                {
+                    "dataType": "LCSF_STRUCT",
+                    "desc": "Global counters",
+                    "id": 4,
+                    "isArray": false,
+                    "isOptional": false,
+                    "name": "counters",
+                    "size": 0,
+                    "structName": "counters"
+                },
+                {
+                    "dataType": "LCSF_STRUCT",
+                    "desc": "One entry per link",
+                    "id": 5,
+                    "isArray": true,
+                    "isOptional": false,
+                    "name": "link_counters",
+                    "size": 0,
+                    "structName": "counters"
+                }
+            ],
+            "description": "Status report",
+            "direction": 2,
+            "hasAtt": true,
+            "id": 0,
+            "name": "get_status",
+            "parentName": "NONE",
+            "size": 6
+        },
+        {
+            "attributes": [
+                {
+                    "dataType": "LCSF_UINT8",
+                    "desc": "Mode",
+                    "id": 0,
+                    "isOptional": false,
+                    "name": "mode",
+                    "size": 0
+                },
+                {
+                    "dataType": "LCSF_SUB_ATTRIBUTES",
+                    "desc": "Configuration block",
+                    "id": 1,
+                    "isOptional": false,
+                    "name": "cfg",
+                    "size": 3,
+                    "subAttr": [
+                        {
+                            "dataType": "LCSF_STRUCT",
+                            "desc": "Reference link",
+                            "id": 0,
+                            "isArray": false,
+                            "isOptional": false,
+                            "name": "link",
+                            "size": 0,
+                            "structName": "link"
+                        },
+                        {
+                            "dataType": "LCSF_STRUCT",
+                            "desc": "Other links",
+                            "id": 1,
+                            "isArray": true,
+                            "isOptional": true,
+                            "name": "links",
+                            "size": 0,
+                            "structName": "link"
+                        },
+                        {
+                            "dataType": "LCSF_STRUCT",
+                            "desc": "Status snapshot",
+                            "id": 2,
+                            "isArray": false,
+                            "isOptional": true,
+                            "name": "opt_status",
+                            "size": 0,
+                            "structName": "status"
+                        }
+                    ]
+                }
+            ],
+            "description": "Configuration",
+            "direction": 2,
+            "hasAtt": true,
+            "id": 1,
+            "name": "set_cfg",
+            "parentName": "NONE",
+            "size": 2
+        }
+    ],
+    "desc": "Protocol used to test struct attributes.",
+    "id": "56",
+    "name": "StructTest",
+    "structs": [
+        {
+            "desc": "Device status, append only",
+            "fields": [
+                {
+                    "dataType": "LCSF_UINT64",
+                    "desc": "Uptime in ms",
+                    "name": "uptime"
+                },
+                {
+                    "dataType": "LCSF_INT16",
+                    "desc": "Temperature in 0.1 C",
+                    "name": "temp"
+                },
+                {
+                    "dataType": "LCSF_FLOAT32",
+                    "desc": "Load ratio",
+                    "name": "ratio"
+                },
+                {
+                    "dataType": "LCSF_UINT8",
+                    "desc": "Status flags",
+                    "name": "flags"
+                },
+                {
+                    "dataType": "LCSF_INT32",
+                    "desc": "Clock offset in us",
+                    "name": "offset"
+                },
+                {
+                    "dataType": "LCSF_FLOAT64",
+                    "desc": "Clock drift in ppm",
+                    "name": "drift"
+                },
+                {
+                    "dataType": "LCSF_INT8",
+                    "desc": "Last correction",
+                    "name": "delta"
+                },
+                {
+                    "dataType": "LCSF_INT64",
+                    "desc": "Signed counter",
+                    "name": "big"
+                },
+                {
+                    "dataType": "LCSF_UINT16",
+                    "desc": "Event count",
+                    "name": "count"
+                }
+            ],
+            "isExtensible": true,
+            "name": "status"
+        },
+        {
+            "desc": "Per link packet counters",
+            "fields": [
+                {
+                    "dataType": "LCSF_UINT32",
+                    "desc": "Packets sent",
+                    "name": "sent"
+                },
+                {
+                    "dataType": "LCSF_UINT32",
+                    "desc": "Packets lost",
+                    "name": "lost"
+                },
+                {
+                    "dataType": "LCSF_UINT32",
+                    "desc": "Crc errors",
+                    "name": "crc"
+                }
+            ],
+            "isExtensible": false,
+            "name": "link"
+        },
+        {
+            "desc": "Link counters, mostly small values",
+            "fields": [
+                {
+                    "dataType": "LCSF_VARUINT32",
+                    "desc": "Received frames",
+                    "name": "rx"
+                },
+                {
+                    "dataType": "LCSF_VARUINT16",
+                    "desc": "Errors",
+                    "name": "err"
+                },
+                {
+                    "dataType": "LCSF_VARUINT64",
+                    "desc": "Uptime in ms",
+                    "name": "uptime"
+                },
+                {
+                    "dataType": "LCSF_UINT8",
+                    "desc": "Last frame crc",
+                    "name": "crc"
+                },
+                {
+                    "dataType": "LCSF_VARINT16",
+                    "desc": "Temperature delta",
+                    "name": "temp"
+                },
+                {
+                    "dataType": "LCSF_VARINT32",
+                    "desc": "Clock drift",
+                    "name": "drift"
+                },
+                {
+                    "dataType": "LCSF_VARINT64",
+                    "desc": "Time offset",
+                    "name": "offset"
+                }
+            ],
+            "isExtensible": true,
+            "name": "counters"
+        }
+    ],
+    "version": 1
+}

@@ -49,6 +49,23 @@ Examples:
 * For a raw generation: `./LCSG_Generator_CLI -l Description/Test.json`
 * For a generation with code imported for the A point of view: `./LCSG_Generator_CLI -l Description/Test.json -a OutputA/Test_Main_a.c`
 
+### Struct types
+Structs give a byte array attribute an explicit layout, they are defined once and reusable across commands. They are only editable in the json for now (see `tests/data/model_struct_desc.json`):
+```json
+"structs": [{"name": "link", "desc": "", "isExtensible": false, "fields": [
+    {"name": "sent", "dataType": "LCSF_UINT32", "desc": ""},
+    {"name": "lost", "dataType": "LCSF_UINT32", "desc": ""}]}],
+...
+{"name": "links", "id": 1, "dataType": "LCSF_STRUCT", "structName": "link", "isArray": true, ...}
+```
+* On the wire a struct attribute is a byte array: fields packed in order, little endian. Field types: `LCSF_(U)INT8` to `LCSF_(U)INT64`, `LCSF_FLOAT32`, `LCSF_FLOAT64`, and the variable-length `LCSF_VARUINT16/32/64`, `LCSF_VARINT16/32/64`.
+* Variable-length fields are unsigned LEB128: 7 bits per byte from the least significant, MSb set when more bytes follow. Signed ones are zigzag encoded first (0, -1, 1, -2 give 0, 1, 2, 3). A value over its field type or over 10 bytes ends the decode like a missing field. A struct with variable-length fields must be extensible, its array elements each start with their size on one byte, and its generated size is a maximum.
+* Fields can only be appended: a shorter payload reads missing fields as 0, a longer one ignores the extra bytes.
+* `isArray` sends structs back to back. An `isExtensible` struct prefixes its arrays with the element size on one byte so its fields can still be appended.
+* An attribute payload is at most `LCSF_ATT_PAYLOAD_MAX_SIZE` bytes, 255 with `LCSF_SMALL` and 65535 otherwise, the C stack refuses bigger ones. The generated bridge asserts each struct fits, array lengths are checked by the application with `<PROT>_<STRUCT>_ARRAY_SIZE(nb)`.
+* An empty array can't be sent since the stacks reject zero-size byte arrays. Make the attribute optional and leave it out, or make the struct extensible.
+* Generated helpers: `LCSF_Bridge_<Prot><struct>Serialize/Deserialize/ArraySerialize/ArrayDeserialize` in C, `serialize/deserialize/serialize_array/deserialize_array` in Rust. The C bridge handles single structs, struct arrays are left to the application.
+
 ## How to build
 
 If for some reasons you want or need to build the application yourself, you will need to have Qt5.14 or higher installed on your machine.
