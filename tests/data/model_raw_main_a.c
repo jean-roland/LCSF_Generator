@@ -246,7 +246,7 @@ static bool TestExecuteCC5(test_cmd_payload_t *pCmdPayload) {
             m_ca7_sa1_isHere = true;
         }
         m_ca8_sa4 = pCmdPayload->cc5_payload.ca6_payload.ca7_payload.ca8_payload.p_sa4;
-        m_ca8_sa4Size = pCmdPayload->cc5_payload.ca6_payload.ca7_payload.ca8_payload.PayloadSize;
+        m_ca8_sa4Size = pCmdPayload->cc5_payload.ca6_payload.ca7_payload.ca8_payload.sa4Size;
     }
     // Process data
 #pragma GCC warning "#warning TODO: function to implement"
@@ -288,7 +288,7 @@ static bool TestExecuteCC6(test_cmd_payload_t *pCmdPayload) {
             m_ca11_sa1_isHere = true;
         }
         m_ca12_sa4 = pCmdPayload->cc6_payload.ca10_payload.ca11_payload.ca12_payload.p_sa4;
-        m_ca12_sa4Size = pCmdPayload->cc6_payload.ca10_payload.ca11_payload.ca12_payload.PayloadSize;
+        m_ca12_sa4Size = pCmdPayload->cc6_payload.ca10_payload.ca11_payload.ca12_payload.sa4Size;
     }
     // Process data
 #pragma GCC warning "#warning TODO: function to implement"

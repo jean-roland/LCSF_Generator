@@ -492,7 +492,8 @@ void CodeGenerator::grabAttValues_REC(
                           << " = pCmdPayload->" << this->getPayloadPath(parentNames) << "p_"
                           << attribute->getName().toLower() << ";" << Qt::endl;
                     *pOut << indent << "m_" << parentNames.last().toLower() << "_" << attribute->getName().toLower()
-                          << "Size = pCmdPayload->" << this->getPayloadPath(parentNames) << "PayloadSize;" << Qt::endl;
+                          << "Size = pCmdPayload->" << this->getPayloadPath(parentNames) << attribute->getName().toLower()
+                          << "Size;" << Qt::endl;
                 } else {
                     *pOut << indent << "m_" << parentNames.last().toLower() << "_" << attribute->getName().toLower()
                           << " = pCmdPayload->" << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";"
@@ -513,7 +514,8 @@ void CodeGenerator::grabAttValues_REC(
                       << " = pCmdPayload->" << this->getPayloadPath(parentNames) << "p_" << attribute->getName().toLower()
                       << ";" << Qt::endl;
                 *pOut << indent << "m_" << parentNames.last().toLower() << "_" << attribute->getName().toLower()
-                      << "Size = pCmdPayload->" << this->getPayloadPath(parentNames) << "PayloadSize;" << Qt::endl;
+                      << "Size = pCmdPayload->" << this->getPayloadPath(parentNames) << attribute->getName().toLower()
+                      << "Size;" << Qt::endl;
             } else {
                 *pOut << indent << "m_" << parentNames.last().toLower() << "_" << attribute->getName().toLower()
                       << " = pCmdPayload->" << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";"
