@@ -83,6 +83,7 @@ class Command {
     static QList<Attribute::T_structType *> getStructList(QList<Command *> cmdList);
     static bool hasStructFieldType(QList<Command *> cmdList, bool (*pIsType)(NS_FieldType::T_FieldType));
     static QString checkStructs(QList<Command *> cmdList);
+    static QStringList getStructAttNames(QList<Command *> cmdList, Attribute::T_structType *pStruct);
 
     friend bool operator==(const Command &lhs, const Command &rhs) {
         if (lhs.m_name != rhs.m_name) {

@@ -469,6 +469,11 @@
           <string>Commands</string>
          </property>
         </item>
+        <item>
+         <property name="text">
+          <string>Structs</string>
+         </property>
+        </item>
        </widget>
        </item>
        </layout>
@@ -491,7 +496,7 @@
            </size>
           </property>
           <property name="toolTip">
-           <string>Show the currently selected table</string>
+           <string></string>
           </property>
           <property name="selectionMode">
            <enum>QAbstractItemView::SingleSelection</enum>

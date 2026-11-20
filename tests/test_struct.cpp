@@ -71,6 +71,8 @@ TEST(test_struct, desc_round_trip) {
     ASSERT_EQ(Attribute::getStructSize(struct_list.at(2)), 37); // Variable-length field maximums
     ASSERT_EQ(Command::getMaxStructBuffSize(struct_cmd_list), 113);
     EXPECT_EQ(Attribute::getStructFieldOffsets(struct_list.at(2)).join(" ").toStdString(), "0 - - - - - -");
+    EXPECT_EQ(Command::getStructAttNames(struct_cmd_list, struct_list.at(0)).join(", ").toStdString(),
+        "get_status.status, get_status.opt_status, get_status.ext_status, cfg.opt_status");
     ASSERT_TRUE(DescHandler::save_desc(outputDir "StructTest_desc.json", struct_cmd_list, struct_list, struct_prot_name,
         struct_prot_id, struct_prot_version, struct_prot_desc));
     compareFiles("model_struct_desc.json", "StructTest_desc.json");

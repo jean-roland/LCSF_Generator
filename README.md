@@ -50,7 +50,7 @@ Examples:
 * For a generation with code imported for the A point of view: `./LCSG_Generator_CLI -l Description/Test.json -a OutputA/Test_Main_a.c`
 
 ### Struct types
-Structs give a byte array attribute an explicit layout, they are defined once and reusable across commands. They are only editable in the json for now (see `tests/data/model_struct_desc.json`):
+Structs give a byte array attribute an explicit layout, they are defined once and reusable across commands. In the GUI they are edited under the `Structs` tree node and picked as `struct <name>` or `struct <name>[]` in the attribute data type. In the json (see `tests/data/model_struct_desc.json`):
 ```json
 "structs": [{"name": "link", "desc": "", "isExtensible": false, "fields": [
     {"name": "sent", "dataType": "LCSF_UINT32", "desc": ""},

@@ -21,6 +21,7 @@
 
 // Qt include
 #include <QDesktopServices>
+#include <QMenu>
 #include <QRandomGenerator>
 #include <QStringBuilder>
 // Custom include
@@ -175,6 +176,7 @@ void MainWindow::loadProtocolFile(const QString &filePath) {
 
     // Update UI
     this->updateDescTreeCmd();
+    this->updateDescTreeStruct();
     ui->twDescTreeView->setCurrentItem(ui->twDescTreeView->topLevelItem(0));
     if (this->m_cmdArray.size() > 0) {
         this->loadCommandArray();
@@ -408,7 +410,9 @@ void MainWindow::on_twDescTreeView_currentItemChanged(QTreeWidgetItem *current, 
         QString tableName = current->text(0);
         ui->labelDescTableName->setText(baseTableLabel + tableName);
         ui->twDescTableView->clear();
-        if (tableName.compare(cmdArrayName) == 0) {
+        if (this->loadStructTable(current)) {
+            qDebug() << "Struct array detected";
+        } else if (tableName.compare(cmdArrayName) == 0) {
             qDebug() << "Command array detected";
             this->showCommandArray();
             if (this->m_cmdArray.size() > 0) {
@@ -440,13 +444,112 @@ void MainWindow::on_twDescTreeView_currentItemChanged(QTreeWidgetItem *current, 
     }
 }
 
+static QTableWidgetItem *newReadOnlyItem(void) {
+    QTableWidgetItem *item = new QTableWidgetItem(0);
+    item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+    // Disabled background, the text keeps its color to stay readable
+    item->setBackground(QApplication::palette().brush(QPalette::Disabled, QPalette::Base));
+    return item;
+}
+
+// Place of a combo box item in its popup
+typedef struct {
+    QString subMenuName; // Empty for the top level
+    QString label;
+} T_popupEntry;
+
+// Combo box whose popup groups its items in submenus, in item order
+class GroupedComboBox : public QComboBox {
+  public:
+    explicit GroupedComboBox(T_popupEntry (*pGetEntry)(QString itemText)) : m_pGetEntry(pGetEntry) {
+    }
+
+    void showPopup(void) override {
+        QMenu menu(this);
+        QMap<QString, QMenu *> subMenus;
+        menu.setMinimumWidth(this->width());
+        // Build the menu
+        for (int itemIdx = 0; itemIdx < this->count(); itemIdx++) {
+            T_popupEntry entry = this->m_pGetEntry(this->itemText(itemIdx));
+            QMenu *pTargetMenu = &menu;
+            if (!entry.subMenuName.isEmpty()) {
+                if (!subMenus.contains(entry.subMenuName)) {
+                    subMenus.insert(entry.subMenuName, menu.addMenu(entry.subMenuName));
+                }
+                pTargetMenu = subMenus.value(entry.subMenuName);
+            }
+            pTargetMenu->addAction(entry.label)->setData(itemIdx);
+        }
+        // Apply the pick
+        QAction *pPickedAction = menu.exec(this->mapToGlobal(QPoint(0, this->height())));
+        if (pPickedAction != nullptr) {
+            this->setCurrentIndex(pPickedAction->data().toInt());
+        }
+    }
+
+  private:
+    T_popupEntry (*m_pGetEntry)(QString itemText);
+};
+
+// "uint16" goes in the "uint" submenu as "16", types without a width at the top level
+static T_popupEntry getTypeWidthEntry(QString itemText) {
+    QString kind = itemText;
+    while (!kind.isEmpty() && kind.back().isDigit()) {
+        kind.chop(1);
+    }
+    if (kind.length() == itemText.length()) {
+        return {"", itemText};
+    }
+    return {kind, itemText.mid(kind.length())};
+}
+
+// "struct name" and "struct name[]" go in the "struct" and "struct[]" submenus, other types by width
+static T_popupEntry getAttDataTypeEntry(QString itemText) {
+    if (!itemText.startsWith("struct ")) {
+        return getTypeWidthEntry(itemText);
+    }
+    QString structName = itemText.mid(QString("struct ").length());
+    if (structName.endsWith("[]")) {
+        structName.chop(2);
+        return {"struct[]", structName};
+    }
+    return {"struct", structName};
+}
+
 void MainWindow::fillCellItems(int rowIdx) {
-    ui->twDescTableView->setItem(rowIdx, 0, new QTableWidgetItem(0));
-    ui->twDescTableView->setItem(rowIdx, 1, new QTableWidgetItem(0));
-    ui->twDescTableView->setItem(rowIdx, 4, new QTableWidgetItem(0));
+    QString firstHeader = ui->twDescTableView->horizontalHeaderItem(0)->text();
+
+    if (firstHeader.compare("Struct Name") == 0) {
+        ui->twDescTableView->setItem(rowIdx, 0, new QTableWidgetItem(0));
+        ui->twDescTableView->setItem(rowIdx, 2, newReadOnlyItem());
+        ui->twDescTableView->setItem(rowIdx, 3, newReadOnlyItem());
+        ui->twDescTableView->setItem(rowIdx, 4, new QTableWidgetItem(0));
+    } else if (firstHeader.compare("Field Name") == 0) {
+        ui->twDescTableView->setItem(rowIdx, 0, new QTableWidgetItem(0));
+        ui->twDescTableView->setItem(rowIdx, 2, newReadOnlyItem());
+        ui->twDescTableView->setItem(rowIdx, 3, new QTableWidgetItem(0));
+    } else {
+        ui->twDescTableView->setItem(rowIdx, 0, new QTableWidgetItem(0));
+        ui->twDescTableView->setItem(rowIdx, 1, new QTableWidgetItem(0));
+        ui->twDescTableView->setItem(rowIdx, 4, new QTableWidgetItem(0));
+    }
 }
 
 void MainWindow::fillCellWidgets(int rowIdx) {
+    QString firstHeader = ui->twDescTableView->horizontalHeaderItem(0)->text();
+
+    if (firstHeader.compare("Struct Name") == 0) {
+        QComboBox *comboExtensible = new QComboBox();
+        comboExtensible->addItems(QStringList() << "Yes" << "No");
+        comboExtensible->setCurrentIndex(1);
+        ui->twDescTableView->setCellWidget(rowIdx, 1, comboExtensible);
+        return;
+    } else if (firstHeader.compare("Field Name") == 0) {
+        QComboBox *comboFieldType = new GroupedComboBox(getTypeWidthEntry);
+        comboFieldType->addItems(NS_FieldType::SL_DocFieldType);
+        ui->twDescTableView->setCellWidget(rowIdx, 1, comboFieldType);
+        return;
+    }
     QComboBox *comboYesNo = new QComboBox();
     comboYesNo->addItems(QStringList() << "Yes" << "No");
     ui->twDescTableView->setCellWidget(rowIdx, 2, comboYesNo);
@@ -454,8 +557,13 @@ void MainWindow::fillCellWidgets(int rowIdx) {
     if (ui->twDescTableView->horizontalHeaderItem(0)->text().compare("Attribute Name") == 0) {
         // Attributes default to non-optional ("No")
         comboYesNo->setCurrentIndex(1);
-        QComboBox *comboDataType = new QComboBox();
-        comboDataType->addItems(NS_AttDataType::SL_DocAttDataType);
+        QComboBox *comboDataType = new GroupedComboBox(getAttDataTypeEntry);
+        // Base types, then each struct single and as array
+        comboDataType->addItems(NS_AttDataType::SL_DocAttDataType.mid(0, NS_AttDataType::STRUCT));
+        for (Attribute::T_structType *pStruct : this->m_structArray) {
+            comboDataType->addItem("struct " + pStruct->name);
+            comboDataType->addItem("struct " + pStruct->name + "[]");
+        }
         ui->twDescTableView->setCellWidget(rowIdx, 3, comboDataType);
     } else {
         // Commands
@@ -532,7 +640,7 @@ void MainWindow::loadCommandAttArray(QString cmdName) {
                 comboBox->setCurrentIndex(1);
             }
             comboBox = static_cast<QComboBox *>(ui->twDescTableView->cellWidget(idx, 3));
-            comboBox->setCurrentIndex(attribute->getDataType());
+            this->setAttDataTypeComboBox(comboBox, attribute);
             ui->twDescTableView->item(idx, 4)->setText(attribute->getDesc());
         }
     } else {
@@ -565,7 +673,7 @@ void MainWindow::loadAttArray(QTreeWidgetItem *item) {
                 comboBox->setCurrentIndex(1);
             }
             comboBox = static_cast<QComboBox *>(ui->twDescTableView->cellWidget(idx, 3));
-            comboBox->setCurrentIndex(attribute->getDataType());
+            this->setAttDataTypeComboBox(comboBox, attribute);
             ui->twDescTableView->item(idx, 4)->setText(attribute->getDesc());
         }
     } else {
@@ -584,6 +692,232 @@ void MainWindow::showAttributeArray(void) {
     this->fillCellItems(0);
     this->fillCellWidgets(0);
     this->preFillCmdIdxCell(0);
+}
+
+void MainWindow::showStructArray(void) {
+    QStringList Headers;
+    this->clearArray();
+    Headers << "Struct Name" << "Extensible?" << "Size (bytes)" << "Used By" << "Description";
+    ui->twDescTableView->setRowCount(1);
+    ui->twDescTableView->setColumnCount(5);
+    ui->twDescTableView->setHorizontalHeaderLabels(Headers);
+    this->fillCellItems(0);
+    this->fillCellWidgets(0);
+}
+
+void MainWindow::loadStructArray(void) {
+    this->clearArray();
+    ui->twDescTableView->setRowCount(this->m_structArray.size());
+    for (int idx = 0; idx < this->m_structArray.size(); idx++) {
+        Attribute::T_structType *pStruct = this->m_structArray.at(idx);
+        this->fillCellItems(idx);
+        this->fillCellWidgets(idx);
+        ui->twDescTableView->item(idx, 0)->setText(pStruct->name);
+        static_cast<QComboBox *>(ui->twDescTableView->cellWidget(idx, 1))->setCurrentIndex((pStruct->isExtensible) ? 0 : 1);
+        QString sizeString = QString::number(Attribute::getStructSize(pStruct));
+        ui->twDescTableView->item(idx, 2)->setText(
+            (Attribute::hasStructVarField(pStruct)) ? "up to " + sizeString : sizeString);
+        ui->twDescTableView->item(idx, 3)->setText(Command::getStructAttNames(this->m_cmdArray, pStruct).join(", "));
+        ui->twDescTableView->item(idx, 4)->setText(pStruct->desc);
+    }
+}
+
+void MainWindow::showFieldArray(void) {
+    QStringList Headers;
+    this->clearArray();
+    Headers << "Field Name" << "Data Type" << "Offset" << "Description";
+    ui->twDescTableView->setRowCount(1);
+    ui->twDescTableView->setColumnCount(4);
+    ui->twDescTableView->setHorizontalHeaderLabels(Headers);
+    this->fillCellItems(0);
+    this->fillCellWidgets(0);
+}
+
+void MainWindow::loadFieldArray(QTreeWidgetItem *item) {
+    Attribute::T_structType *pStruct = this->findFieldStruct(item);
+    if ((pStruct == nullptr) || (pStruct->fields.isEmpty())) {
+        return;
+    }
+    QStringList offsets = Attribute::getStructFieldOffsets(pStruct);
+    this->clearArray();
+    ui->twDescTableView->setRowCount(pStruct->fields.size());
+    for (int idx = 0; idx < pStruct->fields.size(); idx++) {
+        const Attribute::T_structField &field = pStruct->fields.at(idx);
+        this->fillCellItems(idx);
+        this->fillCellWidgets(idx);
+        ui->twDescTableView->item(idx, 0)->setText(field.name);
+        static_cast<QComboBox *>(ui->twDescTableView->cellWidget(idx, 1))
+            ->setCurrentIndex((field.dataType == NS_FieldType::UNKNOWN) ? -1 : field.dataType);
+        ui->twDescTableView->item(idx, 2)->setText(offsets.at(idx));
+        ui->twDescTableView->item(idx, 3)->setText(field.desc);
+    }
+}
+
+bool MainWindow::loadStructTable(QTreeWidgetItem *item) {
+    if (item->text(0).compare(structArrayName) == 0) {
+        this->showStructArray();
+        if (!this->m_structArray.isEmpty()) {
+            this->loadStructArray();
+        }
+    } else if (this->isFieldTable(item)) {
+        this->showFieldArray();
+        this->loadFieldArray(item);
+    } else {
+        return false;
+    }
+    ui->twDescTableView->resizeColumnsToContents();
+    // Struct contents are short, keep columns at the default width at least
+    QHeaderView *pHeader = ui->twDescTableView->horizontalHeader();
+    for (int colIdx = 0; colIdx < pHeader->count(); colIdx++) {
+        pHeader->resizeSection(colIdx, qMax(pHeader->sectionSize(colIdx), pHeader->defaultSectionSize()));
+    }
+    pHeader->setStretchLastSection(true);
+    return true;
+}
+
+bool MainWindow::isFieldTable(QTreeWidgetItem *item) {
+    return (item->parent() != nullptr) && (item->parent()->text(0).compare(structArrayName) == 0);
+}
+
+Attribute::T_structType *MainWindow::findStruct(QString structName) {
+    for (Attribute::T_structType *pStruct : this->m_structArray) {
+        if (pStruct->name.compare(structName) == 0) {
+            return pStruct;
+        }
+    }
+    return nullptr;
+}
+
+Attribute::T_structType *MainWindow::findFieldStruct(QTreeWidgetItem *item) {
+    QString tableName = item->text(0);
+    return this->findStruct(tableName.remove(tableName.length() - fieldArraySuffix.length(), fieldArraySuffix.length()));
+}
+
+void MainWindow::updateDescTreeStruct(void) {
+    QTreeWidgetItem *parentTreeItem = ui->twDescTreeView->topLevelItem(1);
+    QList<QTreeWidgetItem *> currentChildrenList = this->getTreeItemChildren(parentTreeItem);
+
+    for (Attribute::T_structType *pStruct : this->m_structArray) {
+        QString structName = pStruct->name + fieldArraySuffix;
+        QTreeWidgetItem *existingChild = this->getTreeItemChild(currentChildrenList, structName);
+        if (existingChild != nullptr) {
+            // Remove pre-existing children from list
+            currentChildrenList.removeAll(existingChild);
+        } else {
+            parentTreeItem->addChild(new QTreeWidgetItem(QStringList(structName), 0));
+        }
+    }
+    // Delete removed children
+    this->deleteNoLongerExistingTreeItemChildren(parentTreeItem, currentChildrenList);
+    ui->twDescTreeView->expandItem(parentTreeItem);
+}
+
+bool MainWindow::saveStructTable(void) {
+    QStringList newStructNames;
+
+    for (int idx = 0; idx < ui->twDescTableView->rowCount(); idx++) {
+        if ((ui->twDescTableView->item(idx, 0) != nullptr) && (!ui->twDescTableView->item(idx, 0)->text().isEmpty())) {
+            newStructNames.append(CheckAndCorrectInputString(ui->twDescTableView->item(idx, 0)->text()).toLower());
+        }
+    }
+    for (int idx = 0; idx < ui->twDescTableView->rowCount(); idx++) {
+        // Placeholder row: skip silently
+        if ((ui->twDescTableView->item(idx, 0) == nullptr) || (ui->twDescTableView->item(idx, 0)->text().isEmpty())) {
+            continue;
+        }
+        QString structName = CheckAndCorrectInputString(ui->twDescTableView->item(idx, 0)->text());
+        QComboBox *extensibleComboBox = static_cast<QComboBox *>(ui->twDescTableView->cellWidget(idx, 1));
+        bool isExtensible = (extensibleComboBox->currentText().compare("Yes") == 0);
+        QString structDesc = (ui->twDescTableView->item(idx, 4) == nullptr) ? "" : ui->twDescTableView->item(idx, 4)->text();
+
+        // Generated type names are lower case
+        if (newStructNames.count(structName.toLower()) > 1) {
+            QMessageBox::warning(this, "Warning", "Multiple definition of struct name: " + structName + " detected");
+            return false;
+        }
+        // Edit or add struct, attributes hold struct pointers so a rename keeps them
+        if (idx < this->m_structArray.size()) {
+            Attribute::T_structType *pStruct = this->m_structArray.at(idx);
+            pStruct->name = structName;
+            pStruct->isExtensible = isExtensible;
+            pStruct->desc = structDesc;
+        } else {
+            this->m_structArray.append(new Attribute::T_structType{structName, structDesc, isExtensible, {}});
+        }
+    }
+    return true;
+}
+
+bool MainWindow::saveFieldTable(QTreeWidgetItem *item) {
+    Attribute::T_structType *pStruct = this->findFieldStruct(item);
+    QList<Attribute::T_structField> fields;
+    QStringList fieldNames;
+
+    if (pStruct == nullptr) {
+        qDebug() << "Unknown struct, couldn't save table\n";
+        return false;
+    }
+    for (int idx = 0; idx < ui->twDescTableView->rowCount(); idx++) {
+        // Placeholder row: skip silently
+        if ((ui->twDescTableView->item(idx, 0) == nullptr) || (ui->twDescTableView->item(idx, 0)->text().isEmpty())) {
+            continue;
+        }
+        QString fieldName = CheckAndCorrectInputString(ui->twDescTableView->item(idx, 0)->text());
+        int fieldType = static_cast<QComboBox *>(ui->twDescTableView->cellWidget(idx, 1))->currentIndex();
+        QString fieldDesc = (ui->twDescTableView->item(idx, 3) == nullptr) ? "" : ui->twDescTableView->item(idx, 3)->text();
+
+        // Generated field names are lower case
+        if (fieldNames.contains(fieldName, Qt::CaseInsensitive)) {
+            QMessageBox::warning(this, "Warning", "Multiple definition of field name: " + fieldName + " detected");
+            return false;
+        }
+        if (fieldType < 0) {
+            QMessageBox::warning(this, "Warning", "Unknown data type on line n°: " + QString::number(idx + 1));
+            return false;
+        }
+        fieldNames.append(fieldName);
+        fields.append({fieldName, static_cast<NS_FieldType::T_FieldType>(fieldType), fieldDesc});
+    }
+    pStruct->fields = fields;
+    return true;
+}
+
+void MainWindow::deleteStruct(int structIdx) {
+    // Rows past m_structArray are unsaved structs
+    if (structIdx < this->m_structArray.size()) {
+        Attribute::T_structType *pStruct = this->m_structArray.takeAt(structIdx);
+        qDebug() << "Struct deleted: " << pStruct->name;
+        delete pStruct;
+        this->updateDescTreeStruct();
+    }
+}
+
+void MainWindow::setAttDataTypeComboBox(QComboBox *comboBox, Attribute *attribute) {
+    if (attribute->getDataType() == NS_AttDataType::UNKNOWN) {
+        // Unknown type from the json, user has to pick one
+        comboBox->setCurrentIndex(-1);
+    } else if (attribute->getDataType() != NS_AttDataType::STRUCT) {
+        comboBox->setCurrentIndex(attribute->getDataType());
+    } else if (attribute->getStruct() == nullptr) {
+        // Unknown struct from the json, user has to pick one
+        comboBox->setCurrentIndex(-1);
+    } else {
+        comboBox->setCurrentText("struct " + attribute->getStruct()->name + ((attribute->getIsArray()) ? "[]" : ""));
+    }
+}
+
+Attribute::T_structType *MainWindow::getAttStructFromComboBox(QComboBox *comboBox, bool *pIsArray) {
+    QString typeText = comboBox->currentText();
+
+    *pIsArray = typeText.endsWith("[]");
+    if (!typeText.startsWith("struct ")) {
+        return nullptr;
+    }
+    typeText.remove(0, QString("struct ").length());
+    if (*pIsArray) {
+        typeText.chop(2);
+    }
+    return this->findStruct(typeText);
 }
 
 QList<QTreeWidgetItem *> MainWindow::getTreeItemChildren(QTreeWidgetItem *parentTreeItem) {
@@ -732,7 +1066,14 @@ void MainWindow::updateDescTreeAtt(QTreeWidgetItem *parentTreeItem) {
 bool MainWindow::saveCurrentDescTable(QTreeWidgetItem *item) {
     QString tableName = item->text(0);
 
-    if (tableName.compare(cmdArrayName) == 0) {
+    if (tableName.compare(structArrayName) == 0) {
+        if (this->saveStructTable()) {
+            this->updateDescTreeStruct();
+            return true;
+        }
+    } else if (this->isFieldTable(item)) {
+        return this->saveFieldTable(item);
+    } else if (tableName.compare(cmdArrayName) == 0) {
         if (this->saveCommandTable()) {
             this->updateDescTreeCmd();
             return true;
@@ -895,6 +1236,9 @@ bool MainWindow::saveCommandTable(void) {
 NS_AttDataType::T_AttDataType MainWindow::getAttDataTypeFromComboBox(QComboBox *comboBox) {
     NS_AttDataType::T_AttDataType dataType = NS_AttDataType::UNKNOWN;
     if (comboBox != nullptr) {
+        if (comboBox->currentText().startsWith("struct ")) {
+            return NS_AttDataType::STRUCT;
+        }
         for (int idx = 0; idx < NS_AttDataType::SL_DocAttDataType.size(); idx++) {
             if (comboBox->currentText().compare(NS_AttDataType::SL_DocAttDataType.at(idx)) == 0) {
                 dataType = NS_AttDataType::SLAttDataType2Enum[idx];
@@ -941,6 +1285,8 @@ bool MainWindow::saveCmdAttTable(QString cmdName) {
             bool attIsOptional = (isOptionalComboBox->currentText().compare("Yes") == 0) ? true : false;
             QComboBox *dataTypeComboBox = static_cast<QComboBox *>(ui->twDescTableView->cellWidget(idx, 3));
             NS_AttDataType::T_AttDataType attDataType = getAttDataTypeFromComboBox(dataTypeComboBox);
+            bool attIsArray = false;
+            Attribute::T_structType *pAttStruct = this->getAttStructFromComboBox(dataTypeComboBox, &attIsArray);
 
             if (attDataType == NS_AttDataType::UNKNOWN) {
                 QMessageBox::warning(this, "Warning", "Unknown data type");
@@ -962,6 +1308,8 @@ bool MainWindow::saveCmdAttTable(QString cmdName) {
                          << attIsOptional << ", " << NS_AttDataType::SL_AttDataType.at(attDataType) << ", " << attDesc;
                 Attribute *currentAtt = command->getAttArray().at(idx);
                 currentAtt->editParams(attName, attCode, attIsOptional, attDataType, attDesc);
+                currentAtt->setStruct(pAttStruct);
+                currentAtt->setIsArray(attIsArray);
 
                 if (attDataType != NS_AttDataType::SUB_ATTRIBUTES) {
                     currentAtt->clearArray_rec();
@@ -970,7 +1318,10 @@ bool MainWindow::saveCmdAttTable(QString cmdName) {
             } else {
                 qDebug() << "Attribute creation: " << attName << ", " << attCode << ", " << attIsOptional << ", "
                          << NS_AttDataType::SL_AttDataType.at(attDataType) << ", " << attDesc;
-                command->addAttribute(new Attribute(attName, attCode, attIsOptional, attDataType, attDesc));
+                Attribute *newAtt = new Attribute(attName, attCode, attIsOptional, attDataType, attDesc);
+                newAtt->setStruct(pAttStruct);
+                newAtt->setIsArray(attIsArray);
+                command->addAttribute(newAtt);
             }
         }
         for (QString noLongerExistingAttName : noLongerExistingAttNames) {
@@ -1099,6 +1450,8 @@ bool MainWindow::saveAttTable(QTreeWidgetItem *item) {
             bool attIsOptional = (isOptionalComboBox->currentText().compare("Yes") == 0) ? true : false;
             QComboBox *dataTypeComboBox = static_cast<QComboBox *>(ui->twDescTableView->cellWidget(idx, 3));
             NS_AttDataType::T_AttDataType attDataType = getAttDataTypeFromComboBox(dataTypeComboBox);
+            bool attIsArray = false;
+            Attribute::T_structType *pAttStruct = this->getAttStructFromComboBox(dataTypeComboBox, &attIsArray);
 
             if (attDataType == NS_AttDataType::UNKNOWN) {
                 QMessageBox::warning(this, "Warning", "Unknown data type!");
@@ -1120,6 +1473,8 @@ bool MainWindow::saveAttTable(QTreeWidgetItem *item) {
                          << attIsOptional << ", " << NS_AttDataType::SL_AttDataType.at(attDataType) << ", " << attDesc;
                 Attribute *currentAtt = pAttStorage->getSubAttArray().at(idx);
                 currentAtt->editParams(attName, attCode, attIsOptional, attDataType, attDesc);
+                currentAtt->setStruct(pAttStruct);
+                currentAtt->setIsArray(attIsArray);
                 if (attDataType != NS_AttDataType::SUB_ATTRIBUTES) {
                     currentAtt->clearArray_rec();
                 }
@@ -1127,7 +1482,10 @@ bool MainWindow::saveAttTable(QTreeWidgetItem *item) {
             } else {
                 qDebug() << "Sub-attribute creation: " << attName << ", " << attCode << ", " << attIsOptional << ", "
                          << NS_AttDataType::SL_AttDataType.at(attDataType) << ", " << attDesc;
-                pAttStorage->addSubAtt(new Attribute(attName, attCode, attIsOptional, attDataType, attDesc));
+                Attribute *newAtt = new Attribute(attName, attCode, attIsOptional, attDataType, attDesc);
+                newAtt->setStruct(pAttStruct);
+                newAtt->setIsArray(attIsArray);
+                pAttStorage->addSubAtt(newAtt);
             }
         }
         for (QString noLongerExistingAttName : noLongerExistingAttNames) {
@@ -1143,6 +1501,8 @@ bool MainWindow::saveAttTable(QTreeWidgetItem *item) {
 void MainWindow::on_pbSaveTable_clicked(void) {
     if (ui->twDescTreeView->currentItem() != nullptr) {
         if (this->saveCurrentDescTable(ui->twDescTreeView->currentItem())) {
+            // Refresh computed sizes and offsets
+            this->loadStructTable(ui->twDescTreeView->currentItem());
             QMessageBox::information(this, "Info", "Table saved");
         }
     }
@@ -1213,7 +1573,20 @@ void MainWindow::on_pbDeleteTableLine_clicked(void) {
 
     if (ui->twDescTableView->rowCount() > 0) {
         QTreeWidgetItem *currentItem = ui->twDescTreeView->currentItem();
+        // Struct table rows match m_structArray indexes, the cell text may be an unsaved rename
+        int structIdx = (ui->twDescTableView->currentRow() >= 0) ? ui->twDescTableView->currentRow() :
+                                                                   ui->twDescTableView->rowCount() - 1;
 
+        // Structs used by attributes can't be deleted
+        if ((currentItem != nullptr) && (currentItem->text(0).compare(structArrayName) == 0) &&
+            (structIdx < this->m_structArray.size())) {
+            Attribute::T_structType *pStruct = this->m_structArray.at(structIdx);
+            QStringList users = Command::getStructAttNames(this->m_cmdArray, pStruct);
+            if (!users.isEmpty()) {
+                QMessageBox::warning(this, "Warning", "Struct " + pStruct->name + " is used by: " + users.join(", ") + ".");
+                return;
+            }
+        }
         if (currentItem != nullptr) {
             if (ui->twDescTableView->currentRow() >= 0) {
                 QString msgString =
@@ -1242,7 +1615,11 @@ void MainWindow::on_pbDeleteTableLine_clicked(void) {
                 }
             }
             if (deleteOk) {
-                if (currentItem->parent() == nullptr) {
+                if (currentItem->text(0).compare(structArrayName) == 0) {
+                    this->deleteStruct(structIdx);
+                } else if (this->isFieldTable(currentItem)) {
+                    // Fields are applied when the table is saved
+                } else if (currentItem->parent() == nullptr) {
                     // Commands
                     this->deleteCommand(objectName);
                 } else if (currentItem->parent()->parent() == nullptr) {
@@ -1276,7 +1653,9 @@ void MainWindow::on_pbRefreshTable_clicked(void) {
     QString tableName = current->text(0);
     ui->twDescTableView->clear();
 
-    if (tableName.compare(cmdArrayName) == 0) {
+    if (this->loadStructTable(current)) {
+        return;
+    } else if (tableName.compare(cmdArrayName) == 0) {
         this->showCommandArray();
         if (this->m_cmdArray.size() > 0) {
             this->loadCommandArray();
@@ -1298,6 +1677,12 @@ void MainWindow::on_pbRefreshTable_clicked(void) {
 void MainWindow::on_pbSortTable_clicked(void) {
     QTreeWidgetItem *currentTreeItem = ui->twDescTreeView->currentItem();
 
+    // Field order is the struct layout
+    if ((currentTreeItem != nullptr) &&
+        ((currentTreeItem->text(0).compare(structArrayName) == 0) || (this->isFieldTable(currentTreeItem)))) {
+        QMessageBox::information(this, "Info", "Struct tables keep their declaration order");
+        return;
+    }
     if (currentTreeItem != nullptr) {
         QString widgetName = currentTreeItem->text(0);
         QString tableName = currentTreeItem->text(0);
@@ -1374,6 +1759,7 @@ void MainWindow::clearData(void) {
     }
     // Clear ui Tree
     this->clearTree();
+    this->updateDescTreeStruct();
     // Clear ui Table
     ui->twDescTableView->clearContents();
     // Reset Table

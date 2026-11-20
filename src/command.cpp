@@ -350,6 +350,25 @@ bool Command::hasStructFieldType(QList<Command *> cmdList, bool (*pIsType)(NS_Fi
     return false;
 }
 
+static void getStructAttNames_Rec(
+    QString parentName, QList<Attribute *> attList, Attribute::T_structType *pStruct, QStringList &names) {
+    for (Attribute *attribute : attList) {
+        if ((attribute->getDataType() == NS_AttDataType::STRUCT) && (attribute->getStruct() == pStruct)) {
+            names.append(parentName + "." + attribute->getName());
+        }
+        getStructAttNames_Rec(attribute->getName(), attribute->getSubAttArray(), pStruct, names);
+    }
+}
+
+QStringList Command::getStructAttNames(QList<Command *> cmdList, Attribute::T_structType *pStruct) {
+    QStringList names;
+
+    for (Command *command : cmdList) {
+        getStructAttNames_Rec(command->getName(), command->getAttArray(), pStruct, names);
+    }
+    return names;
+}
+
 QString Command::checkStructs(QList<Command *> cmdList) {
     for (Command *command : cmdList) {
         QList<Attribute *> structAttList;

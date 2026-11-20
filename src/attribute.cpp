@@ -135,7 +135,9 @@ bool Attribute::getIsArray(void) {
 int Attribute::getStructSize(const T_structType *pStruct) {
     int size = 0;
     for (const T_structField &field : pStruct->fields) {
-        size += NS_FieldType::FieldTypeSize[field.dataType];
+        if (field.dataType != NS_FieldType::UNKNOWN) {
+            size += NS_FieldType::FieldTypeSize[field.dataType];
+        }
     }
     return size;
 }
