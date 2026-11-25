@@ -29,14 +29,23 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+// Fit columns to their contents and the default width, the last one fills the table
+static void resizeTableColumns(QTableWidget *pTable) {
+    pTable->resizeColumnsToContents();
+    QHeaderView *pHeader = pTable->horizontalHeader();
+    for (int colIdx = 0; colIdx < pHeader->count(); colIdx++) {
+        pHeader->resizeSection(colIdx, qMax(pHeader->sectionSize(colIdx), pHeader->defaultSectionSize()));
+    }
+    pHeader->setStretchLastSection(true);
+}
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
     ui->leProtocolName->setText(defProtocolName);
     ui->twDescTreeView->setCurrentItem(ui->twDescTreeView->topLevelItem(0));
 
     // Columns resize
-    ui->twDescTableView->resizeColumnsToContents();
-    ui->twDescTableView->horizontalHeader()->setStretchLastSection(true);
+    resizeTableColumns(ui->twDescTableView);
 
     // Default dir paths
     cOutPathA = defCOutPath;
@@ -182,9 +191,7 @@ void MainWindow::loadProtocolFile(const QString &filePath) {
         this->loadCommandArray();
     }
     // Column resize
-    for (int ColumnIndex = 0; ColumnIndex < ui->twDescTableView->rowCount(); ++ColumnIndex) {
-        ui->twDescTableView->resizeColumnToContents(ColumnIndex);
-    }
+    resizeTableColumns(ui->twDescTableView);
     // Close file
     file.close();
     // Remember the file in the "Open Recent" menu
@@ -418,8 +425,7 @@ void MainWindow::on_twDescTreeView_currentItemChanged(QTreeWidgetItem *current, 
             if (this->m_cmdArray.size() > 0) {
                 this->loadCommandArray();
             }
-            ui->twDescTableView->resizeColumnsToContents();
-            ui->twDescTableView->horizontalHeader()->setStretchLastSection(true);
+            resizeTableColumns(ui->twDescTableView);
         } else if (tableName.contains(attArraySuffix)) {
             qDebug() << "Attribute array detected";
             this->showAttributeArray();
@@ -432,8 +438,7 @@ void MainWindow::on_twDescTreeView_currentItemChanged(QTreeWidgetItem *current, 
             } else {
                 this->loadAttArray(current);
             }
-            ui->twDescTableView->resizeColumnsToContents();
-            ui->twDescTableView->horizontalHeader()->setStretchLastSection(true);
+            resizeTableColumns(ui->twDescTableView);
         } else {
             qDebug() << "Error, unknown array type";
         }
@@ -765,13 +770,7 @@ bool MainWindow::loadStructTable(QTreeWidgetItem *item) {
     } else {
         return false;
     }
-    ui->twDescTableView->resizeColumnsToContents();
-    // Struct contents are short, keep columns at the default width at least
-    QHeaderView *pHeader = ui->twDescTableView->horizontalHeader();
-    for (int colIdx = 0; colIdx < pHeader->count(); colIdx++) {
-        pHeader->resizeSection(colIdx, qMax(pHeader->sectionSize(colIdx), pHeader->defaultSectionSize()));
-    }
-    pHeader->setStretchLastSection(true);
+    resizeTableColumns(ui->twDescTableView);
     return true;
 }
 
