@@ -363,7 +363,7 @@
          <string>Generate protocol description</string>
         </property>
         <property name="text">
-         <string>Generate Desc</string>
+         <string>Generate Code</string>
         </property>
        </widget>
       </item>
