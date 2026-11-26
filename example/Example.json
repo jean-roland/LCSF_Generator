@@ -215,6 +215,16 @@
                     "isOptional": true,
                     "name": "TempData",
                     "size": 0
+                },
+                {
+                    "dataType": "LCSF_STRUCT",
+                    "desc": "Return sensor statistics",
+                    "id": 8,
+                    "isArray": false,
+                    "isOptional": true,
+                    "name": "Stats",
+                    "size": 0,
+                    "structName": "SensorStats"
                 }
             ],
             "description": "Give sensor data",
@@ -223,11 +233,40 @@
             "id": 8,
             "name": "SensorData",
             "parentName": "NONE",
-            "size": 2
+            "size": 3
         }
     ],
     "desc": "",
     "id": "00",
     "name": "Example",
+    "structs": [
+        {
+            "desc": "Sensor statistics since boot",
+            "fields": [
+                {
+                    "dataType": "LCSF_VARUINT32",
+                    "desc": "Number of samples",
+                    "name": "SampleNb"
+                },
+                {
+                    "dataType": "LCSF_VARUINT16",
+                    "desc": "Number of read errors",
+                    "name": "ErrorNb"
+                },
+                {
+                    "dataType": "LCSF_INT8",
+                    "desc": "Lowest temperature",
+                    "name": "MinTemp"
+                },
+                {
+                    "dataType": "LCSF_INT8",
+                    "desc": "Highest temperature",
+                    "name": "MaxTemp"
+                }
+            ],
+            "isExtensible": true,
+            "name": "SensorStats"
+        }
+    ],
     "version": 1
 }
