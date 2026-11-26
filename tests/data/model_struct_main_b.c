@@ -118,6 +118,12 @@ static bool StructTestExecuteset_cfg(structtest_cmd_payload_t *pCmdPayload) {
     uint32_t m_cfg_linksSize = 0;
     bool m_cfg_opt_status_isHere = false;
     structtest_status_t m_cfg_opt_status = {0};
+    int8_t m_cfg_step = 0;
+    bool m_cfg_epoch_isHere = false;
+    int64_t m_cfg_epoch = 0;
+    int16_t m_set_cfg_trim = 0;
+    bool m_set_cfg_bias_isHere = false;
+    int32_t m_set_cfg_bias = 0;
     // Retrieve attributes data
     m_set_cfg_mode = pCmdPayload->set_cfg_payload.mode;
     m_cfg_link = pCmdPayload->set_cfg_payload.cfg_payload.link;
@@ -129,6 +135,16 @@ static bool StructTestExecuteset_cfg(structtest_cmd_payload_t *pCmdPayload) {
     if ((pCmdPayload->set_cfg_payload.cfg_payload.optAttFlagsBitfield & STRUCTTEST_CFG_ATT_OPT_STATUS_FLAG) != 0) {
         m_cfg_opt_status = pCmdPayload->set_cfg_payload.cfg_payload.opt_status;
         m_cfg_opt_status_isHere = true;
+    }
+    m_cfg_step = pCmdPayload->set_cfg_payload.cfg_payload.step;
+    if ((pCmdPayload->set_cfg_payload.cfg_payload.optAttFlagsBitfield & STRUCTTEST_CFG_ATT_EPOCH_FLAG) != 0) {
+        m_cfg_epoch = pCmdPayload->set_cfg_payload.cfg_payload.epoch;
+        m_cfg_epoch_isHere = true;
+    }
+    m_set_cfg_trim = pCmdPayload->set_cfg_payload.trim;
+    if ((pCmdPayload->set_cfg_payload.optAttFlagsBitfield & STRUCTTEST_SET_CFG_ATT_BIAS_FLAG) != 0) {
+        m_set_cfg_bias = pCmdPayload->set_cfg_payload.bias;
+        m_set_cfg_bias_isHere = true;
     }
     // Process data
 #pragma GCC warning "#warning TODO: function to implement"

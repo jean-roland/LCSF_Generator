@@ -116,6 +116,22 @@ QString CodeGenerator::getTypeStringFromDataType(NS_AttDataType::T_AttDataType d
             typeString = "uint64_t ";
             break;
 
+        case NS_AttDataType::INT8:
+            typeString = "int8_t ";
+            break;
+
+        case NS_AttDataType::INT16:
+            typeString = "int16_t ";
+            break;
+
+        case NS_AttDataType::INT32:
+            typeString = "int32_t ";
+            break;
+
+        case NS_AttDataType::INT64:
+            typeString = "int64_t ";
+            break;
+
         case NS_AttDataType::FLOAT32:
             typeString = "float ";
             break;
@@ -146,6 +162,10 @@ QString CodeGenerator::getInitStringFromDataType(NS_AttDataType::T_AttDataType d
         case NS_AttDataType::UINT16:
         case NS_AttDataType::UINT32:
         case NS_AttDataType::UINT64:
+        case NS_AttDataType::INT8:
+        case NS_AttDataType::INT16:
+        case NS_AttDataType::INT32:
+        case NS_AttDataType::INT64:
         case NS_AttDataType::FLOAT32:
         case NS_AttDataType::FLOAT64:
         default:
@@ -160,6 +180,22 @@ QString CodeGenerator::getInitStringFromDataType(NS_AttDataType::T_AttDataType d
     return initString;
 }
 
+// GetVLESize cast of a signed integer to its width, sign-extended to the uint64_t parameter it would be sized 8 bytes
+QString CodeGenerator::getVleCastString(NS_AttDataType::T_AttDataType dataType) {
+    switch (dataType) {
+        case NS_AttDataType::INT8:
+            return "(uint8_t)";
+        case NS_AttDataType::INT16:
+            return "(uint16_t)";
+        case NS_AttDataType::INT32:
+            return "(uint32_t)";
+        case NS_AttDataType::INT64:
+            return "(uint64_t)";
+        default:
+            return "";
+    }
+}
+
 QString CodeGenerator::getAttDescString(QString protocolName, QString parentName, Attribute *attribute) {
     QString descString = "";
     if (attribute != nullptr) {
@@ -170,10 +206,8 @@ QString CodeGenerator::getAttDescString(QString protocolName, QString parentName
             descString.append("false, ");
         }
         // Type
-        descString.append(NS_AttDataType::SL_AttDataType.at((attribute->getDataType() == NS_AttDataType::STRUCT) ?
-                                  NS_AttDataType::BYTE_ARRAY :
-                                  attribute->getDataType()) +
-            ", ");
+        descString.append(
+            NS_AttDataType::SL_AttDataType.at(NS_AttDataType::getStackDataType(attribute->getDataType())) + ", ");
         // Id
         descString.append("LCSF_" + protocolName.toUpper() + "_" + parentName.toUpper() + "_ATT_ID_" +
             attribute->getName().toUpper() + ", ");
@@ -421,7 +455,8 @@ void CodeGenerator::fillSubAttPayload_Rec(
                           << attribute->getName().toLower() << ");" << Qt::endl;
                     break;
                 default:
-                    *pOut << indent << attDataPath << "PayloadSize = GetVLESize(pCmdPayload->"
+                    *pOut << indent << attDataPath << "PayloadSize = GetVLESize("
+                          << this->getVleCastString(attribute->getDataType()) << "pCmdPayload->"
                           << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ");" << Qt::endl;
                     *pOut << indent << attDataPath << "Payload.pData = &(pCmdPayload->" << this->getPayloadPath(parentNames)
                           << attribute->getName().toLower() << ");" << Qt::endl;
@@ -478,7 +513,8 @@ void CodeGenerator::fillSubAttPayload_Rec(
                           << attribute->getName().toLower() << ");" << Qt::endl;
                     break;
                 default:
-                    *pOut << indent << attDataPath << "PayloadSize = GetVLESize(pCmdPayload->"
+                    *pOut << indent << attDataPath << "PayloadSize = GetVLESize("
+                          << this->getVleCastString(attribute->getDataType()) << "pCmdPayload->"
                           << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ");" << Qt::endl;
                     *pOut << indent << attDataPath << "Payload.pData = &(pCmdPayload->" << this->getPayloadPath(parentNames)
                           << attribute->getName().toLower() << ");" << Qt::endl;
@@ -2003,9 +2039,10 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
                                 break;
                             default:
                                 out << "        pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper()
-                                    << "_ATT_" << attribute->getName().toUpper()
-                                    << "].PayloadSize = GetVLESize(pCmdPayload->" << command->getName().toLower()
-                                    << "_payload." << attribute->getName().toLower() << ");" << Qt::endl;
+                                    << "_ATT_" << attribute->getName().toUpper() << "].PayloadSize = GetVLESize("
+                                    << this->getVleCastString(attribute->getDataType()) << "pCmdPayload->"
+                                    << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ");"
+                                    << Qt::endl;
                                 out << "        pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper()
                                     << "_ATT_" << attribute->getName().toUpper() << "].Payload.pData = &(pCmdPayload->"
                                     << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ");"
@@ -2079,9 +2116,10 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
                                 break;
                             default:
                                 out << "    pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper()
-                                    << "_ATT_" << attribute->getName().toUpper()
-                                    << "].PayloadSize = GetVLESize(pCmdPayload->" << command->getName().toLower()
-                                    << "_payload." << attribute->getName().toLower() << ");" << Qt::endl;
+                                    << "_ATT_" << attribute->getName().toUpper() << "].PayloadSize = GetVLESize("
+                                    << this->getVleCastString(attribute->getDataType()) << "pCmdPayload->"
+                                    << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ");"
+                                    << Qt::endl;
                                 out << "    pAttArray[" << protocolName.toUpper() << "_" << command->getName().toUpper()
                                     << "_ATT_" << attribute->getName().toUpper() << "].Payload.pData = &(pCmdPayload->"
                                     << command->getName().toLower() << "_payload." << attribute->getName().toLower() << ");"

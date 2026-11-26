@@ -107,6 +107,8 @@ static void LCSF_Bridge_StructTestget_statusGetData(lcsf_valid_att_t *pAttArray,
 }
 
 static void LCSF_Bridge_StructTestset_cfgGetData(lcsf_valid_att_t *pAttArray, structtest_cmd_payload_t *pCmdPayload) {
+    // Initialize optional attribute flags bitfield
+    pCmdPayload->set_cfg_payload.optAttFlagsBitfield = 0;
     // Retrieve data of attribute mode
     memcpy(&(pCmdPayload->set_cfg_payload.mode), pAttArray[STRUCTTEST_SET_CFG_ATT_MODE].Payload.pData, pAttArray[STRUCTTEST_SET_CFG_ATT_MODE].PayloadSize);
     // Retrieve data of attribute cfg
@@ -128,6 +130,23 @@ static void LCSF_Bridge_StructTestset_cfgGetData(lcsf_valid_att_t *pAttArray, st
         pCmdPayload->set_cfg_payload.cfg_payload.optAttFlagsBitfield |= STRUCTTEST_CFG_ATT_OPT_STATUS_FLAG;
         // Retrieve data of sub-attribute opt_status
         pCmdPayload->set_cfg_payload.cfg_payload.opt_statusFieldNb = LCSF_Bridge_StructTeststatusDeserialize(&(pCmdPayload->set_cfg_payload.cfg_payload.opt_status), pAttArray[STRUCTTEST_SET_CFG_ATT_CFG].Payload.pSubAttArray[STRUCTTEST_CFG_ATT_OPT_STATUS].Payload.pData, pAttArray[STRUCTTEST_SET_CFG_ATT_CFG].Payload.pSubAttArray[STRUCTTEST_CFG_ATT_OPT_STATUS].PayloadSize);
+    }
+    // Retrieve data of sub-attribute step
+    memcpy(&(pCmdPayload->set_cfg_payload.cfg_payload.step), pAttArray[STRUCTTEST_SET_CFG_ATT_CFG].Payload.pSubAttArray[STRUCTTEST_CFG_ATT_STEP].Payload.pData, pAttArray[STRUCTTEST_SET_CFG_ATT_CFG].Payload.pSubAttArray[STRUCTTEST_CFG_ATT_STEP].PayloadSize);
+    // Retrieve data of sub-attribute epoch
+    if (pAttArray[STRUCTTEST_SET_CFG_ATT_CFG].Payload.pSubAttArray[STRUCTTEST_CFG_ATT_EPOCH].Payload.pData != NULL) {
+        // Note presence of optional attribute epoch
+        pCmdPayload->set_cfg_payload.cfg_payload.optAttFlagsBitfield |= STRUCTTEST_CFG_ATT_EPOCH_FLAG;
+        // Retrieve data of sub-attribute epoch
+        memcpy(&(pCmdPayload->set_cfg_payload.cfg_payload.epoch), pAttArray[STRUCTTEST_SET_CFG_ATT_CFG].Payload.pSubAttArray[STRUCTTEST_CFG_ATT_EPOCH].Payload.pData, pAttArray[STRUCTTEST_SET_CFG_ATT_CFG].Payload.pSubAttArray[STRUCTTEST_CFG_ATT_EPOCH].PayloadSize);
+    }
+    // Retrieve data of attribute trim
+    memcpy(&(pCmdPayload->set_cfg_payload.trim), pAttArray[STRUCTTEST_SET_CFG_ATT_TRIM].Payload.pData, pAttArray[STRUCTTEST_SET_CFG_ATT_TRIM].PayloadSize);
+    // Retrieve data of attribute bias
+    if (pAttArray[STRUCTTEST_SET_CFG_ATT_BIAS].Payload.pData != NULL) {
+        // Note presence of optional attribute
+        pCmdPayload->set_cfg_payload.optAttFlagsBitfield |= STRUCTTEST_SET_CFG_ATT_BIAS_FLAG;
+        memcpy(&(pCmdPayload->set_cfg_payload.bias), pAttArray[STRUCTTEST_SET_CFG_ATT_BIAS].Payload.pData, pAttArray[STRUCTTEST_SET_CFG_ATT_BIAS].PayloadSize);
     }
 }
 
@@ -249,6 +268,26 @@ static bool LCSF_Bridge_StructTestset_cfgFillAtt(lcsf_valid_att_t **pAttArrayAdd
         pStructBuff += STRUCTTEST_STATUS_SIZE;
     } else {
         pAttArray[STRUCTTEST_SET_CFG_ATT_CFG].Payload.pSubAttArray[STRUCTTEST_CFG_ATT_OPT_STATUS].Payload.pData = NULL;
+    }
+    // Fill data of sub-attribute step
+    pAttArray[STRUCTTEST_SET_CFG_ATT_CFG].Payload.pSubAttArray[STRUCTTEST_CFG_ATT_STEP].PayloadSize = GetVLESize((uint8_t)pCmdPayload->set_cfg_payload.cfg_payload.step);
+    pAttArray[STRUCTTEST_SET_CFG_ATT_CFG].Payload.pSubAttArray[STRUCTTEST_CFG_ATT_STEP].Payload.pData = &(pCmdPayload->set_cfg_payload.cfg_payload.step);
+    // Fill data of sub-attribute epoch
+    if ((pCmdPayload->set_cfg_payload.cfg_payload.optAttFlagsBitfield & STRUCTTEST_CFG_ATT_EPOCH_FLAG) != 0) {
+        pAttArray[STRUCTTEST_SET_CFG_ATT_CFG].Payload.pSubAttArray[STRUCTTEST_CFG_ATT_EPOCH].PayloadSize = GetVLESize((uint64_t)pCmdPayload->set_cfg_payload.cfg_payload.epoch);
+        pAttArray[STRUCTTEST_SET_CFG_ATT_CFG].Payload.pSubAttArray[STRUCTTEST_CFG_ATT_EPOCH].Payload.pData = &(pCmdPayload->set_cfg_payload.cfg_payload.epoch);
+    } else {
+        pAttArray[STRUCTTEST_SET_CFG_ATT_CFG].Payload.pSubAttArray[STRUCTTEST_CFG_ATT_EPOCH].Payload.pData = NULL;
+    }
+    // Fill data of attribute trim
+    pAttArray[STRUCTTEST_SET_CFG_ATT_TRIM].PayloadSize = GetVLESize((uint16_t)pCmdPayload->set_cfg_payload.trim);
+    pAttArray[STRUCTTEST_SET_CFG_ATT_TRIM].Payload.pData = &(pCmdPayload->set_cfg_payload.trim);
+    // Fill data of attribute bias
+    if ((pCmdPayload->set_cfg_payload.optAttFlagsBitfield & STRUCTTEST_SET_CFG_ATT_BIAS_FLAG) != 0) {
+        pAttArray[STRUCTTEST_SET_CFG_ATT_BIAS].PayloadSize = GetVLESize((uint32_t)pCmdPayload->set_cfg_payload.bias);
+        pAttArray[STRUCTTEST_SET_CFG_ATT_BIAS].Payload.pData = &(pCmdPayload->set_cfg_payload.bias);
+    } else {
+        pAttArray[STRUCTTEST_SET_CFG_ATT_BIAS].Payload.pData = NULL;
     }
     return true;
 }

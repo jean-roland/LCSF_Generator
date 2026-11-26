@@ -99,7 +99,13 @@ fn set_cfg_get_data(att_arr: &[LcsfValidAtt]) -> CmdPayload {
             is_opt_status_here: false,
             opt_status: Default::default(),
             opt_status_field_nb: 0,
+            step: 0,
+            is_epoch_here: false,
+            epoch: 0,
         },
+        trim: 0,
+        is_bias_here: false,
+        bias: 0,
     };
     // Get iterator
     let att_iter = &mut att_arr.iter();
@@ -125,6 +131,24 @@ fn set_cfg_get_data(att_arr: &[LcsfValidAtt]) -> CmdPayload {
             set_cfg_payload.cfg_payload.is_opt_status_here = true;
             (set_cfg_payload.cfg_payload.opt_status, set_cfg_payload.cfg_payload.opt_status_field_nb) = Status::deserialize(data);
         }
+        // Retrieve data of sub-attribute step
+        if let LcsfValidAttPayload::Data(data) = &subatt_iter.next().unwrap().payload {
+            set_cfg_payload.cfg_payload.step = lcsf_validator::vle_decode(data) as u8 as i8;
+        }
+        // Retrieve data of sub-attribute epoch
+        if let LcsfValidAttPayload::Data(data) = &subatt_iter.next().unwrap().payload && !data.is_empty() {
+            set_cfg_payload.cfg_payload.is_epoch_here = true;
+            set_cfg_payload.cfg_payload.epoch = lcsf_validator::vle_decode(data) as i64;
+        }
+    }
+    // Retrieve data of attribute trim
+    if let LcsfValidAttPayload::Data(data) = &att_iter.next().unwrap().payload {
+        set_cfg_payload.trim = lcsf_validator::vle_decode(data) as u16 as i16;
+    }
+    // Retrieve data of attribute bias
+    if let LcsfValidAttPayload::Data(data) = &att_iter.next().unwrap().payload && !data.is_empty() {
+        set_cfg_payload.is_bias_here = true;
+        set_cfg_payload.bias = lcsf_validator::vle_decode(data) as u32 as i32;
     }
     CmdPayload::SetCfgPayload(set_cfg_payload)
 }
@@ -192,7 +216,23 @@ fn set_cfg_fill_att(cmd_payload: &CmdPayload) -> Vec<LcsfValidAtt> {
             } else {
                 LcsfValidAttPayload::Data(Vec::new())
             }},
+            // Fill data of sub-attribute step
+            LcsfValidAtt { payload: LcsfValidAttPayload::Data(lcsf_validator::vle_encode(payload.cfg_payload.step as u8 as u64))},
+            // Fill data of sub-attribute epoch
+            LcsfValidAtt { payload: if payload.cfg_payload.is_epoch_here {
+                LcsfValidAttPayload::Data(lcsf_validator::vle_encode(payload.cfg_payload.epoch as u64))
+            } else {
+                LcsfValidAttPayload::Data(Vec::new())
+            }},
         ]),});
+        // Fill data of attribute trim
+        att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data(lcsf_validator::vle_encode(payload.trim as u16 as u64)),});
+        // Fill data of attribute bias
+        if payload.is_bias_here {
+            att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data(lcsf_validator::vle_encode(payload.bias as u32 as u64)),});
+        } else {
+            att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data(Vec::new()),});
+        }
     }
     att_arr
 }
@@ -230,6 +270,8 @@ pub const CMD_ID_SET_CFG: u16 = 0x1;
 const CFG_ATT_ID_LINK: u16 = 0x0;
 const CFG_ATT_ID_LINKS: u16 = 0x1;
 const CFG_ATT_ID_OPT_STATUS: u16 = 0x2;
+const CFG_ATT_ID_STEP: u16 = 0x3;
+const CFG_ATT_ID_EPOCH: u16 = 0x4;
 
 // GetStatus attribute ids
 const GET_STATUS_ATT_ID_STATUS: u16 = 0x0;
@@ -242,6 +284,8 @@ const GET_STATUS_ATT_ID_LINK_COUNTERS: u16 = 0x5;
 // SetCfg attribute ids
 const SET_CFG_ATT_ID_MODE: u16 = 0x0;
 const SET_CFG_ATT_ID_CFG: u16 = 0x1;
+const SET_CFG_ATT_ID_TRIM: u16 = 0x2;
+const SET_CFG_ATT_ID_BIAS: u16 = 0x3;
 
 lazy_static! {
     /// Test protocol descriptor
@@ -260,7 +304,11 @@ lazy_static! {
                 (CFG_ATT_ID_LINK, LcsfAttDesc { is_optional: false, data_type: LcsfDataType::ByteArray, subatt_desc_arr: Vec::new()}),
                 (CFG_ATT_ID_LINKS, LcsfAttDesc { is_optional: true, data_type: LcsfDataType::ByteArray, subatt_desc_arr: Vec::new()}),
                 (CFG_ATT_ID_OPT_STATUS, LcsfAttDesc { is_optional: true, data_type: LcsfDataType::ByteArray, subatt_desc_arr: Vec::new()}),
+                (CFG_ATT_ID_STEP, LcsfAttDesc { is_optional: false, data_type: LcsfDataType::Uint8, subatt_desc_arr: Vec::new()}),
+                (CFG_ATT_ID_EPOCH, LcsfAttDesc { is_optional: true, data_type: LcsfDataType::Uint64, subatt_desc_arr: Vec::new()}),
             ]}),
+            (SET_CFG_ATT_ID_TRIM, LcsfAttDesc { is_optional: false, data_type: LcsfDataType::Uint16, subatt_desc_arr: Vec::new()}),
+            (SET_CFG_ATT_ID_BIAS, LcsfAttDesc { is_optional: true, data_type: LcsfDataType::Uint32, subatt_desc_arr: Vec::new()}),
         ]}),
     ]};
 }

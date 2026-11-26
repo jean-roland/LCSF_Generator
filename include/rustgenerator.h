@@ -56,6 +56,11 @@ class RustGenerator {
     QString getStructFieldString(Attribute *attribute);
     QString getStructGetString(QString attDataPath, Attribute *attribute);
     QString getStructFillString(QString attDataPath, Attribute *attribute);
+    QString getSignedTypeString(NS_AttDataType::T_AttDataType dataType);
+    QString getSignedCastString(NS_AttDataType::T_AttDataType dataType);
+    QString getSignedFieldString(Attribute *attribute);
+    QString getSignedGetString(QString attDataPath, Attribute *attribute);
+    QString getSignedFillString(QString attDataPath, Attribute *attribute);
     void printFixedStructImpl(QString typeString, Attribute::T_structType *pStruct, QTextStream *pOut);
     void printVarStructImpl(QString typeString, Attribute::T_structType *pStruct, QTextStream *pOut);
     void printVarUintFunctions(QTextStream *pOut);

@@ -28,6 +28,8 @@ enum _structtest_cfg_att_names {
     STRUCTTEST_CFG_ATT_LINK,
     STRUCTTEST_CFG_ATT_LINKS,
     STRUCTTEST_CFG_ATT_OPT_STATUS,
+    STRUCTTEST_CFG_ATT_STEP,
+    STRUCTTEST_CFG_ATT_EPOCH,
 };
 
 enum _structtest_get_status_att_names {
@@ -42,6 +44,8 @@ enum _structtest_get_status_att_names {
 enum _structtest_set_cfg_att_names {
     STRUCTTEST_SET_CFG_ATT_MODE,
     STRUCTTEST_SET_CFG_ATT_CFG,
+    STRUCTTEST_SET_CFG_ATT_TRIM,
+    STRUCTTEST_SET_CFG_ATT_BIAS,
 };
 
 // Struct types
@@ -86,6 +90,7 @@ typedef struct _structtest_counters {
 // Attribute with sub-attributes structures
 #define STRUCTTEST_CFG_ATT_LINKS_FLAG (1 << 0)
 #define STRUCTTEST_CFG_ATT_OPT_STATUS_FLAG (1 << 1)
+#define STRUCTTEST_CFG_ATT_EPOCH_FLAG (1 << 2)
 typedef struct _structtest_set_cfg_att_cfg_att_payload {
     uint8_t optAttFlagsBitfield;
     uint16_t linkFieldNb;
@@ -94,6 +99,8 @@ typedef struct _structtest_set_cfg_att_cfg_att_payload {
     uint8_t *p_links;
     uint16_t opt_statusFieldNb;
     structtest_status_t opt_status;
+    int8_t step;
+    int64_t epoch;
 } structtest_set_cfg_att_cfg_att_payload_t;
 
 // Commands data structures
@@ -115,9 +122,13 @@ typedef struct _structtest_get_status_att_payload {
     uint8_t *p_link_counters;
 } structtest_get_status_att_payload_t;
 
+#define STRUCTTEST_SET_CFG_ATT_BIAS_FLAG (1 << 0)
 typedef struct _structtest_set_cfg_att_payload {
+    uint8_t optAttFlagsBitfield;
     uint8_t mode;
     structtest_set_cfg_att_cfg_att_payload_t cfg_payload;
+    int16_t trim;
+    int32_t bias;
 } structtest_set_cfg_att_payload_t;
 
 // Command payload union

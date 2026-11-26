@@ -19,6 +19,8 @@ static const lcsf_attribute_desc_t LCSF_StructTest_cfg_AttDescArray[LCSF_STRUCTT
     {false, LCSF_BYTE_ARRAY, LCSF_STRUCTTEST_CFG_ATT_ID_LINK, 0, NULL},
     {true, LCSF_BYTE_ARRAY, LCSF_STRUCTTEST_CFG_ATT_ID_LINKS, 0, NULL},
     {true, LCSF_BYTE_ARRAY, LCSF_STRUCTTEST_CFG_ATT_ID_OPT_STATUS, 0, NULL},
+    {false, LCSF_UINT8, LCSF_STRUCTTEST_CFG_ATT_ID_STEP, 0, NULL},
+    {true, LCSF_UINT64, LCSF_STRUCTTEST_CFG_ATT_ID_EPOCH, 0, NULL},
 };
 
 // Attribute array descriptor of command get_status
@@ -35,6 +37,8 @@ static const lcsf_attribute_desc_t LCSF_StructTest_get_status_AttDescArray[LCSF_
 static const lcsf_attribute_desc_t LCSF_StructTest_set_cfg_AttDescArray[LCSF_STRUCTTEST_CMD_SET_CFG_ATT_NB] = {
     {false, LCSF_UINT8, LCSF_STRUCTTEST_SET_CFG_ATT_ID_MODE, 0, NULL},
     {false, LCSF_SUB_ATTRIBUTES, LCSF_STRUCTTEST_SET_CFG_ATT_ID_CFG, LCSF_STRUCTTEST_ATT_CFG_SUBATT_NB, LCSF_StructTest_cfg_AttDescArray},
+    {false, LCSF_UINT16, LCSF_STRUCTTEST_SET_CFG_ATT_ID_TRIM, 0, NULL},
+    {true, LCSF_UINT32, LCSF_STRUCTTEST_SET_CFG_ATT_ID_BIAS, 0, NULL},
 };
 
 // Command array descriptor

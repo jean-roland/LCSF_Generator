@@ -22,9 +22,13 @@ Protocol id: 56
 |-
 | link_counters || '''0x05''' || No || '''struct counters[]''' || One entry per link
 |-
-| rowspan="2" | set_cfg || rowspan="2" | '''0x01''' || rowspan="2" | Bidirectional || rowspan="2" | Configuration || mode || '''0x00''' || No || '''(u)int8''' || Mode
+| rowspan="4" | set_cfg || rowspan="4" | '''0x01''' || rowspan="4" | Bidirectional || rowspan="4" | Configuration || mode || '''0x00''' || No || '''uint8''' || Mode
 |-
 | cfg || '''0x01''' || No || '''sub-attributes''' || Configuration block
+|-
+| trim || '''0x02''' || No || '''int16''' || Signed trim
+|-
+| bias || '''0x03''' || Yes || '''int32''' || Signed bias
 |-
 |}
 
@@ -39,6 +43,10 @@ Protocol id: 56
 | links || '''0x01''' || Yes || '''struct link[]''' || Other links
 |-
 | opt_status || '''0x02''' || Yes || '''struct status''' || Status snapshot
+|-
+| step || '''0x03''' || No || '''int8''' || Signed step
+|-
+| epoch || '''0x04''' || Yes || '''int64''' || Signed epoch
 |-
 |}
 

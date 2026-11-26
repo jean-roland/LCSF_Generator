@@ -26,8 +26,10 @@ Protocol id: `56`
 
 | Name | Id | Optional? | Data type | Attribute Description |
 |:----:|:--:|:----------:|:---------:|:---------------------:|
-| mode | `0x00` | No | `(u)int8` | Mode |
+| mode | `0x00` | No | `uint8` | Mode |
 | cfg | `0x01` | No | `sub-attributes` | Configuration block |
+| trim | `0x02` | No | `int16` | Signed trim |
+| bias | `0x03` | Yes | `int32` | Signed bias |
 
 ## cfg sub-attributes table
 
@@ -36,6 +38,8 @@ Protocol id: `56`
 | link | `0x00` | No | `struct link` | Reference link
 | links | `0x01` | Yes | `struct link[]` | Other links
 | opt_status | `0x02` | Yes | `struct status` | Status snapshot
+| step | `0x03` | No | `int8` | Signed step
+| epoch | `0x04` | Yes | `int64` | Signed epoch
 
 ## status struct table
 

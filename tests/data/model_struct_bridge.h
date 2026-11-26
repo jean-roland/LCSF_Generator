@@ -29,6 +29,8 @@ enum _lcsf_structtest_cfg_att_id {
     LCSF_STRUCTTEST_CFG_ATT_ID_LINK = 0x0,
     LCSF_STRUCTTEST_CFG_ATT_ID_LINKS = 0x1,
     LCSF_STRUCTTEST_CFG_ATT_ID_OPT_STATUS = 0x2,
+    LCSF_STRUCTTEST_CFG_ATT_ID_STEP = 0x3,
+    LCSF_STRUCTTEST_CFG_ATT_ID_EPOCH = 0x4,
 };
 
 enum _lcsf_structtest_get_status_att_id {
@@ -43,12 +45,14 @@ enum _lcsf_structtest_get_status_att_id {
 enum _lcsf_structtest_set_cfg_att_id {
     LCSF_STRUCTTEST_SET_CFG_ATT_ID_MODE = 0x0,
     LCSF_STRUCTTEST_SET_CFG_ATT_ID_CFG = 0x1,
+    LCSF_STRUCTTEST_SET_CFG_ATT_ID_TRIM = 0x2,
+    LCSF_STRUCTTEST_SET_CFG_ATT_ID_BIAS = 0x3,
 };
 
 // --- Public Constants ---
 
 // Bridge decoder lifo size
-#define LCSF_BRIDGE_STRUCTTEST_LIFO_SIZE 6
+#define LCSF_BRIDGE_STRUCTTEST_LIFO_SIZE 9
 // Lcsf protocol identifier
 #define LCSF_STRUCTTEST_PROTOCOL_ID 0x56
 // Lcsf protocol version
@@ -57,9 +61,9 @@ enum _lcsf_structtest_set_cfg_att_id {
 #define LCSF_STRUCTTEST_CMD_NB STRUCTTEST_CMD_COUNT
 // Command attribute number
 #define LCSF_STRUCTTEST_CMD_GET_STATUS_ATT_NB 6
-#define LCSF_STRUCTTEST_CMD_SET_CFG_ATT_NB 2
+#define LCSF_STRUCTTEST_CMD_SET_CFG_ATT_NB 4
 // Attribute sub-attributes number
-#define LCSF_STRUCTTEST_ATT_CFG_SUBATT_NB 3
+#define LCSF_STRUCTTEST_ATT_CFG_SUBATT_NB 5
 // Bridge struct serialization buffer size
 #define LCSF_BRIDGE_STRUCTTEST_STRUCT_BUFF_SIZE 113
 // Struct types fit in an attribute payload

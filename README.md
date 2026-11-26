@@ -49,6 +49,9 @@ Examples:
 * For a raw generation: `./LCSG_Generator_CLI -l Description/Test.json`
 * For a generation with code imported for the A point of view: `./LCSG_Generator_CLI -l Description/Test.json -a OutputA/Test_Main_a.c`
 
+### Signed integer attributes
+Attribute types `LCSF_INT8` to `LCSF_INT64` give `int8_t` to `int64_t` payload fields in C and `i8` to `i64` in Rust. On the wire they are the unsigned type of the same width holding the two's complement, so a peer using `LCSF_UINT8` to `LCSF_UINT64` reads the same bytes. Like unsigned ones they are sent without their leading zero bytes: a negative value has none and always takes its full width.
+
 ### Struct types
 Structs give a byte array attribute an explicit layout, they are defined once and reusable across commands. In the GUI they are edited under the `Structs` tree node and picked as `struct <name>` or `struct <name>[]` in the attribute data type. In the json (see `tests/data/model_struct_desc.json`):
 ```json

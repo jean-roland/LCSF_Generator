@@ -87,7 +87,7 @@
                     "id": 1,
                     "isOptional": false,
                     "name": "cfg",
-                    "size": 3,
+                    "size": 5,
                     "subAttr": [
                         {
                             "dataType": "LCSF_STRUCT",
@@ -118,8 +118,40 @@
                             "name": "opt_status",
                             "size": 0,
                             "structName": "status"
+                        },
+                        {
+                            "dataType": "LCSF_INT8",
+                            "desc": "Signed step",
+                            "id": 3,
+                            "isOptional": false,
+                            "name": "step",
+                            "size": 0
+                        },
+                        {
+                            "dataType": "LCSF_INT64",
+                            "desc": "Signed epoch",
+                            "id": 4,
+                            "isOptional": true,
+                            "name": "epoch",
+                            "size": 0
                         }
                     ]
+                },
+                {
+                    "dataType": "LCSF_INT16",
+                    "desc": "Signed trim",
+                    "id": 2,
+                    "isOptional": false,
+                    "name": "trim",
+                    "size": 0
+                },
+                {
+                    "dataType": "LCSF_INT32",
+                    "desc": "Signed bias",
+                    "id": 3,
+                    "isOptional": true,
+                    "name": "bias",
+                    "size": 0
                 }
             ],
             "description": "Configuration",
@@ -128,7 +160,7 @@
             "id": 1,
             "name": "set_cfg",
             "parentName": "NONE",
-            "size": 2
+            "size": 4
         }
     ],
     "desc": "Protocol used to test struct attributes.",

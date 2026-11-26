@@ -46,6 +46,9 @@ pub struct GetStatusAttPayload {
 pub struct SetCfgAttPayload {
     pub mode: u8,
     pub cfg_payload: SetCfgAttCfgPayload,
+    pub trim: i16,
+    pub is_bias_here: bool,
+    pub bias: i32,
 }
 
 // Attribute with sub-attributes structures
@@ -58,6 +61,9 @@ pub struct SetCfgAttCfgPayload {
     pub is_opt_status_here: bool,
     pub opt_status: Status,
     pub opt_status_field_nb: usize,
+    pub step: i8,
+    pub is_epoch_here: bool,
+    pub epoch: i64,
 }
 
 // Struct types
@@ -382,11 +388,21 @@ fn execute_set_cfg(payload: &SetCfgAttPayload) {
     let cfg_link = payload.cfg_payload.link;
     let mut cfg_links = &Vec::new();
     let mut cfg_opt_status = Default::default();
+    let cfg_step = payload.cfg_payload.step;
+    let mut cfg_epoch = 0;
+    let trim = payload.trim;
+    let mut bias = 0;
     if payload.cfg_payload.is_links_here {
         cfg_links = &payload.cfg_payload.links;
     }
     if payload.cfg_payload.is_opt_status_here {
         cfg_opt_status = payload.cfg_payload.opt_status;
+    }
+    if payload.cfg_payload.is_epoch_here {
+        cfg_epoch = payload.cfg_payload.epoch;
+    }
+    if payload.is_bias_here {
+        bias = payload.bias;
     }
     // Function to implement
     todo!();

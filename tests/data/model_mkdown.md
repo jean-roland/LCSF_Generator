@@ -22,17 +22,17 @@ Protocol id: `55`
 
 | Name | Id | Optional? | Data type | Attribute Description |
 |:----:|:--:|:----------:|:---------:|:---------------------:|
-| SA1 | `0x00` | No | `(u)int8` | Non optional uint8 simple attribute |
-| SA2 | `0x01` | No | `(u)int16` | Non optional uint16 simple attribute |
-| SA3 | `0x02` | No | `(u)int32` | Non optional uint32 simple attribute |
+| SA1 | `0x00` | No | `uint8` | Non optional uint8 simple attribute |
+| SA2 | `0x01` | No | `uint16` | Non optional uint16 simple attribute |
+| SA3 | `0x02` | No | `uint32` | Non optional uint32 simple attribute |
 | SA4 | `0x03` | No | `byte array` | Non optional byte array simple attribute |
 | SA5 | `0x04` | No | `string` | Non optional string simple attribute |
-| SA6 | `0x05` | Yes | `(u)int8` | Optional uint8 simple attribute |
-| SA7 | `0x06` | Yes | `(u)int16` | Optional uint16 simple attribute |
-| SA8 | `0x07` | Yes | `(u)int32` | Optional uint32 simple attribute |
+| SA6 | `0x05` | Yes | `uint8` | Optional uint8 simple attribute |
+| SA7 | `0x06` | Yes | `uint16` | Optional uint16 simple attribute |
+| SA8 | `0x07` | Yes | `uint32` | Optional uint32 simple attribute |
 | SA9 | `0x08` | Yes | `byte array` | Optional byte array simple attribute |
 | SA10 | `0x09` | Yes | `string` | Optional string simple attribute |
-| SA11 | `0x0a` | No | `(u)int64` | Non optional uint64 simple attribute |
+| SA11 | `0x0a` | No | `uint64` | Non optional uint64 simple attribute |
 | SA12 | `0x0b` | No | `float32` | Non optional float32 simple attribute |
 | SA13 | `0x0c` | No | `float64` | Non optional float64 simple attribute |
 
@@ -40,17 +40,17 @@ Protocol id: `55`
 
 | Name | Id | Optional? | Data type | Attribute Description |
 |:----:|:--:|:----------:|:---------:|:---------------------:|
-| SA1 | `0x00` | No | `(u)int8` | Non optional uint8 simple attribute |
-| SA2 | `0x01` | No | `(u)int16` | Non optional uint16 simple attribute |
-| SA3 | `0x02` | No | `(u)int32` | Non optional uint32 simple attribute |
+| SA1 | `0x00` | No | `uint8` | Non optional uint8 simple attribute |
+| SA2 | `0x01` | No | `uint16` | Non optional uint16 simple attribute |
+| SA3 | `0x02` | No | `uint32` | Non optional uint32 simple attribute |
 | SA4 | `0x03` | No | `byte array` | Non optional byte array simple attribute |
 | SA5 | `0x04` | No | `string` | Non optional string simple attribute |
-| SA6 | `0x05` | Yes | `(u)int8` | Optional uint8 simple attribute |
-| SA7 | `0x06` | Yes | `(u)int16` | Optional uint16 simple attribute |
-| SA8 | `0x07` | Yes | `(u)int32` | Optional uint32 simple attribute |
+| SA6 | `0x05` | Yes | `uint8` | Optional uint8 simple attribute |
+| SA7 | `0x06` | Yes | `uint16` | Optional uint16 simple attribute |
+| SA8 | `0x07` | Yes | `uint32` | Optional uint32 simple attribute |
 | SA9 | `0x08` | Yes | `byte array` | Optional byte array simple attribute |
 | SA10 | `0x09` | Yes | `string` | Optional string simple attribute |
-| SA11 | `0x0a` | No | `(u)int64` | Non optional uint64 simple attribute |
+| SA11 | `0x0a` | No | `uint64` | Non optional uint64 simple attribute |
 | SA12 | `0x0b` | No | `float32` | Non optional float32 simple attribute |
 | SA13 | `0x0c` | No | `float64` | Non optional float64 simple attribute |
 
@@ -58,17 +58,17 @@ Protocol id: `55`
 
 | Name | Id | Optional? | Data type | Attribute Description |
 |:----:|:--:|:----------:|:---------:|:---------------------:|
-| SA1 | `0x00` | No | `(u)int8` | Non optional uint8 simple attribute |
-| SA2 | `0x01` | No | `(u)int16` | Non optional uint16 simple attribute |
-| SA3 | `0x02` | No | `(u)int32` | Non optional uint32 simple attribute |
+| SA1 | `0x00` | No | `uint8` | Non optional uint8 simple attribute |
+| SA2 | `0x01` | No | `uint16` | Non optional uint16 simple attribute |
+| SA3 | `0x02` | No | `uint32` | Non optional uint32 simple attribute |
 | SA4 | `0x03` | No | `byte array` | Non optional byte array simple attribute |
 | SA5 | `0x04` | No | `string` | Non optional string simple attribute |
-| SA6 | `0x05` | Yes | `(u)int8` | Optional uint8 simple attribute |
-| SA7 | `0x06` | Yes | `(u)int16` | Optional uint16 simple attribute |
-| SA8 | `0x07` | Yes | `(u)int32` | Optional uint32 simple attribute |
+| SA6 | `0x05` | Yes | `uint8` | Optional uint8 simple attribute |
+| SA7 | `0x06` | Yes | `uint16` | Optional uint16 simple attribute |
+| SA8 | `0x07` | Yes | `uint32` | Optional uint32 simple attribute |
 | SA9 | `0x08` | Yes | `byte array` | Optional byte array simple attribute |
 | SA10 | `0x09` | Yes | `string` | Optional string simple attribute |
-| SA11 | `0x0a` | No | `(u)int64` | Non optional uint64 simple attribute |
+| SA11 | `0x0a` | No | `uint64` | Non optional uint64 simple attribute |
 | SA12 | `0x0b` | No | `float32` | Non optional float32 simple attribute |
 | SA13 | `0x0c` | No | `float64` | Non optional float64 simple attribute |
 
@@ -76,7 +76,7 @@ Protocol id: `55`
 
 | Name | Id | Optional? | Data type | Attribute Description |
 |:----:|:--:|:----------:|:---------:|:---------------------:|
-| SA1 | `0x00` | No | `(u)int8` | Non optional uint8 simple attribute |
+| SA1 | `0x00` | No | `uint8` | Non optional uint8 simple attribute |
 | CA1 | `0x0a` | No | `sub-attributes` | Non optional complex attribute |
 | CA2 | `0x0b` | Yes | `sub-attributes` | Optional complex attribute |
 
@@ -84,7 +84,7 @@ Protocol id: `55`
 
 | Name | Id | Optional? | Data type | Attribute Description |
 |:----:|:--:|:----------:|:---------:|:---------------------:|
-| SA2 | `0x01` | No | `(u)int16` | Non optional uint16 simple attribute |
+| SA2 | `0x01` | No | `uint16` | Non optional uint16 simple attribute |
 | CA5 | `0x0a` | No | `sub-attributes` | Non optional complex attribute |
 | CA6 | `0x0b` | Yes | `sub-attributes` | Optional complex attribute |
 
@@ -100,22 +100,22 @@ Protocol id: `55`
 
 | Name | Id | Optional? | Data type | Description |
 |:----:|:--:|:----------:|:---------:|:-----------:|
-| SA1 | `0x00` | No | `(u)int8` | Non optional uint8 simple attribute
-| SA2 | `0x01` | No | `(u)int16` | Non optional uint16 simple attribute
-| SA3 | `0x02` | Yes | `(u)int32` | Optional uint32 simple attribute
+| SA1 | `0x00` | No | `uint8` | Non optional uint8 simple attribute
+| SA2 | `0x01` | No | `uint16` | Non optional uint16 simple attribute
+| SA3 | `0x02` | Yes | `uint32` | Optional uint32 simple attribute
 
 ## CA10 sub-attributes table
 
 | Name | Id | Optional? | Data type | Description |
 |:----:|:--:|:----------:|:---------:|:-----------:|
-| SA1 | `0x00` | Yes | `(u)int8` | Optional uint8 simple attribute
+| SA1 | `0x00` | Yes | `uint8` | Optional uint8 simple attribute
 | CA11 | `0x0b` | No | `sub-attributes` | Non-optional complex attribute
 
 ## CA11 sub-attributes table
 
 | Name | Id | Optional? | Data type | Description |
 |:----:|:--:|:----------:|:---------:|:-----------:|
-| SA1 | `0x00` | Yes | `(u)int8` | Optional uint8 simple attribute
+| SA1 | `0x00` | Yes | `uint8` | Optional uint8 simple attribute
 | CA12 | `0x0a` | No | `sub-attributes` | Non-optional complex attribute
 
 ## CA12 sub-attributes table
@@ -128,14 +128,14 @@ Protocol id: `55`
 
 | Name | Id | Optional? | Data type | Description |
 |:----:|:--:|:----------:|:---------:|:-----------:|
-| SA1 | `0x00` | Yes | `(u)int8` | Optional uint8 simple attribute
+| SA1 | `0x00` | Yes | `uint8` | Optional uint8 simple attribute
 | CA3 | `0x0b` | No | `sub-attributes` | Non-optional complex attribute
 
 ## CA3 sub-attributes table
 
 | Name | Id | Optional? | Data type | Description |
 |:----:|:--:|:----------:|:---------:|:-----------:|
-| SA1 | `0x00` | Yes | `(u)int8` | Optional uint8 simple attribute
+| SA1 | `0x00` | Yes | `uint8` | Optional uint8 simple attribute
 | CA4 | `0x0a` | No | `sub-attributes` | Non-optional complex attribute
 
 ## CA4 sub-attributes table
@@ -148,22 +148,22 @@ Protocol id: `55`
 
 | Name | Id | Optional? | Data type | Description |
 |:----:|:--:|:----------:|:---------:|:-----------:|
-| SA1 | `0x00` | No | `(u)int8` | Non optional uint8 simple attribute
-| SA2 | `0x01` | No | `(u)int16` | Non optional uint16 simple attribute
-| SA3 | `0x02` | Yes | `(u)int32` | Optional uint32 simple attribute
+| SA1 | `0x00` | No | `uint8` | Non optional uint8 simple attribute
+| SA2 | `0x01` | No | `uint16` | Non optional uint16 simple attribute
+| SA3 | `0x02` | Yes | `uint32` | Optional uint32 simple attribute
 
 ## CA6 sub-attributes table
 
 | Name | Id | Optional? | Data type | Description |
 |:----:|:--:|:----------:|:---------:|:-----------:|
-| SA1 | `0x00` | Yes | `(u)int8` | Optional uint8 simple attribute
+| SA1 | `0x00` | Yes | `uint8` | Optional uint8 simple attribute
 | CA7 | `0x0b` | No | `sub-attributes` | Non-optional complex attribute
 
 ## CA7 sub-attributes table
 
 | Name | Id | Optional? | Data type | Description |
 |:----:|:--:|:----------:|:---------:|:-----------:|
-| SA1 | `0x00` | Yes | `(u)int8` | Optional uint8 simple attribute
+| SA1 | `0x00` | Yes | `uint8` | Optional uint8 simple attribute
 | CA8 | `0x0a` | No | `sub-attributes` | Non-optional complex attribute
 
 ## CA8 sub-attributes table
@@ -176,7 +176,7 @@ Protocol id: `55`
 
 | Name | Id | Optional? | Data type | Description |
 |:----:|:--:|:----------:|:---------:|:-----------:|
-| SA1 | `0x00` | No | `(u)int8` | Non optional uint8 simple attribute
-| SA2 | `0x01` | No | `(u)int16` | Non optional uint16 simple attribute
-| SA3 | `0x02` | Yes | `(u)int32` | Optional uint32 simple attribute
+| SA1 | `0x00` | No | `uint8` | Non optional uint8 simple attribute
+| SA2 | `0x01` | No | `uint16` | Non optional uint16 simple attribute
+| SA3 | `0x02` | Yes | `uint32` | Optional uint32 simple attribute
 

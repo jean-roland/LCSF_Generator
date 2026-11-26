@@ -260,6 +260,10 @@ void RustGenerator::printInitstruct_Rec(QString parentName, QList<Attribute *> a
             case NS_AttDataType::UINT16:
             case NS_AttDataType::UINT32:
             case NS_AttDataType::UINT64:
+            case NS_AttDataType::INT8:
+            case NS_AttDataType::INT16:
+            case NS_AttDataType::INT32:
+            case NS_AttDataType::INT64:
                 *pOut << indent << attribute->getName().toLower() << ": 0," << Qt::endl;
                 break;
             case NS_AttDataType::FLOAT32:
@@ -356,6 +360,12 @@ void RustGenerator::getSubAttData_Rec(QStringList parentNames, QList<Attribute *
                         *pOut << indent << "    " << attDataPath << attribute->getName().toLower()
                               << " = CString::from_vec_with_nul(data.clone()).unwrap();" << Qt::endl;
                         break;
+                    case NS_AttDataType::INT8:
+                    case NS_AttDataType::INT16:
+                    case NS_AttDataType::INT32:
+                    case NS_AttDataType::INT64:
+                        *pOut << indent << "    " << this->getSignedGetString(attDataPath, attribute) << Qt::endl;
+                        break;
                     case NS_AttDataType::STRUCT:
                         *pOut << indent << "    " << this->getStructGetString(attDataPath, attribute) << Qt::endl;
                         break;
@@ -396,6 +406,12 @@ void RustGenerator::getSubAttData_Rec(QStringList parentNames, QList<Attribute *
                     case NS_AttDataType::STRING:
                         *pOut << indent << "    " << attDataPath << attribute->getName().toLower()
                               << " = CString::from_vec_with_nul(data.clone()).unwrap();" << Qt::endl;
+                        break;
+                    case NS_AttDataType::INT8:
+                    case NS_AttDataType::INT16:
+                    case NS_AttDataType::INT32:
+                    case NS_AttDataType::INT64:
+                        *pOut << indent << "    " << this->getSignedGetString(attDataPath, attribute) << Qt::endl;
                         break;
                     case NS_AttDataType::STRUCT:
                         *pOut << indent << "    " << this->getStructGetString(attDataPath, attribute) << Qt::endl;
@@ -463,6 +479,13 @@ void RustGenerator::fillSubAttData_Rec(
                         *pOut << indent << "    LcsfValidAttPayload::Data(payload." << attDataPath
                               << attribute->getName().toLower() << ".clone().into_bytes_with_nul())" << Qt::endl;
                         break;
+                    case NS_AttDataType::INT8:
+                    case NS_AttDataType::INT16:
+                    case NS_AttDataType::INT32:
+                    case NS_AttDataType::INT64:
+                        *pOut << indent << "    LcsfValidAttPayload::Data("
+                              << this->getSignedFillString(attDataPath, attribute) << ")" << Qt::endl;
+                        break;
                     case NS_AttDataType::STRUCT:
                         *pOut << indent << "    LcsfValidAttPayload::Data("
                               << this->getStructFillString(attDataPath, attribute) << ")" << Qt::endl;
@@ -496,6 +519,12 @@ void RustGenerator::fillSubAttData_Rec(
                         *pOut << "LcsfValidAttPayload::Data(payload." << attDataPath << attribute->getName().toLower()
                               << ".clone().into_bytes_with_nul())";
                         break;
+                    case NS_AttDataType::INT8:
+                    case NS_AttDataType::INT16:
+                    case NS_AttDataType::INT32:
+                    case NS_AttDataType::INT64:
+                        *pOut << "LcsfValidAttPayload::Data(" << this->getSignedFillString(attDataPath, attribute) << ")";
+                        break;
                     case NS_AttDataType::STRUCT:
                         *pOut << "LcsfValidAttPayload::Data(" << this->getStructFillString(attDataPath, attribute) << ")";
                         break;
@@ -517,7 +546,7 @@ QString RustGenerator::getAttDescString(bool isOptional, NS_AttDataType::T_AttDa
     }
     // Type
     descString.append(", data_type: LcsfDataType::");
-    switch (data_type) {
+    switch (NS_AttDataType::getStackDataType(data_type)) {
         case NS_AttDataType::UINT8:
             descString.append("Uint8");
             break;
@@ -537,7 +566,6 @@ QString RustGenerator::getAttDescString(bool isOptional, NS_AttDataType::T_AttDa
             descString.append("Float64");
             break;
         case NS_AttDataType::BYTE_ARRAY:
-        case NS_AttDataType::STRUCT:
             descString.append("ByteArray");
             break;
         case NS_AttDataType::STRING:
@@ -579,6 +607,54 @@ QString RustGenerator::getStructFillString(QString attDataPath, Attribute *attri
         return typeString + "::serialize_array(" + attPath + ")";
     }
     return typeString + "::serialize(" + attPath + ")";
+}
+
+// Rust type of a signed integer attribute
+QString RustGenerator::getSignedTypeString(NS_AttDataType::T_AttDataType dataType) {
+    switch (dataType) {
+        case NS_AttDataType::INT8:
+            return "i8";
+        case NS_AttDataType::INT16:
+            return "i16";
+        case NS_AttDataType::INT32:
+            return "i32";
+        case NS_AttDataType::INT64:
+        default:
+            return "i64";
+    }
+}
+
+// Cast of a signed integer to the unsigned type of its width, none at 64 bits where u64 is already that type
+QString RustGenerator::getSignedCastString(NS_AttDataType::T_AttDataType dataType) {
+    switch (dataType) {
+        case NS_AttDataType::INT8:
+            return " as u8";
+        case NS_AttDataType::INT16:
+            return " as u16";
+        case NS_AttDataType::INT32:
+            return " as u32";
+        case NS_AttDataType::INT64:
+        default:
+            return "";
+    }
+}
+
+// Payload field declaration of a signed integer attribute
+QString RustGenerator::getSignedFieldString(Attribute *attribute) {
+    return "    pub " + attribute->getName().toLower() + ": " + this->getSignedTypeString(attribute->getDataType()) + ",";
+}
+
+// Retrieve code of a signed integer attribute from its data, two's complement of the attribute width
+QString RustGenerator::getSignedGetString(QString attDataPath, Attribute *attribute) {
+    return attDataPath + attribute->getName().toLower() + " = lcsf_validator::vle_decode(data)" +
+        this->getSignedCastString(attribute->getDataType()) + " as " + this->getSignedTypeString(attribute->getDataType()) +
+        ";";
+}
+
+// Fill code of a signed integer attribute data, cast to its width first: a sign extension to u64 would encode 8 bytes
+QString RustGenerator::getSignedFillString(QString attDataPath, Attribute *attribute) {
+    return "lcsf_validator::vle_encode(payload." + attDataPath + attribute->getName().toLower() +
+        this->getSignedCastString(attribute->getDataType()) + " as u64)";
 }
 
 void RustGenerator::printFixedStructImpl(QString typeString, Attribute::T_structType *pStruct, QTextStream *pOut) {
@@ -931,6 +1007,12 @@ void RustGenerator::generateMain(
                         case NS_AttDataType::FLOAT64:
                             out << "    pub " << attribute->getName().toLower() << ": f64," << Qt::endl;
                             break;
+                        case NS_AttDataType::INT8:
+                        case NS_AttDataType::INT16:
+                        case NS_AttDataType::INT32:
+                        case NS_AttDataType::INT64:
+                            out << this->getSignedFieldString(attribute) << Qt::endl;
+                            break;
                         case NS_AttDataType::STRUCT:
                             out << this->getStructFieldString(attribute) << Qt::endl;
                             break;
@@ -992,6 +1074,12 @@ void RustGenerator::generateMain(
                                     break;
                                 case NS_AttDataType::FLOAT64:
                                     out << "    pub " << currentSubAttInfo.attName.toLower() << ": f64," << Qt::endl;
+                                    break;
+                                case NS_AttDataType::INT8:
+                                case NS_AttDataType::INT16:
+                                case NS_AttDataType::INT32:
+                                case NS_AttDataType::INT64:
+                                    out << this->getSignedFieldString(currentSubAttInfo.attPointer) << Qt::endl;
                                     break;
                                 case NS_AttDataType::STRUCT:
                                     out << this->getStructFieldString(currentSubAttInfo.attPointer) << Qt::endl;
@@ -1312,6 +1400,10 @@ void RustGenerator::generateBridge(
                         case NS_AttDataType::UINT16:
                         case NS_AttDataType::UINT32:
                         case NS_AttDataType::UINT64:
+                        case NS_AttDataType::INT8:
+                        case NS_AttDataType::INT16:
+                        case NS_AttDataType::INT32:
+                        case NS_AttDataType::INT64:
                             out << "        " << attribute->getName().toLower() << ": 0," << Qt::endl;
                             break;
                         case NS_AttDataType::FLOAT32:
@@ -1404,6 +1496,14 @@ void RustGenerator::generateBridge(
                                         << attribute->getName().toLower()
                                         << " = CString::from_vec_with_nul(data.clone()).unwrap();" << Qt::endl;
                                     break;
+                                case NS_AttDataType::INT8:
+                                case NS_AttDataType::INT16:
+                                case NS_AttDataType::INT32:
+                                case NS_AttDataType::INT64:
+                                    out << "        "
+                                        << this->getSignedGetString(command->getName().toLower() + "_payload.", attribute)
+                                        << Qt::endl;
+                                    break;
                                 case NS_AttDataType::STRUCT:
                                     out << "        "
                                         << this->getStructGetString(command->getName().toLower() + "_payload.", attribute)
@@ -1453,6 +1553,14 @@ void RustGenerator::generateBridge(
                                     out << "        " << command->getName().toLower() << "_payload."
                                         << attribute->getName().toLower()
                                         << " = CString::from_vec_with_nul(data.clone()).unwrap();" << Qt::endl;
+                                    break;
+                                case NS_AttDataType::INT8:
+                                case NS_AttDataType::INT16:
+                                case NS_AttDataType::INT32:
+                                case NS_AttDataType::INT64:
+                                    out << "        "
+                                        << this->getSignedGetString(command->getName().toLower() + "_payload.", attribute)
+                                        << Qt::endl;
                                     break;
                                 case NS_AttDataType::STRUCT:
                                     out << "        "
@@ -1539,6 +1647,13 @@ void RustGenerator::generateBridge(
                                 out << "            att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data(payload."
                                     << attribute->getName().toLower() << ".clone().into_bytes_with_nul()),});" << Qt::endl;
                                 break;
+                            case NS_AttDataType::INT8:
+                            case NS_AttDataType::INT16:
+                            case NS_AttDataType::INT32:
+                            case NS_AttDataType::INT64:
+                                out << "            att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data("
+                                    << this->getSignedFillString("", attribute) << "),});" << Qt::endl;
+                                break;
                             case NS_AttDataType::STRUCT:
                                 out << "            att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data("
                                     << this->getStructFillString("", attribute) << "),});" << Qt::endl;
@@ -1586,6 +1701,13 @@ void RustGenerator::generateBridge(
                             case NS_AttDataType::STRING:
                                 out << "        att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data(payload."
                                     << attribute->getName().toLower() << ".clone().into_bytes_with_nul()),});" << Qt::endl;
+                                break;
+                            case NS_AttDataType::INT8:
+                            case NS_AttDataType::INT16:
+                            case NS_AttDataType::INT32:
+                            case NS_AttDataType::INT64:
+                                out << "        att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data("
+                                    << this->getSignedFillString("", attribute) << "),});" << Qt::endl;
                                 break;
                             case NS_AttDataType::STRUCT:
                                 out << "        att_arr.push(LcsfValidAtt { payload: LcsfValidAttPayload::Data("

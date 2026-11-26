@@ -30,6 +30,10 @@ typedef enum {
     UINT16,
     UINT32,
     UINT64,
+    INT8,
+    INT16,
+    INT32,
+    INT64,
     FLOAT32,
     FLOAT64,
     BYTE_ARRAY,
@@ -39,15 +43,34 @@ typedef enum {
     UNKNOWN,
 } T_AttDataType;
 
-const T_AttDataType SLAttDataType2Enum[10] = {
-    UINT8, UINT16, UINT32, UINT64, FLOAT32, FLOAT64, BYTE_ARRAY, SUB_ATTRIBUTES, STRING, STRUCT};
+const T_AttDataType SLAttDataType2Enum[UNKNOWN] = {
+    UINT8, UINT16, UINT32, UINT64, INT8, INT16, INT32, INT64, FLOAT32, FLOAT64, BYTE_ARRAY, SUB_ATTRIBUTES, STRING, STRUCT};
 
 const QStringList SL_AttDataType =
-    (QStringList() << "LCSF_UINT8" << "LCSF_UINT16" << "LCSF_UINT32" << "LCSF_UINT64" << "LCSF_FLOAT32" << "LCSF_FLOAT64"
-                   << "LCSF_BYTE_ARRAY" << "LCSF_SUB_ATTRIBUTES" << "LCSF_STRING" << "LCSF_STRUCT");
+    (QStringList() << "LCSF_UINT8" << "LCSF_UINT16" << "LCSF_UINT32" << "LCSF_UINT64" << "LCSF_INT8" << "LCSF_INT16"
+                   << "LCSF_INT32" << "LCSF_INT64" << "LCSF_FLOAT32" << "LCSF_FLOAT64" << "LCSF_BYTE_ARRAY"
+                   << "LCSF_SUB_ATTRIBUTES" << "LCSF_STRING" << "LCSF_STRUCT");
 const QStringList SL_DocAttDataType =
-    (QStringList() << "(u)int8" << "(u)int16" << "(u)int32" << "(u)int64" << "float32" << "float64" << "byte array"
-                   << "sub-attributes" << "string" << "struct");
+    (QStringList() << "uint8" << "uint16" << "uint32" << "uint64" << "int8" << "int16" << "int32" << "int64" << "float32"
+                   << "float64" << "byte array" << "sub-attributes" << "string" << "struct");
+
+// Data type the stacks know: signed integers travel as the unsigned type of their width, structs as byte arrays
+inline T_AttDataType getStackDataType(T_AttDataType dataType) {
+    switch (dataType) {
+        case INT8:
+            return UINT8;
+        case INT16:
+            return UINT16;
+        case INT32:
+            return UINT32;
+        case INT64:
+            return UINT64;
+        case STRUCT:
+            return BYTE_ARRAY;
+        default:
+            return dataType;
+    }
+}
 } // namespace NS_AttDataType
 
 namespace NS_FieldType {

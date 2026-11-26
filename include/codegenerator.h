@@ -45,6 +45,7 @@ class CodeGenerator {
     QString getFlagTypeStringFromAttNb(int attNb, QString varName);
     QString getTypeStringFromDataType(NS_AttDataType::T_AttDataType dataType);
     QString getInitStringFromDataType(NS_AttDataType::T_AttDataType dataType);
+    QString getVleCastString(NS_AttDataType::T_AttDataType dataType);
     QString getAttDescString(QString protocolName, QString parentName, Attribute *attribute);
     NS_AttDataType::T_AttDataType getPayloadDataType(Attribute *attribute);
     QString getStructTypeString(QString protocolName, Attribute::T_structType *pStruct);
