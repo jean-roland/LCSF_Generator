@@ -1738,13 +1738,11 @@ void MainWindow::clearData(void) {
     this->m_codeextractB = CodeExtractor();
     this->m_rustextractA = RustExtractor();
     this->m_rustextractB = RustExtractor();
-    // Clear button states
-    QPalette pal;
-    pal.setColor(QPalette::Button, QColor(Qt::white));
-    ui->pbImportDescA->setPalette(pal);
-    ui->pbImportDescB->setPalette(pal);
-    ui->pbImportRustA->setPalette(pal);
-    ui->pbImportRustB->setPalette(pal);
+    // Clear button states, back to the default palette
+    ui->pbImportDescA->setPalette(QPalette());
+    ui->pbImportDescB->setPalette(QPalette());
+    ui->pbImportRustA->setPalette(QPalette());
+    ui->pbImportRustB->setPalette(QPalette());
     // Clear command array
     for (Command *command : this->m_cmdArray) {
         command->clearAttArray();
