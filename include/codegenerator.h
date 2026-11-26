@@ -50,6 +50,10 @@ class CodeGenerator {
     NS_AttDataType::T_AttDataType getPayloadDataType(Attribute *attribute);
     QString getStructTypeString(QString protocolName, Attribute::T_structType *pStruct);
     QString getStructFctString(QString protocolName, Attribute::T_structType *pStruct);
+    QString getStructArrayNoteString(QString protocolName, Attribute *attribute);
+    void printStructFieldNbGet(Attribute *attribute, QString varName, QString attPath, QString indent, QTextStream *pOut);
+    void printStructArrayDecode(
+        QString protocolName, Attribute *attribute, QString varName, QString indent, QTextStream *pOut);
     QList<Attribute::T_attInfos> getAttInfos_Rec(QString parentName, QList<Attribute *> attList);
     QList<Attribute::T_attInfos> getAttInfos(QList<Command *> cmdList);
     QList<Attribute::T_attInfos> insertSortAttInfosListByParentName(QList<Attribute::T_attInfos> attInfosList);

@@ -78,32 +78,41 @@ static bool StructTestSendCommand(uint_fast16_t cmdName, bool hasPayload) {
 static bool StructTestExecuteget_status(structtest_cmd_payload_t *pCmdPayload) {
     // Declare attributes
     structtest_status_t m_get_status_status = {0};
+    uint16_t m_get_status_statusFieldNb = 0;
     uint8_t *m_get_status_links = NULL;
     uint32_t m_get_status_linksSize = 0;
     bool m_get_status_opt_status_isHere = false;
     structtest_status_t m_get_status_opt_status = {0};
+    uint16_t m_get_status_opt_statusFieldNb = 0;
     bool m_get_status_ext_status_isHere = false;
     uint8_t *m_get_status_ext_status = NULL;
     uint32_t m_get_status_ext_statusSize = 0;
     structtest_counters_t m_get_status_counters = {0};
+    uint16_t m_get_status_countersFieldNb = 0;
     uint8_t *m_get_status_link_counters = NULL;
     uint32_t m_get_status_link_countersSize = 0;
     // Retrieve attributes data
     m_get_status_status = pCmdPayload->get_status_payload.status;
+    m_get_status_statusFieldNb = pCmdPayload->get_status_payload.statusFieldNb;
     m_get_status_links = pCmdPayload->get_status_payload.p_links;
     m_get_status_linksSize = pCmdPayload->get_status_payload.linksSize;
+    // Decode with: LCSF_Bridge_StructTestlinkArrayDeserialize(pArray, maxNb, m_get_status_links, m_get_status_linksSize);
     if ((pCmdPayload->get_status_payload.optAttFlagsBitfield & STRUCTTEST_GET_STATUS_ATT_OPT_STATUS_FLAG) != 0) {
         m_get_status_opt_status = pCmdPayload->get_status_payload.opt_status;
+        m_get_status_opt_statusFieldNb = pCmdPayload->get_status_payload.opt_statusFieldNb;
         m_get_status_opt_status_isHere = true;
     }
     if ((pCmdPayload->get_status_payload.optAttFlagsBitfield & STRUCTTEST_GET_STATUS_ATT_EXT_STATUS_FLAG) != 0) {
         m_get_status_ext_status = pCmdPayload->get_status_payload.p_ext_status;
         m_get_status_ext_statusSize = pCmdPayload->get_status_payload.ext_statusSize;
+        // Decode with: LCSF_Bridge_StructTeststatusArrayDeserialize(pArray, maxNb, m_get_status_ext_status, m_get_status_ext_statusSize);
         m_get_status_ext_status_isHere = true;
     }
     m_get_status_counters = pCmdPayload->get_status_payload.counters;
+    m_get_status_countersFieldNb = pCmdPayload->get_status_payload.countersFieldNb;
     m_get_status_link_counters = pCmdPayload->get_status_payload.p_link_counters;
     m_get_status_link_countersSize = pCmdPayload->get_status_payload.link_countersSize;
+    // Decode with: LCSF_Bridge_StructTestcountersArrayDeserialize(pArray, maxNb, m_get_status_link_counters, m_get_status_link_countersSize);
     // Process data
 #pragma GCC warning "#warning TODO: function to implement"
     return true;
@@ -113,11 +122,13 @@ static bool StructTestExecuteset_cfg(structtest_cmd_payload_t *pCmdPayload) {
     // Declare attributes
     uint8_t m_set_cfg_mode = 0;
     structtest_link_t m_cfg_link = {0};
+    uint16_t m_cfg_linkFieldNb = 0;
     bool m_cfg_links_isHere = false;
     uint8_t *m_cfg_links = NULL;
     uint32_t m_cfg_linksSize = 0;
     bool m_cfg_opt_status_isHere = false;
     structtest_status_t m_cfg_opt_status = {0};
+    uint16_t m_cfg_opt_statusFieldNb = 0;
     int8_t m_cfg_step = 0;
     bool m_cfg_epoch_isHere = false;
     int64_t m_cfg_epoch = 0;
@@ -127,13 +138,16 @@ static bool StructTestExecuteset_cfg(structtest_cmd_payload_t *pCmdPayload) {
     // Retrieve attributes data
     m_set_cfg_mode = pCmdPayload->set_cfg_payload.mode;
     m_cfg_link = pCmdPayload->set_cfg_payload.cfg_payload.link;
+    m_cfg_linkFieldNb = pCmdPayload->set_cfg_payload.cfg_payload.linkFieldNb;
     if ((pCmdPayload->set_cfg_payload.cfg_payload.optAttFlagsBitfield & STRUCTTEST_CFG_ATT_LINKS_FLAG) != 0) {
         m_cfg_links = pCmdPayload->set_cfg_payload.cfg_payload.p_links;
         m_cfg_linksSize = pCmdPayload->set_cfg_payload.cfg_payload.linksSize;
+        // Decode with: LCSF_Bridge_StructTestlinkArrayDeserialize(pArray, maxNb, m_cfg_links, m_cfg_linksSize);
         m_cfg_links_isHere = true;
     }
     if ((pCmdPayload->set_cfg_payload.cfg_payload.optAttFlagsBitfield & STRUCTTEST_CFG_ATT_OPT_STATUS_FLAG) != 0) {
         m_cfg_opt_status = pCmdPayload->set_cfg_payload.cfg_payload.opt_status;
+        m_cfg_opt_statusFieldNb = pCmdPayload->set_cfg_payload.cfg_payload.opt_statusFieldNb;
         m_cfg_opt_status_isHere = true;
     }
     m_cfg_step = pCmdPayload->set_cfg_payload.cfg_payload.step;

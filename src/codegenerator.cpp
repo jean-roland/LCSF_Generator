@@ -238,6 +238,35 @@ QString CodeGenerator::getStructFctString(QString protocolName, Attribute::T_str
     return "LCSF_Bridge_" + protocolName + pStruct->name;
 }
 
+// Payload field note of a struct array, the bridge leaves it serialized for the application
+QString CodeGenerator::getStructArrayNoteString(QString protocolName, Attribute *attribute) {
+    if (!attribute->getIsArray()) {
+        return "";
+    }
+    QString fctString = this->getStructFctString(protocolName, attribute->getStruct());
+    return " // " + attribute->getStruct()->name + " struct array, see " + fctString + "ArraySerialize and " + fctString +
+        "ArrayDeserialize";
+}
+
+// Retrieve code of a single struct field count, for structs from older peers missing trailing fields
+void CodeGenerator::printStructFieldNbGet(
+    Attribute *attribute, QString varName, QString attPath, QString indent, QTextStream *pOut) {
+    if (this->getPayloadDataType(attribute) != NS_AttDataType::STRUCT) {
+        return;
+    }
+    *pOut << indent << varName << "FieldNb = pCmdPayload->" << attPath << "FieldNb;" << Qt::endl;
+}
+
+// Example decode line of a struct array retrieved in varName and varNameSize
+void CodeGenerator::printStructArrayDecode(
+    QString protocolName, Attribute *attribute, QString varName, QString indent, QTextStream *pOut) {
+    if (!attribute->getIsArray()) {
+        return;
+    }
+    *pOut << indent << "// Decode with: " << this->getStructFctString(protocolName, attribute->getStruct())
+          << "ArrayDeserialize(pArray, maxNb, " << varName << ", " << varName << "Size);" << Qt::endl;
+}
+
 QList<Attribute::T_attInfos> CodeGenerator::getAttInfos_Rec(QString parentName, QList<Attribute *> attList) {
     QList<Attribute::T_attInfos> resultList = QList<Attribute::T_attInfos>();
     Attribute::T_attInfos localAttInfos;
@@ -536,6 +565,8 @@ void CodeGenerator::declareAtt_REC(QString protocolName, QString parentName, QLi
         } else if (this->getPayloadDataType(attribute) == NS_AttDataType::STRUCT) {
             *pOut << indent << this->getStructTypeString(protocolName, attribute->getStruct()) << "m_"
                   << parentName.toLower() << "_" << attribute->getName().toLower() << " = {0};" << Qt::endl;
+            *pOut << indent << "uint16_t m_" << parentName.toLower() << "_" << attribute->getName().toLower()
+                  << "FieldNb = 0;" << Qt::endl;
         } else {
             QString typeString = this->getTypeStringFromDataType(this->getPayloadDataType(attribute));
             QString initString = this->getInitStringFromDataType(this->getPayloadDataType(attribute));
@@ -581,10 +612,15 @@ void CodeGenerator::grabAttValues_REC(
                     *pOut << indent << "m_" << parentNames.last().toLower() << "_" << attribute->getName().toLower()
                           << "Size = pCmdPayload->" << this->getPayloadPath(parentNames) << attribute->getName().toLower()
                           << "Size;" << Qt::endl;
+                    this->printStructArrayDecode(protocolName, attribute,
+                        "m_" + parentNames.last().toLower() + "_" + attribute->getName().toLower(), indent, pOut);
                 } else {
                     *pOut << indent << "m_" << parentNames.last().toLower() << "_" << attribute->getName().toLower()
                           << " = pCmdPayload->" << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";"
                           << Qt::endl;
+                    this->printStructFieldNbGet(attribute,
+                        "m_" + parentNames.last().toLower() + "_" + attribute->getName().toLower(),
+                        this->getPayloadPath(parentNames) + attribute->getName().toLower(), indent, pOut);
                 }
                 *pOut << indent << "m_" << parentNames.last().toLower() << "_" << attribute->getName().toLower()
                       << "_isHere = true;" << Qt::endl;
@@ -603,10 +639,15 @@ void CodeGenerator::grabAttValues_REC(
                 *pOut << indent << "m_" << parentNames.last().toLower() << "_" << attribute->getName().toLower()
                       << "Size = pCmdPayload->" << this->getPayloadPath(parentNames) << attribute->getName().toLower()
                       << "Size;" << Qt::endl;
+                this->printStructArrayDecode(protocolName, attribute,
+                    "m_" + parentNames.last().toLower() + "_" + attribute->getName().toLower(), indent, pOut);
             } else {
                 *pOut << indent << "m_" << parentNames.last().toLower() << "_" << attribute->getName().toLower()
                       << " = pCmdPayload->" << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";"
                       << Qt::endl;
+                this->printStructFieldNbGet(attribute,
+                    "m_" + parentNames.last().toLower() + "_" + attribute->getName().toLower(),
+                    this->getPayloadPath(parentNames) + attribute->getName().toLower(), indent, pOut);
             }
         }
     }
@@ -1069,6 +1110,7 @@ void CodeGenerator::generateMainHeader(
                                 QString typeString = this->getTypeStringFromDataType(subAttPayloadType);
                                 out << "    " << "uint32_t " << currentSubAttInfo.attName.toLower() << "Size;" << Qt::endl;
                                 out << "    " << typeString << "p_" << currentSubAttInfo.attName.toLower() << ";"
+                                    << this->getStructArrayNoteString(protocolName, currentSubAttInfo.attPointer)
                                     << Qt::endl;
                             } else {
                                 QString typeString = this->getTypeStringFromDataType(currentSubAttInfo.dataType);
@@ -1120,7 +1162,8 @@ void CodeGenerator::generateMainHeader(
                         (attribute->getDataType() == NS_AttDataType::STRING)) {
                         QString typeString = this->getTypeStringFromDataType(this->getPayloadDataType(attribute));
                         out << "    " << "uint32_t " << attribute->getName().toLower() << "Size;" << Qt::endl;
-                        out << "    " << typeString << "p_" << attribute->getName().toLower() << ";" << Qt::endl;
+                        out << "    " << typeString << "p_" << attribute->getName().toLower() << ";"
+                            << this->getStructArrayNoteString(protocolName, attribute) << Qt::endl;
                     } else {
                         QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
                         out << "    " << typeString << attribute->getName().toLower() << ";" << Qt::endl;
@@ -1346,12 +1389,19 @@ void CodeGenerator::generateMain(
                                             << attribute->getName().toLower() << "Size = pCmdPayload->"
                                             << command->getName().toLower() << "_payload." << attribute->getName().toLower()
                                             << "Size;" << Qt::endl;
+                                        this->printStructArrayDecode(protocolName, attribute,
+                                            "m_" + command->getName().toLower() + "_" + attribute->getName().toLower(),
+                                            "        ", &out);
                                     } else {
                                         QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
                                         out << "        " << "m_" << command->getName().toLower() << "_"
                                             << attribute->getName().toLower() << " = pCmdPayload->"
                                             << command->getName().toLower() << "_payload." << attribute->getName().toLower()
                                             << ";" << Qt::endl;
+                                        this->printStructFieldNbGet(attribute,
+                                            "m_" + command->getName().toLower() + "_" + attribute->getName().toLower(),
+                                            command->getName().toLower() + "_payload." + attribute->getName().toLower(),
+                                            "        ", &out);
                                     }
                                     out << "        m_" << command->getName().toLower() << "_"
                                         << attribute->getName().toLower() << "_isHere = true;" << Qt::endl;
@@ -1372,12 +1422,19 @@ void CodeGenerator::generateMain(
                                         << attribute->getName().toLower() << "Size = pCmdPayload->"
                                         << command->getName().toLower() << "_payload." << attribute->getName().toLower()
                                         << "Size;" << Qt::endl;
+                                    this->printStructArrayDecode(protocolName, attribute,
+                                        "m_" + command->getName().toLower() + "_" + attribute->getName().toLower(), "    ",
+                                        &out);
                                 } else {
                                     QString typeString = this->getTypeStringFromDataType(attribute->getDataType());
                                     out << "    " << "m_" << command->getName().toLower() << "_"
                                         << attribute->getName().toLower() << " = pCmdPayload->"
                                         << command->getName().toLower() << "_payload." << attribute->getName().toLower()
                                         << ";" << Qt::endl;
+                                    this->printStructFieldNbGet(attribute,
+                                        "m_" + command->getName().toLower() + "_" + attribute->getName().toLower(),
+                                        command->getName().toLower() + "_payload." + attribute->getName().toLower(), "    ",
+                                        &out);
                                 }
                             }
                         }

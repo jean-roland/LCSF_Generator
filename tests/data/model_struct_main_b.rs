@@ -367,13 +367,17 @@ impl Counters {
 fn execute_get_status(payload: &GetStatusAttPayload) {
     // Retrieve attributes
     let status = payload.status;
+    let status_field_nb = payload.status_field_nb;
     let links = &payload.links;
     let mut opt_status = Default::default();
+    let mut opt_status_field_nb = 0;
     let mut ext_status = &Vec::new();
     let counters = payload.counters;
+    let counters_field_nb = payload.counters_field_nb;
     let link_counters = &payload.link_counters;
     if payload.is_opt_status_here {
         opt_status = payload.opt_status;
+        opt_status_field_nb = payload.opt_status_field_nb;
     }
     if payload.is_ext_status_here {
         ext_status = &payload.ext_status;
@@ -386,8 +390,10 @@ fn execute_set_cfg(payload: &SetCfgAttPayload) {
     // Retrieve attributes
     let mode = payload.mode;
     let cfg_link = payload.cfg_payload.link;
+    let cfg_link_field_nb = payload.cfg_payload.link_field_nb;
     let mut cfg_links = &Vec::new();
     let mut cfg_opt_status = Default::default();
+    let mut cfg_opt_status_field_nb = 0;
     let cfg_step = payload.cfg_payload.step;
     let mut cfg_epoch = 0;
     let trim = payload.trim;
@@ -397,6 +403,7 @@ fn execute_set_cfg(payload: &SetCfgAttPayload) {
     }
     if payload.cfg_payload.is_opt_status_here {
         cfg_opt_status = payload.cfg_payload.opt_status;
+        cfg_opt_status_field_nb = payload.cfg_payload.opt_status_field_nb;
     }
     if payload.cfg_payload.is_epoch_here {
         cfg_epoch = payload.cfg_payload.epoch;

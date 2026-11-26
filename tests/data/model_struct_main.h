@@ -96,7 +96,7 @@ typedef struct _structtest_set_cfg_att_cfg_att_payload {
     uint16_t linkFieldNb;
     structtest_link_t link;
     uint32_t linksSize;
-    uint8_t *p_links;
+    uint8_t *p_links; // link struct array, see LCSF_Bridge_StructTestlinkArraySerialize and LCSF_Bridge_StructTestlinkArrayDeserialize
     uint16_t opt_statusFieldNb;
     structtest_status_t opt_status;
     int8_t step;
@@ -111,15 +111,15 @@ typedef struct _structtest_get_status_att_payload {
     uint16_t statusFieldNb;
     structtest_status_t status;
     uint32_t linksSize;
-    uint8_t *p_links;
+    uint8_t *p_links; // link struct array, see LCSF_Bridge_StructTestlinkArraySerialize and LCSF_Bridge_StructTestlinkArrayDeserialize
     uint16_t opt_statusFieldNb;
     structtest_status_t opt_status;
     uint32_t ext_statusSize;
-    uint8_t *p_ext_status;
+    uint8_t *p_ext_status; // status struct array, see LCSF_Bridge_StructTeststatusArraySerialize and LCSF_Bridge_StructTeststatusArrayDeserialize
     uint16_t countersFieldNb;
     structtest_counters_t counters;
     uint32_t link_countersSize;
-    uint8_t *p_link_counters;
+    uint8_t *p_link_counters; // counters struct array, see LCSF_Bridge_StructTestcountersArraySerialize and LCSF_Bridge_StructTestcountersArrayDeserialize
 } structtest_get_status_att_payload_t;
 
 #define STRUCTTEST_SET_CFG_ATT_BIAS_FLAG (1 << 0)

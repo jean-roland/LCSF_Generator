@@ -158,6 +158,8 @@ void RustGenerator::declareAtt_REC(
                 } else if (attribute->getDataType() == NS_AttDataType::STRUCT) {
                     *pOut << "    let mut " << parentNames.last().toLower().toLower() << "_"
                           << attribute->getName().toLower() << " = Default::default();" << Qt::endl;
+                    *pOut << "    let mut " << parentNames.last().toLower().toLower() << "_"
+                          << attribute->getName().toLower() << "_field_nb = 0;" << Qt::endl;
                 } else {
                     *pOut << "    let mut " << parentNames.last().toLower().toLower() << "_"
                           << attribute->getName().toLower() << " = 0;" << Qt::endl;
@@ -172,6 +174,11 @@ void RustGenerator::declareAtt_REC(
                     *pOut << "    let " << parentNames.last().toLower().toLower() << "_" << attribute->getName().toLower()
                           << " = payload." << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";"
                           << Qt::endl;
+                    if (attribute->getDataType() == NS_AttDataType::STRUCT) {
+                        *pOut << "    let " << parentNames.last().toLower() << "_" << attribute->getName().toLower()
+                              << "_field_nb = payload." << this->getPayloadPath(parentNames)
+                              << attribute->getName().toLower() << "_field_nb;" << Qt::endl;
+                    }
                 }
             }
         }
@@ -206,6 +213,11 @@ void RustGenerator::grabAttValues_REC(
                 } else {
                     *pOut << indent << parentNames.last().toLower() << "_" << attribute->getName().toLower() << " = payload."
                           << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";" << Qt::endl;
+                    if (attribute->getDataType() == NS_AttDataType::STRUCT) {
+                        *pOut << indent << parentNames.last().toLower() << "_" << attribute->getName().toLower()
+                              << "_field_nb = payload." << this->getPayloadPath(parentNames)
+                              << attribute->getName().toLower() << "_field_nb;" << Qt::endl;
+                    }
                 }
             }
             indent = this->getIndent(indentNb);
@@ -224,6 +236,11 @@ void RustGenerator::grabAttValues_REC(
                 } else {
                     *pOut << indent << parentNames.last().toLower() << "_" << attribute->getName().toLower() << " = payload."
                           << this->getPayloadPath(parentNames) << attribute->getName().toLower() << ";" << Qt::endl;
+                    if (attribute->getDataType() == NS_AttDataType::STRUCT) {
+                        *pOut << indent << parentNames.last().toLower() << "_" << attribute->getName().toLower()
+                              << "_field_nb = payload." << this->getPayloadPath(parentNames)
+                              << attribute->getName().toLower() << "_field_nb;" << Qt::endl;
+                    }
                 }
             }
         }
@@ -1164,6 +1181,7 @@ void RustGenerator::generateMain(
                                 } else if (attribute->getDataType() == NS_AttDataType::STRUCT) {
                                     out << "    let mut " << attribute->getName().toLower() << " = Default::default();"
                                         << Qt::endl;
+                                    out << "    let mut " << attribute->getName().toLower() << "_field_nb = 0;" << Qt::endl;
                                 } else {
                                     out << "    let mut " << attribute->getName().toLower() << " = 0;" << Qt::endl;
                                 }
@@ -1175,6 +1193,10 @@ void RustGenerator::generateMain(
                                 } else {
                                     out << "    let " << attribute->getName().toLower() << " = payload."
                                         << attribute->getName().toLower() << ";" << Qt::endl;
+                                    if (attribute->getDataType() == NS_AttDataType::STRUCT) {
+                                        out << "    let " << attribute->getName().toLower() << "_field_nb = payload."
+                                            << attribute->getName().toLower() << "_field_nb;" << Qt::endl;
+                                    }
                                 }
                             }
                         }
@@ -1194,6 +1216,10 @@ void RustGenerator::generateMain(
                             } else {
                                 out << "        " << attribute->getName().toLower() << " = payload."
                                     << attribute->getName().toLower() << ";" << Qt::endl;
+                                if (attribute->getDataType() == NS_AttDataType::STRUCT) {
+                                    out << "        " << attribute->getName().toLower() << "_field_nb = payload."
+                                        << attribute->getName().toLower() << "_field_nb;" << Qt::endl;
+                                }
                             }
                             out << "    }" << Qt::endl;
                         } else {
