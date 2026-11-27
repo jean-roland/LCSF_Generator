@@ -19,6 +19,7 @@
     along with this project. If not, see <https://www.gnu.org/licenses/>
  */
 
+#include <QDir>
 #include <QFile>
 #include <gtest/gtest.h>
 
@@ -73,6 +74,8 @@ TEST(test_struct, desc_round_trip) {
     EXPECT_EQ(Attribute::getStructFieldOffsets(struct_list.at(2)).join(" ").toStdString(), "0 - - - - - -");
     EXPECT_EQ(Command::getStructAttNames(struct_cmd_list, struct_list.at(0)).join(", ").toStdString(),
         "get_status.status, get_status.opt_status, get_status.ext_status, cfg.opt_status");
+    // Test order is not defined, a generator test may not have created it yet
+    ASSERT_TRUE(QDir().mkpath(outputDir));
     ASSERT_TRUE(DescHandler::save_desc(outputDir "StructTest_desc.json", struct_cmd_list, struct_list, struct_prot_name,
         struct_prot_id, struct_prot_version, struct_prot_desc));
     compareFiles("model_struct_desc.json", "StructTest_desc.json");

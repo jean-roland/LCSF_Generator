@@ -19,6 +19,7 @@
     along with this project. If not, see <https://www.gnu.org/licenses/>
  */
 
+#include <QDir>
 #include <QFile>
 #include <QTextStream>
 #include <gtest/gtest.h>
@@ -74,7 +75,8 @@ TEST(test_deschandler, save_desc) {
     QFile model_file, output_file;
     QStringList model_content, output_content;
 
-    // Generate desc
+    // Generate desc, test order is not defined so a generator test may not have created the folder yet
+    ASSERT_TRUE(QDir().mkpath(path));
     ASSERT_TRUE(DescHandler::save_desc(filename, cmd_list, {}, protocol_name, protocol_id, protocol_version, protocol_desc));
 
     // Check desc file
