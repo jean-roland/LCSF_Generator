@@ -53,7 +53,12 @@ jobs:
           $ver = (Select-String -Path CMakeLists.txt -Pattern 'LCSF_Generator VERSION ([0-9.]+)').Matches[0].Groups[1].Value
           $name = "LCSF_Generator-$ver-windows-x86_64"
           cmake --install build --prefix "dist/$name"
-          windeployqt --release --no-translations --compiler-runtime "dist/$name/bin/lcsf_generator_gui.exe"
+          # The MinGW import library is only for linking against the dll
+          Remove-Item -Recurse "dist/$name/lib"
+          # windeployqt finds the plugins through qmake, take the one of the installed Qt
+          $qmake = "$env:QT_ROOT_DIR\bin\qmake.exe"
+          & $qmake -query QT_INSTALL_PLUGINS
+          windeployqt --qmake $qmake --release --no-translations --compiler-runtime "dist/$name/bin/lcsf_generator_gui.exe"
           Copy-Item README.md, LICENCE.md "dist/$name"
           Compress-Archive -Path "dist/$name" -DestinationPath "dist/$name.zip"
       - uses: actions/upload-artifact@v4
