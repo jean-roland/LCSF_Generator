@@ -55,11 +55,19 @@ jobs:
           cmake --install build --prefix "dist/$name"
           # The MinGW import library is only for linking against the dll
           Remove-Item -Recurse "dist/$name/lib"
-          # windeployqt finds the plugins through qmake, take the one of the installed Qt
-          $qmake = "$env:QT_ROOT_DIR\bin\qmake.exe"
-          & $qmake -query QT_INSTALL_PLUGINS
-          windeployqt --qmake $qmake --release --no-translations --compiler-runtime "dist/$name/bin/lcsf_generator_gui.exe"
+          # Qt and MinGW runtime dlls listed by hand: the Qt 5.15 windeployqt did not find the platform plugin here
+          $qt = $env:QT_ROOT_DIR
+          $bin = "dist/$name/bin"
+          Copy-Item "$qt/bin/Qt5Core.dll", "$qt/bin/Qt5Gui.dll", "$qt/bin/Qt5Widgets.dll", "$qt/bin/libgcc_s_seh-1.dll",
+            "$qt/bin/libstdc++-6.dll", "$qt/bin/libwinpthread-1.dll" $bin
+          New-Item -ItemType Directory "$bin/platforms", "$bin/styles" | Out-Null
+          Copy-Item "$qt/plugins/platforms/qwindows.dll" "$bin/platforms"
+          Copy-Item "$qt/plugins/styles/qwindowsvistastyle.dll" "$bin/styles"
           Copy-Item README.md, LICENCE.md "dist/$name"
+          # Smoke test with Qt off the path: the archive must carry every dll the CLI loads
+          $env:PATH = "$env:SystemRoot\system32"
+          & "$bin/lcsf_generator_cli.exe" --version
+          if ($LASTEXITCODE -ne 0) { exit 1 }
           Compress-Archive -Path "dist/$name" -DestinationPath "dist/$name.zip"
       - uses: actions/upload-artifact@v4
         with:
