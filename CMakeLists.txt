@@ -19,7 +19,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 # Project
-project(LCSF_Generator VERSION 1.4 LANGUAGES CXX)
+project(LCSF_Generator VERSION 1.5 LANGUAGES CXX)
 
 # Includes
 include_directories(${CMAKE_CURRENT_BINARY_DIR})

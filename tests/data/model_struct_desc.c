@@ -1,7 +1,7 @@
 /**
  * \file LCSF_Desc_StructTest.c
  * \brief StructTest LCSF descriptor
- * \author LCSF Generator v1.4
+ * \author LCSF Generator v1.5
  *
  */
 

@@ -13,22 +13,8 @@ VER_NB=$1
 CMAKELISTS_PATH=./CMakeLists.txt
 TESTS_DATA=./tests/test_data.cpp
 DATA_DIR=./tests/data
-BRIDGE_H_PATH=$DATA_DIR/model_bridge.h
-BRIDGE_AC_PATH=$DATA_DIR/model_bridge_a.c
-BRIDGE_BC_PATH=$DATA_DIR/model_bridge_b.c
-DESC_PATH=$DATA_DIR/model_desc.c
-MAIN_H_PATH=$DATA_DIR/model_main.h
-MAIN_AC_PATH=$DATA_DIR/model_main_a.c
-MAIN_BC_PATH=$DATA_DIR/model_main_b.c
-RAWMAIN_H_PATH=$DATA_DIR/model_raw_main.h
-RAWMAIN_AC_PATH=$DATA_DIR/model_raw_main_a.c
-RAWMAIN_BC_PATH=$DATA_DIR/model_raw_main_b.c
-RUST_BRIDGE_A_PATH=$DATA_DIR/model_bridge_a.rs
-RUST_BRIDGE_B_PATH=$DATA_DIR/model_bridge_b.rs
-RUST_MAIN_A_PATH=$DATA_DIR/model_main_a.rs
-RUST_MAIN_B_PATH=$DATA_DIR/model_main_b.rs
-FILE_LIST=($TESTS_DATA $BRIDGE_H_PATH $BRIDGE_AC_PATH $BRIDGE_BC_PATH $DESC_PATH $MAIN_H_PATH $MAIN_AC_PATH $MAIN_BC_PATH $RAWMAIN_H_PATH
-    $RAWMAIN_AC_PATH $RAWMAIN_BC_PATH $RUST_BRIDGE_A_PATH $RUST_BRIDGE_B_PATH $RUST_MAIN_A_PATH $RUST_MAIN_B_PATH)
+# Every golden file whose header carries the generator version
+FILE_LIST=($TESTS_DATA $(grep -rl "LCSF Generator v" $DATA_DIR))
 
 # Modify CMakeFiles
 sed -i -e "s/\(LCSF_Generator VERSION \).*)/\1$VER_NB LANGUAGES CXX)/" $CMAKELISTS_PATH

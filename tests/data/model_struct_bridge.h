@@ -1,7 +1,7 @@
 /**
  * \file LCSF_Bridge_StructTest.h
  * \brief StructTest LCSF bridge module
- * \author LCSF Generator v1.4
+ * \author LCSF Generator v1.5
  *
  */
 

@@ -1,7 +1,7 @@
 /**
  * \file StructTest_Main.h
  * \brief StructTest protocol module
- * \author LCSF Generator v1.4
+ * \author LCSF Generator v1.5
  *
  */
 

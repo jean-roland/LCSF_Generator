@@ -1,7 +1,7 @@
 /**
  * \file LCSF_Bridge_Test_b.c
  * \brief Test LCSF bridge module (B)
- * \author LCSF Generator v1.4
+ * \author LCSF Generator v1.5
  *
  */
 
