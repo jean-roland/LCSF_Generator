@@ -3,8 +3,8 @@
 set -euo pipefail
 
 # Builds a Linux release archive and drafts release notes from git history.
-# Windows build and the GitHub upload are not handled here (need a cross
-# toolchain / github.com auth that aren't assumed present).
+# CI runs it, builds the Windows archive and drafts the GitHub release
+# (.github/workflows/ci.yml).
 
 OUT_DIR=${1:-./dist}
 
@@ -36,16 +36,18 @@ cp README.md LICENCE.md "$STAGE/"
 tar -C "$OUT_DIR" -czf "$OUT_DIR/$NAME.tar.gz" "$NAME"
 echo "Archive: $OUT_DIR/$NAME.tar.gz"
 
-# Draft changelog from the last tag to HEAD
-LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+# Draft changelog from the last tag to HEAD, a tag on HEAD itself excluded
+LAST_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
 NOTES=$OUT_DIR/RELEASE_NOTES_${VER}.md
 {
     echo "# LCSF Generator $VER"
     echo
     [[ -n "$LAST_TAG" ]] && echo "Changes since $LAST_TAG:" || echo "Changes:"
     echo
-    echo "## Features"; git log --pretty="- %s" ${LAST_TAG:+$LAST_TAG..HEAD} --grep="^feat" | sed 's/^- feat: /- /'
-    echo; echo "## Fixes"; git log --pretty="- %s" ${LAST_TAG:+$LAST_TAG..HEAD} --grep="^fix" | sed 's/^- fix: /- /'
-    echo; echo "## Build / internal"; git log --pretty="- %s" ${LAST_TAG:+$LAST_TAG..HEAD} --grep="^\(build\|chore\|refactor\|test\)" | sed 's/^- [a-z]*: /- /'
+    # Commit type and scope prefix, e.g. "feat(gui): "
+    STRIP_TYPE='s/^- [a-z]+(\([^)]*\))?: /- /'
+    echo "## Features"; git log --pretty="- %s" ${LAST_TAG:+$LAST_TAG..HEAD} --grep="^feat" | sed -E "$STRIP_TYPE"
+    echo; echo "## Fixes"; git log --pretty="- %s" ${LAST_TAG:+$LAST_TAG..HEAD} --grep="^fix" | sed -E "$STRIP_TYPE"
+    echo; echo "## Build / internal"; git log --pretty="- %s" ${LAST_TAG:+$LAST_TAG..HEAD} --grep="^\(build\|chore\|refactor\|test\)" | sed -E "$STRIP_TYPE"
 } > "$NOTES"
 echo "Release notes: $NOTES (review/curate before publishing)"

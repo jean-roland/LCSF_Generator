@@ -15,13 +15,12 @@ For more information, check the official LCSF documentation [here](https://jean-
 ## How to install
 
 ### Windows
-* Note: release 1.4 ships Linux binaries only. For Windows, use an earlier release or build from source (see below).
 * Go to the [release section](https://github.com/jean-roland/LCSF_Generator/releases) and download the latest Windows version.
-* Unzip the archive and execute `LCSF_Generator.exe` (GUI) or `LCSF_Generator_CLI.exe + args` (CLI).
+* Unzip the archive and execute `bin\lcsf_generator_gui.exe` (GUI) or `bin\lcsf_generator_cli.exe + args` (CLI).
 
 ### Linux
 * Go to the [release section](https://github.com/jean-roland/LCSF_Generator/releases) and download the latest Linux version.
-* Unzip the archive and execute `lcsf_generator_gui.sh` or `lcsf_generator_cli.sh + args`
+* Extract the archive and execute `bin/lcsf_generator_gui` (GUI) or `bin/lcsf_generator_cli + args` (CLI).
 * Requires the Qt5 runtime. On Debian/Ubuntu: `sudo apt install libqt5widgets5`.
 * There might be other missing libraries, in that case you should use the `ldd` command on the executables to find the missing packages.
 
