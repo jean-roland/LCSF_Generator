@@ -1631,15 +1631,6 @@ void CodeGenerator::generateBridgeHeader(
             out << "#define LCSF_BRIDGE_" << protocolName.toUpper() << "_STRUCT_BUFF_SIZE "
                 << Command::getMaxStructBuffSize(cmdList) << Qt::endl;
         }
-        QList<Attribute::T_structType *> structList = Command::getStructList(cmdList);
-        if (!structList.isEmpty()) {
-            out << "// Struct types fit in an attribute payload" << Qt::endl;
-            for (Attribute::T_structType *pStruct : structList) {
-                out << "_Static_assert(" << protocolName.toUpper() << "_" << pStruct->name.toUpper()
-                    << "_SIZE <= LCSF_ATT_PAYLOAD_MAX_SIZE, \"struct " << pStruct->name.toLower()
-                    << " is over the attribute payload max size\");" << Qt::endl;
-            }
-        }
         out << Qt::endl;
         out << "// Protocol descriptor" << Qt::endl;
         out << "extern const lcsf_validator_protocol_desc_t LCSF_" << protocolName << "_ProtDesc;" << Qt::endl;
@@ -1790,6 +1781,15 @@ void CodeGenerator::generateBridge(QString protocolName, QList<Command *> cmdLis
         out << "} lcsf_bridge_" << protocolName.toLower() << "_info_t;" << Qt::endl;
         out << Qt::endl;
         out << "// --- Private Constants ---" << Qt::endl;
+        QList<Attribute::T_structType *> structList = Command::getStructList(cmdList);
+        if (!structList.isEmpty()) {
+            out << "// Struct types fit in an attribute payload" << Qt::endl;
+            for (Attribute::T_structType *pStruct : structList) {
+                out << "_Static_assert(" << protocolName.toUpper() << "_" << pStruct->name.toUpper()
+                    << "_SIZE <= LCSF_ATT_PAYLOAD_MAX_SIZE, \"struct " << pStruct->name.toLower()
+                    << " is over the attribute payload max size\");" << Qt::endl;
+            }
+        }
         out << "// Array to convert command name value to their lcsf command id" << Qt::endl;
         out << "static const uint16_t LCSF_Bridge_" << protocolName << "_CMDNAME2CMDID[LCSF_" << protocolName.toUpper()
             << "_CMD_NB] = {" << Qt::endl;

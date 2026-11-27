@@ -66,10 +66,6 @@ enum _lcsf_structtest_set_cfg_att_id {
 #define LCSF_STRUCTTEST_ATT_CFG_SUBATT_NB 5
 // Bridge struct serialization buffer size
 #define LCSF_BRIDGE_STRUCTTEST_STRUCT_BUFF_SIZE 113
-// Struct types fit in an attribute payload
-_Static_assert(STRUCTTEST_STATUS_SIZE <= LCSF_ATT_PAYLOAD_MAX_SIZE, "struct status is over the attribute payload max size");
-_Static_assert(STRUCTTEST_LINK_SIZE <= LCSF_ATT_PAYLOAD_MAX_SIZE, "struct link is over the attribute payload max size");
-_Static_assert(STRUCTTEST_COUNTERS_SIZE <= LCSF_ATT_PAYLOAD_MAX_SIZE, "struct counters is over the attribute payload max size");
 
 // Protocol descriptor
 extern const lcsf_validator_protocol_desc_t LCSF_StructTest_ProtDesc;

@@ -27,6 +27,10 @@ typedef struct _lcsf_bridge_structtest_info {
 } lcsf_bridge_structtest_info_t;
 
 // --- Private Constants ---
+// Struct types fit in an attribute payload
+_Static_assert(STRUCTTEST_STATUS_SIZE <= LCSF_ATT_PAYLOAD_MAX_SIZE, "struct status is over the attribute payload max size");
+_Static_assert(STRUCTTEST_LINK_SIZE <= LCSF_ATT_PAYLOAD_MAX_SIZE, "struct link is over the attribute payload max size");
+_Static_assert(STRUCTTEST_COUNTERS_SIZE <= LCSF_ATT_PAYLOAD_MAX_SIZE, "struct counters is over the attribute payload max size");
 // Array to convert command name value to their lcsf command id
 static const uint16_t LCSF_Bridge_StructTest_CMDNAME2CMDID[LCSF_STRUCTTEST_CMD_NB] = {
     LCSF_STRUCTTEST_CMD_ID_GET_STATUS,
